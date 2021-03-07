@@ -27,6 +27,7 @@ describe('MailService', () => {
 
       jest
         .spyOn(mailService.mailerService, 'sendMail')
+        // eslint-disable-next-line
         .mockImplementation(async () => {}); // Just check if this is properly called
 
       mailService.sendingMail(email, redirectUrl);

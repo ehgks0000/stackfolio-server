@@ -9,7 +9,7 @@ import { Register } from '../entity/register.entity';
 
 @EntityRepository(Register)
 export class RegisterRepository extends Repository<Register> {
-  async createRegister(data: CreateRegisterDto) {
+  async createRegister(data: CreateRegisterDto): Promise<Register> {
     const { provider = Provider.LOCAL, social_id, email } = data;
 
     // Throw error if user is already registered

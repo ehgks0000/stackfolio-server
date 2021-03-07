@@ -17,7 +17,7 @@ export class UserFavoriteRepository extends Repository<Favorite> {
       throw new BadRequestException('already add favorite');
     }
 
-    let favorite = new Favorite();
+    const favorite = new Favorite();
     // favorite.user = user_id;
     // favorite.post = post_id;
     favorite.user_id = user_id;

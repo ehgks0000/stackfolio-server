@@ -18,18 +18,18 @@ export class QuestionComment {
 
   @PrimaryGeneratedColumn()
   readonly id: number;
-  
-  @Column({default: 1})
-  @IsOptional()
-   group?: number;
 
-  @Column({default: 0})
+  @Column({ default: 1 })
   @IsOptional()
-   sorts?: number;
+  group?: number;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   @IsOptional()
-   depth?: number;
+  sorts?: number;
+
+  @Column({ default: 0 })
+  @IsOptional()
+  depth?: number;
 
   @Column('text')
   @IsString()
@@ -43,11 +43,9 @@ export class QuestionComment {
   @UpdateDateColumn()
   readonly updated_at: Date;
 
-  @Column("timestamptz")
+  @Column('timestamptz')
   @DeleteDateColumn()
   readonly deleted_at: Date;
-
-  
 
   // @Column({ default: false })
   // @IsBoolean()

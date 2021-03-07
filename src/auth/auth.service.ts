@@ -56,7 +56,7 @@ export class AuthService {
   }
 
   // For users who create with there personal mail
-  async sendRegisterMail(email: string) {
+  async sendRegisterMail(email: string): Promise<void> {
     const user = await this.userRepository.findOne({ email });
     if (user) {
       throw new BadRequestException('이미 회원가입된 email입니다.', email);
@@ -73,7 +73,7 @@ export class AuthService {
     this.mailService.sendingMail(email, redirectUrl);
   }
 
-  async sendLoginMail(email: string) {
+  async sendLoginMail(email: string): Promise<void> {
     const user = await this.userRepository.findOne({ email });
     if (!user) {
       throw new BadRequestException('User does not exist');

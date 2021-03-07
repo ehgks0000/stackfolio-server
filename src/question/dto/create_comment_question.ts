@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNumber, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class CreateCommentQuestionDto {
   @IsNumber()
@@ -20,5 +26,4 @@ export class CreateCommentQuestionDto {
 
   @IsString()
   contents: string;
-
 }

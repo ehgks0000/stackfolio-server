@@ -34,7 +34,7 @@ export class PostRepository extends Repository<Post> {
     const user = userProfile.user;
     // console.log('유저 프로필 : ', user);
 
-    let post = new Post();
+    const post = new Post();
     post.title = data.title;
     post.contents = data.contents;
     // post.author = user;

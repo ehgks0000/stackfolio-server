@@ -16,7 +16,7 @@ const validationSchema = Joi.object({
 });
 
 /** @todo Add client host */
-const allowedHosts = ['http://localhost:3000'];
+const allowedHosts = ['http://localhost:4000'];
 
 const configuration = () => ({
   port: process.env.PORT,
