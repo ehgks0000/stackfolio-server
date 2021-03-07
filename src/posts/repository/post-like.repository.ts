@@ -24,7 +24,7 @@ export class PostLikeRepository extends Repository<PostLike> {
     const postRepository = getRepository(Post);
     const postLikeRepository = getRepository(PostLike);
 
-    let post = await postRepository.findOne({ id: post_id });
+    const post = await postRepository.findOne({ id: post_id });
     if (!post) {
       throw new NotFoundException();
     }

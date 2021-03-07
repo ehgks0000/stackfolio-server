@@ -77,6 +77,6 @@ export class Question {
   @OneToMany((type) => QuestionLike, (likes) => likes.question_id)
   likes: QuestionLike[];
 
-  @OneToMany((type)=> QuestionComment, (comments)=>comments.question )
-  comments: Comment[]
+  @OneToMany((type) => QuestionComment, (comments) => comments.question)
+  comments: Comment[];
 }

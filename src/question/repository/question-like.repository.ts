@@ -22,7 +22,7 @@ export class QuestionLikeRepository extends Repository<QuestionLike> {
     const questionLikeRepository = getRepository(QuestionLike);
     const questionRepository = getRepository(Question);
 
-    let question = await questionRepository.findOne({ id: question_id });
+    const question = await questionRepository.findOne({ id: question_id });
 
     if (!question) {
       throw new NotFoundException('좋아할 질문이 없습니다.');

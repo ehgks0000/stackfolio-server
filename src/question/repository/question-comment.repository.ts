@@ -103,7 +103,7 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
           // 4. INSERT INTO BOARD VALUES
           //    (번호, (원글의 GROUP), (3번값), (원글의 DEPTH +1) ,' 제목')
 
-          let {
+          const {
             max: max_2,
           } = await questionCommentRepository
             .createQueryBuilder('comment')

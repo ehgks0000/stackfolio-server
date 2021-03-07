@@ -4,7 +4,7 @@ import { Verification } from '../entity/verification.entity';
 
 @EntityRepository(Verification)
 export class VerificationRepository extends Repository<Verification> {
-  async verifyCodeAndGetUserProfile(code: string) {
+  async verifyCodeAndGetUserProfile(code: string): Promise<any> {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
 

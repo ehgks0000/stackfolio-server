@@ -4,5 +4,6 @@ import { PostInformation } from '../entity/post-information.entity';
 
 @EntityRepository(PostInformation)
 export class PostRepository extends Repository<PostInformation> {
+  // eslint-disable-next-line
   async createPostInformation() {}
 }

@@ -7,6 +7,8 @@ import {
   Req,
   Res,
   UseGuards,
+  Request,
+  Response,
 } from '@nestjs/common';
 import {
   ApiExcludeEndpoint,
@@ -26,6 +28,7 @@ import { AccessTokenDto } from './dto/acess-token.dto';
 import { SendMailDto } from './dto/send-mail.dto';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import docs from './auth.docs';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -38,12 +41,16 @@ export class AuthController {
   @ApiOAuth2(['email', 'profile'], 'google')
   @ApiOkResponse(docs.get['google'].response[200])
   @ApiMovedPermanentlyResponse(docs.get['google'].response[301])
-  async googleAuth() {}
+  // eslint-disable-next-line
+  async googleAuth(): Promise<void> {}
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   @ApiExcludeEndpoint()
-  googleAuthRedirect(@Req() req, @Res({ passthrough: true }) res) {
+  googleAuthRedirect(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AccessTokenDto> {
     return this.authService.socialLogin(req, res);
   }
 
@@ -52,7 +59,7 @@ export class AuthController {
   @ApiCreatedResponse(docs.post['send-register-mail'].response[201])
   @ApiBadRequestResponse(docs.post['send-register-mail'].response[400])
   @ApiInternalServerErrorResponse(docs.error[500])
-  sendRegisterMail(@Body() { email }: SendMailDto) {
+  sendRegisterMail(@Body() { email }: SendMailDto): Promise<void> {
     return this.authService.sendRegisterMail(email);
   }
 
@@ -61,7 +68,7 @@ export class AuthController {
   @ApiCreatedResponse(docs.post['send-login-mail'].response[201])
   @ApiBadRequestResponse(docs.post['send-login-mail'].response[400])
   @ApiInternalServerErrorResponse(docs.error[500])
-  sendLoginMail(@Body() { email }: SendMailDto) {
+  sendLoginMail(@Body() { email }: SendMailDto): Promise<void> {
     return this.authService.sendLoginMail(email);
   }
 
@@ -78,7 +85,7 @@ export class AuthController {
   @ApiOperation(docs.get['verify/:code'].operation)
   @ApiOkResponse(docs.get['verify/:code'].response[200])
   @ApiBadRequestResponse(docs.get['verify/:code'].response[400])
-  loginWithCode(@Param('code') code: string) {
+  loginWithCode(@Param('code') code: string): Promise<LoginDto> {
     return this.authService.loginWithCode(code);
   }
 }

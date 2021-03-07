@@ -39,7 +39,7 @@ export class Verification {
   /** Listeners */
 
   @BeforeInsert()
-  generateVerificationCode() {
+  generateVerificationCode(): void {
     this.code = this.user.email + '-' + nanoid(10);
   }
 }

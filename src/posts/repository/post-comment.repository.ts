@@ -17,5 +17,6 @@ import { PostComment } from '../entity/post-comment.entity';
 
 @EntityRepository(PostComment)
 export class PostCommentRepository extends Repository<PostComment> {
+  // eslint-disable-next-line
   async createPostComment(userId: string, data: CreatePostDto) {}
 }

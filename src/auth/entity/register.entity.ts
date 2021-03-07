@@ -46,7 +46,7 @@ export class Register {
   /** Listener */
 
   @BeforeInsert()
-  generateVerificationCode() {
+  generateVerificationCode(): void {
     this.code = nanoid(10);
   }
 }
