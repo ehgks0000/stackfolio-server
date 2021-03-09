@@ -13,7 +13,7 @@ import { User } from '../entity/user.entity';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async createUser(data: CreateUserDto) {
+  async createUser(data: CreateUserDto): Promise<User> {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
 

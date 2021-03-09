@@ -5,7 +5,7 @@ import { User } from '../entity/user.entity';
 
 @EntityRepository(Favorite)
 export class UserFavoriteRepository extends Repository<Favorite> {
-  async createFavorite(user_id: string, post_id: string) {
+  async createFavorite(user_id: string, post_id: string): Promise<Favorite> {
     const userRepository = getRepository(User);
     const userFavoriteRepository = getRepository(Favorite);
 

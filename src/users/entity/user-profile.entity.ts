@@ -8,6 +8,7 @@ import {
   OneToOne,
   JoinColumn,
   Unique,
+  OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
 import {
@@ -17,6 +18,7 @@ import {
   IsObject,
   IsUUID,
 } from 'class-validator';
+import { UserInterest } from './user-interest.entity';
 
 export class SocialLinks {
   @ApiProperty({ required: false })
@@ -89,4 +91,11 @@ export class UserProfile {
   @OneToOne((type) => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
+
+  // @ApiProperty({ type: [UserInterest] })
+  // @OneToMany((type) => UserInterest, (userInterest) => userInterest.profile, {
+  //   cascade: true,
+  //   eager: true,
+  // })
+  // interests: UserInterest[];
 }

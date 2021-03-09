@@ -87,7 +87,10 @@ export class User {
 
   /** Relations */
 
-  @ManyToMany((type) => User, (user) => user.following, { cascade: true })
+  @ManyToMany((type) => User, (user) => user.following, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'follow',
     joinColumn: { name: 'user_id', referencedColumnName: 'id' },
@@ -95,7 +98,7 @@ export class User {
   })
   followers: User[];
 
-  @ManyToMany((type) => User, (user) => user.followers)
+  @ManyToMany((type) => User, (user) => user.followers, { onDelete: 'CASCADE' })
   following: User[];
 
   //   @ManyToMany((type) => Post, { cascade: true })

@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   Param,
   Patch,
   Post,
@@ -13,6 +12,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConflictResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -25,6 +25,8 @@ import { User } from './entity/user.entity';
 import { UsersService } from './users.service';
 import docs from './users.docs';
 import { PostInformation } from 'src/posts/entity/post-information.entity';
+import { Favorite } from './entity/user-favorite.entity';
+import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -32,19 +34,24 @@ import { PostInformation } from 'src/posts/entity/post-information.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('')
-  @ApiOperation(docs.get['users'].operation)
-  @ApiOkResponse(docs.get['users'].response[200])
-  @ApiBadRequestResponse(docs.get['users'].response[400])
-  getAllUsers() {
-    return this.usersService.getAllUsers();
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation(docs.get['profile'].operation)
+  @ApiOkResponse(docs.get['profile'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  // eslint-disable-next-line
+  getProfile(@Req() req): Promise<UserProfileResponseDto> {
+    return this.usersService.getUserProfile(req.user.id);
   }
 
   @Get('profile/:user_id')
   @ApiOperation(docs.get['profile/:user_id'].operation)
   @ApiOkResponse(docs.get['profile/:user_id'].response[200])
   @ApiBadRequestResponse(docs.get['profile/:user_id'].response[400])
-  getUserProfile(@Param('user_id') userId: string): Promise<UserProfile> {
+  getUserProfile(
+    @Param('user_id') userId: string,
+  ): Promise<UserProfileResponseDto> {
     return this.usersService.getUserProfile(userId);
   }
 
@@ -54,16 +61,29 @@ export class UsersController {
   @ApiOperation(docs.patch['profile'].operation)
   @ApiOkResponse(docs.patch['profile'].response[200])
   @ApiBadRequestResponse(docs.patch['profile'].response[400])
+  @ApiConflictResponse(docs.patch['profile'].response[409])
   @ApiUnauthorizedResponse(docs.unauthorized)
   updateUserProfile(
+    // eslint-disable-next-line
     @Req() req,
     @Body() data: UpdateUserDto,
   ): Promise<UserProfile> {
     return this.usersService.updateUserProfile(req.user.id, data);
   }
 
-  @Get('followers/:user_id')
+  @Get('followers')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation(docs.get['followers'].operation)
+  @ApiOkResponse(docs.get['followers'].response[200])
+  @ApiBadRequestResponse(docs.get['followers'].response[400])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  // eslint-disable-next-line
+  getMyFollowers(@Req() req): Promise<User[]> {
+    return this.usersService.getFollowers(req.user.id);
+  }
+
+  @Get('followers/:user_id')
   @ApiOperation(docs.get['followers/:user_id'].operation)
   @ApiOkResponse(docs.get['followers/:user_id'].response[200])
   @ApiBadRequestResponse(docs.get['followers/:user_id'].response[400])
@@ -72,8 +92,19 @@ export class UsersController {
     return this.usersService.getFollowers(userId);
   }
 
-  @Get('followings/:user_id')
+  @Get('followings')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation(docs.get['followings'].operation)
+  @ApiOkResponse(docs.get['followings'].response[200])
+  @ApiBadRequestResponse(docs.get['followings'].response[400])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  // eslint-disable-next-line
+  getMyFollowings(@Req() req): Promise<User[]> {
+    return this.usersService.getFollowings(req.user.id);
+  }
+
+  @Get('followings/:user_id')
   @ApiOperation(docs.get['followings/:user_id'].operation)
   @ApiOkResponse(docs.get['followings/:user_id'].response[200])
   @ApiBadRequestResponse(docs.get['followings/:user_id'].response[400])
@@ -81,88 +112,84 @@ export class UsersController {
   getFollowings(@Param('user_id') userId: string): Promise<User[]> {
     return this.usersService.getFollowings(userId);
   }
-  //팔로잉 하기
-  @Get('following/:user_id')
+
+  @Post('follow/:user_id')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation(docs.get['following/:user_id'].operation)
-  @ApiOkResponse(docs.get['following/:user_id'].response[200])
-  @ApiBadRequestResponse(docs.get['following/:user_id'].response[400])
+  @ApiBearerAuth()
+  @ApiOperation(docs.post['follow/:user_id'].operation)
+  @ApiOkResponse(docs.post['follow/:user_id'].response[200])
+  @ApiBadRequestResponse(docs.post['follow/:user_id'].response[400])
   @ApiUnauthorizedResponse(docs.unauthorized)
-  getFollowing(@Req() req, @Param('user_id') userId: string) {
-    return this.usersService.getFollowing(req.user, userId);
-  }
-  //팔로잉 끊기(언팔)
-  @Delete('following/:user_id')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation(docs.get['following/:user_id'].operation)
-  @ApiOkResponse(docs.get['following/:user_id'].response[200])
-  @ApiBadRequestResponse(docs.get['following/:user_id'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  unFollowing(@Req() req, @Param('user_id') userId: string) {
-    return this.usersService.unFollowing(req.user.id, userId);
-  }
-  //팔로워 끊기
-  @Delete('follower/:user_id')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation(docs.delete['follower/:user_id'].operation)
-  @ApiOkResponse(docs.delete['follower/:user_id'].response[200])
-  @ApiBadRequestResponse(docs.delete['follower/:user_id'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  unFollower(@Req() req, @Param('user_id') userId: string) {
-    return this.usersService.unFollower(req.user.id, userId);
+  // eslint-disable-next-line
+  getFollowing(@Req() req, @Param('user_id') userId: string): Promise<void> {
+    return this.usersService.follow(req.user, userId);
   }
 
-  //   @Post('follow/:user_id')
-  //   @UseGuards(JwtAuthGuard)
-  //   @ApiOperation(docs.get['following/user_id'].operation)
-  //   @ApiOkResponse(docs.get['following/user_id'].response[200])
-  //   @ApiBadRequestResponse(docs.get['following/user_id'].response[400])
-  //   @ApiUnauthorizedResponse(docs.unauthorized)
-  //   @HttpCode(200)
-  //   follow(@Param('user_id') userId: string): User {
-  //     /** @todo */
-  //     return {} as any;
-  //   }
-
-  //   @Post('unfollow/:user_id')
-  //   @UseGuards(JwtAuthGuard)
-  //   @ApiOperation(docs.get['following/user_id'].operation)
-  //   @ApiOkResponse(docs.get['following/user_id'].response[200])
-  //   @ApiBadRequestResponse(docs.get['following/user_id'].response[400])
-  //   @ApiUnauthorizedResponse(docs.unauthorized)
-  //   @HttpCode(200)
-  //   unfollow(@Param('user_id') userId: string): User {
-  //     /** @todo */
-  //     return {} as any;
-  //   }
-  @Get('favorites')
+  @Delete('follow/:user_id')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation(docs.get['favorites'].operation)
-  @ApiOkResponse(docs.get['favorites'].response[200])
+  @ApiBearerAuth()
+  @ApiOperation(docs.delete['follow/:user_id'].operation)
+  @ApiOkResponse(docs.delete['follow/:user_id'].response[200])
+  @ApiBadRequestResponse(docs.delete['follow/:user_id'].response[400])
   @ApiUnauthorizedResponse(docs.unauthorized)
-  getFavorites(@Req() req) {
-    /** @todo */
-    return this.usersService.getFavorites(req.user.id);
+  // eslint-disable-next-line
+  unFollowing(@Req() req, @Param('user_id') userId: string): Promise<void> {
+    return this.usersService.unFollow(req.user.id, userId);
   }
 
-  @Get('favorite/:post_id')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation(docs.get['favorite/:post_id'].operation)
-  @ApiOkResponse(docs.get['favorite/:post_id'].response[200])
-  @ApiBadRequestResponse(docs.get['favorite/:post_id'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  addFavorite(@Req() req, @Param('post_id') post_id: string) {
-    return this.usersService.addFavorite(req.user.id, post_id);
-  }
-  @Delete('favorite/:favorite_id')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation(docs.delete['favorite/:favorite_id'].operation)
-  @ApiOkResponse(docs.delete['favorite/:favorite_id'].response[200])
-  @ApiBadRequestResponse(docs.delete['favorite/:favorite_id'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  deleteFavorite(@Req() req, @Param('favorite_id') favorite_id: string) {
-    return this.usersService.deleteFavorite(req.user.id, favorite_id);
-  }
+  // // 팔로워 끊기
+  // @Delete('follower/:user_id')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth()
+  // @ApiOperation(docs.delete['follower/:user_id'].operation)
+  // @ApiOkResponse(docs.delete['follower/:user_id'].response[200])
+  // @ApiBadRequestResponse(docs.delete['follower/:user_id'].response[400])
+  // @ApiUnauthorizedResponse(docs.unauthorized)
+  // // eslint-disable-next-line
+  // unFollower(@Req() req, @Param('user_id') userId: string): Promise<User[]> {
+  //   return this.usersService.unFollower(req.user.id, userId);
+  // }
+
+  // @Get('favorites')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth()
+  // @ApiOperation(docs.get['favorites'].operation)
+  // @ApiOkResponse(docs.get['favorites'].response[200])
+  // @ApiUnauthorizedResponse(docs.unauthorized)
+  // // eslint-disable-next-line
+  // getFavorites(@Req() req): Promise<Favorite[]> {
+  //   /** @todo */
+  //   return this.usersService.getFavorites(req.user.id);
+  // }
+
+  // @Get('favorite/:post_id')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth()
+  // @ApiOperation(docs.get['favorite/:post_id'].operation)
+  // @ApiOkResponse(docs.get['favorite/:post_id'].response[200])
+  // @ApiBadRequestResponse(docs.get['favorite/:post_id'].response[400])
+  // @ApiUnauthorizedResponse(docs.unauthorized)
+  // addFavorite(
+  //   // eslint-disable-next-line
+  //   @Req() req,
+  //   @Param('post_id') post_id: string,
+  // ): Promise<Favorite> {
+  //   return this.usersService.addFavorite(req.user.id, post_id);
+  // }
+
+  // @Delete('favorite/:favorite_id')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiOperation(docs.delete['favorite/:favorite_id'].operation)
+  // @ApiOkResponse(docs.delete['favorite/:favorite_id'].response[200])
+  // @ApiBadRequestResponse(docs.delete['favorite/:favorite_id'].response[400])
+  // @ApiUnauthorizedResponse(docs.unauthorized)
+  // deleteFavorite(
+  //   // eslint-disable-next-line
+  //   @Req() req,
+  //   @Param('favorite_id') favorite_id: string,
+  // ): Promise<Favorite> {
+  //   return this.usersService.deleteFavorite(req.user.id, favorite_id);
+  // }
 
   @Delete('')
   @UseGuards(JwtAuthGuard)
@@ -170,6 +197,7 @@ export class UsersController {
   @ApiOperation(docs.delete['user'].operation)
   @ApiOkResponse(docs.delete['user'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
+  // eslint-disable-next-line
   deleteUser(@Req() req): Promise<User> {
     return this.usersService.deleteUser(req.user);
   }
