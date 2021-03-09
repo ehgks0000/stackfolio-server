@@ -17,6 +17,7 @@ import { QuestionComment } from 'src/question/entity/question-comment.entity';
 import { QuestionLike } from 'src/question/entity/question-like.entity';
 import { QuestionInformation } from 'src/question/entity/question-information.entity';
 import { QuestionMetadata } from 'src/question/entity/question-metadata.entity';
+import { UserInterest } from 'src/users/entity/user-interest.entity';
 
 const inContainer = Boolean(process.env.IN_CONTAINER);
 const isDev = process.env.NODE_ENV === 'development';
@@ -26,6 +27,7 @@ const entities = [
   Register,
   User,
   UserProfile,
+  UserInterest,
   Favorite,
   Series,
   Series_posts,

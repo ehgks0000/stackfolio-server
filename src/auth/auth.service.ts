@@ -33,6 +33,7 @@ export class AuthService {
     };
   }
 
+  // eslint-disable-next-line
   async socialLogin(@Req() req, @Res() res): Promise<AccessTokenDto> {
     const { provider, social_id, email } = req.user;
     this.logger.verbose(`New social login [${email}]`);
@@ -70,7 +71,7 @@ export class AuthService {
     const client = 'http://localhost:4000'; /** @todo Update to client url */
     const redirectUrl = `${client}/register?code=${register.code}&email=${register.email}`;
 
-    this.mailService.sendingMail(email, redirectUrl);
+    this.mailService.sendRegisterMail(email, redirectUrl);
   }
 
   async sendLoginMail(email: string): Promise<void> {
@@ -90,7 +91,7 @@ export class AuthService {
     const client = 'http://localhost:4000'; /** @todo Update to client url */
     const redirectUrl = `${client}/verify?code=${verification.code}`;
 
-    this.mailService.sendingMail(email, redirectUrl);
+    this.mailService.sendLoginMail(email, redirectUrl);
   }
 
   async loginWithCode(code: string): Promise<LoginDto> {
