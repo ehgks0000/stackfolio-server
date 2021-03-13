@@ -24,7 +24,6 @@ import {
 } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
-import { AccessTokenDto } from './dto/acess-token.dto';
 import { SendMailDto } from './dto/send-mail.dto';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import docs from './auth.docs';
@@ -50,7 +49,7 @@ export class AuthController {
   googleAuthRedirect(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<AccessTokenDto> {
+  ): Promise<LoginDto> {
     return this.authService.socialLogin(req, res);
   }
 
@@ -77,7 +76,7 @@ export class AuthController {
   @ApiCreatedResponse(docs.post['register'].response[201])
   @ApiBadRequestResponse(docs.post['register'].response[400])
   @ApiConflictResponse(docs.post['register'].response[409])
-  register(@Body() data: CreateUserDto): Promise<AccessTokenDto> {
+  register(@Body() data: CreateUserDto): Promise<LoginDto> {
     return this.authService.register(data);
   }
 

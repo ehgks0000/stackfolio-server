@@ -1,4 +1,3 @@
-import { AccessTokenDto } from './dto/acess-token.dto';
 import { LoginDto } from './dto/login.dto';
 
 export default {
@@ -11,7 +10,7 @@ export default {
       response: {
         [200]: {
           description: 'User is authenticated.',
-          type: AccessTokenDto,
+          type: LoginDto,
         },
         [301]: {
           description:
@@ -64,7 +63,7 @@ export default {
       response: {
         [201]: {
           description: 'User was successfuly created.',
-          type: AccessTokenDto,
+          type: LoginDto,
         },
         [400]: {
           description: 'Invalid register code or invalid email format.',
