@@ -10,7 +10,6 @@ import { UserRepository } from 'src/users/repository/user.repository';
 import { RegisterRepository } from './repository/register.repository';
 import { VerificationRepository } from './repository/verification.repository';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { AccessTokenDto } from './dto/acess-token.dto';
 import { LoginDto } from './dto/login.dto';
 import { MailService } from 'src/mail/mail.service';
 
@@ -25,16 +24,17 @@ export class AuthService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async register(data: CreateUserDto): Promise<AccessTokenDto> {
+  async register(data: CreateUserDto): Promise<LoginDto> {
     const newUser = await this.userRepository.createUser(data);
 
     return {
+      profile: newUser.profile,
       accessToken: this.jwtService.sign({ userId: newUser.id }),
     };
   }
 
   // eslint-disable-next-line
-  async socialLogin(@Req() req, @Res() res): Promise<AccessTokenDto> {
+  async socialLogin(@Req() req, @Res() res): Promise<LoginDto> {
     const { provider, social_id, email } = req.user;
     this.logger.verbose(`New social login [${email}]`);
     const user = await this.userRepository.findOne({ email });
@@ -50,8 +50,8 @@ export class AuthService {
       return res.redirect(encodeURI(redirectUrl));
     }
 
-    // should redirect?
     return {
+      profile: user.profile,
       accessToken: this.jwtService.sign({ userId: user.id }),
     };
   }

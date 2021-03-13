@@ -34,15 +34,15 @@ import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('profile')
+  @Delete('')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation(docs.get['profile'].operation)
-  @ApiOkResponse(docs.get['profile'].response[200])
+  @ApiOperation(docs.delete['user'].operation)
+  @ApiOkResponse(docs.delete['user'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
   // eslint-disable-next-line
-  getProfile(@Req() req): Promise<UserProfileResponseDto> {
-    return this.usersService.getUserProfile(req.user.id);
+  deleteUser(@Req() req): Promise<User> {
+    return this.usersService.deleteUser(req.user);
   }
 
   @Get('profile/:user_id')
@@ -71,44 +71,18 @@ export class UsersController {
     return this.usersService.updateUserProfile(req.user.id, data);
   }
 
-  @Get('followers')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation(docs.get['followers'].operation)
-  @ApiOkResponse(docs.get['followers'].response[200])
-  @ApiBadRequestResponse(docs.get['followers'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  // eslint-disable-next-line
-  getMyFollowers(@Req() req): Promise<User[]> {
-    return this.usersService.getFollowers(req.user.id);
-  }
-
   @Get('followers/:user_id')
   @ApiOperation(docs.get['followers/:user_id'].operation)
   @ApiOkResponse(docs.get['followers/:user_id'].response[200])
   @ApiBadRequestResponse(docs.get['followers/:user_id'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
   getFollowers(@Param('user_id') userId: string): Promise<User[]> {
     return this.usersService.getFollowers(userId);
-  }
-
-  @Get('followings')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation(docs.get['followings'].operation)
-  @ApiOkResponse(docs.get['followings'].response[200])
-  @ApiBadRequestResponse(docs.get['followings'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  // eslint-disable-next-line
-  getMyFollowings(@Req() req): Promise<User[]> {
-    return this.usersService.getFollowings(req.user.id);
   }
 
   @Get('followings/:user_id')
   @ApiOperation(docs.get['followings/:user_id'].operation)
   @ApiOkResponse(docs.get['followings/:user_id'].response[200])
   @ApiBadRequestResponse(docs.get['followings/:user_id'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
   getFollowings(@Param('user_id') userId: string): Promise<User[]> {
     return this.usersService.getFollowings(userId);
   }
@@ -190,15 +164,4 @@ export class UsersController {
   // ): Promise<Favorite> {
   //   return this.usersService.deleteFavorite(req.user.id, favorite_id);
   // }
-
-  @Delete('')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation(docs.delete['user'].operation)
-  @ApiOkResponse(docs.delete['user'].response[200])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  // eslint-disable-next-line
-  deleteUser(@Req() req): Promise<User> {
-    return this.usersService.deleteUser(req.user);
-  }
 }
