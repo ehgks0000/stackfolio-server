@@ -24,11 +24,11 @@ export class PostsService {
     return {} as any;
   }
 
-  async getPostsAll() {
+  async getPostsAll(): Promise<Post[]> {
     const posts = await this.postRepository.find();
     console.log('post all');
 
-    return { posts };
+    return posts;
   }
 
   // 유저의 post 불러오기
@@ -69,7 +69,7 @@ export class PostsService {
     });
 
     await this.postRepository.remove(post);
-    return { post } as any;
+    return post;
   }
 
   //   async getLikePosts(userId: string) {
@@ -77,18 +77,18 @@ export class PostsService {
   //     return { posts } as any;
   //   }
 
-  async likePost(userId: string, postId: string) {
+  async likePost(userId: string, postId: string): Promise<void> {
     this.postLikeRepository.createPostLike(userId, postId);
-    return {} as any;
+    // return {} as any;
   }
 
-  async unlikePost(userId: string, postId: string) {
+  async unlikePost(userId: string, postId: string): Promise<void> {
     const unlikePost = await this.postLikeRepository.findOne({
       user_id: userId,
       post_id: postId,
     });
 
     await this.postLikeRepository.remove(unlikePost);
-    return {} as any;
+    // return {} as any;
   }
 }
