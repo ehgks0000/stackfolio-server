@@ -1,4 +1,3 @@
-import { PostInformation } from 'src/posts/entity/post-information.entity';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { Favorite } from './entity/user-favorite.entity';
 import { UserProfile } from './entity/user-profile.entity';

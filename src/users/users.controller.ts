@@ -18,13 +18,12 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfile } from './entity/user-profile.entity';
 import { User } from './entity/user.entity';
 import { UsersService } from './users.service';
 import docs from './users.docs';
-import { PostInformation } from 'src/posts/entity/post-information.entity';
 import { Favorite } from './entity/user-favorite.entity';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 
