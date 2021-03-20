@@ -47,6 +47,8 @@ export class AuthService {
       });
       const client = 'http://localhost:4000'; /** @todo Update to client url */
       const redirectUrl = `${client}/register?code=${register.code}&email=${register.email}`;
+      this.logger.verbose(`New social login [${redirectUrl}]`);
+
       return res.redirect(encodeURI(redirectUrl));
     }
 

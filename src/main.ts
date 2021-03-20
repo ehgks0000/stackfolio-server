@@ -7,6 +7,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { setSwagger } from './set-swagger';
+import { config } from 'aws-sdk';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -18,7 +19,12 @@ async function bootstrap() {
   const $ = app.get(ConfigService);
   const allowedHosts = $.get('allowed-hosts');
   const port = $.get('port');
-
+  //aws s3 설정
+  //   config.update({
+  //     accessKeyId: $.get('aws.id'),
+  //     secretAccessKey: $.get('aws.secret-key'),
+  //     region: 'ap-northeast-2',
+  //   });
   app.set('trust proxy', 1);
   app.enableCors({ credentials: true, origin: allowedHosts });
   app.use(cookieParser());
