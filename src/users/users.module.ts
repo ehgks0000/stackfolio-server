@@ -6,6 +6,7 @@ import { UserRepository } from './repository/user.repository';
 import { UserProfileRepository } from './repository/user-profile.repository';
 import { UserFavoriteRepository } from './repository/user-favorite.repository';
 import { ImageuploadService } from 'src/imageupload/imageupload.service';
+import { ImageuploadModule } from 'src/imageupload/imageupload.module';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { ImageuploadService } from 'src/imageupload/imageupload.service';
       UserProfileRepository,
       UserFavoriteRepository,
     ]),
-    ImageuploadService,
+    ImageuploadModule,
   ],
   providers: [UsersService],
   controllers: [UsersController],
