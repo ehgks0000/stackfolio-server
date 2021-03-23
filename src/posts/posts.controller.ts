@@ -64,7 +64,7 @@ export class PostsController {
   @Get(':post_id')
   @ApiOperation(docs.get[':post_id'].operation)
   @ApiOkResponse(docs.get[':post_id'].response[200])
-  getPost(@Param('post_id') postId: string): Promise<_Post> {
+  getPost(@Param('post_id') postId: string): Promise<_Post[]> {
     return this.postsService.getPost(postId);
   }
 

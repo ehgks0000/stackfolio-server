@@ -20,7 +20,6 @@ export class PostsService {
 
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
     const post = await this.postRepository.createPost(userId, data);
-    console.log(post);
     return {} as any;
   }
 
@@ -35,12 +34,12 @@ export class PostsService {
   async getPosts(userId: string, includePrivate = false): Promise<Post[]> {
     const post = await this.postRepository.find({ user_id: userId });
     // console.log(post);
-    return { post } as any;
+    return post;
   }
   // postid의 post 불러오기
-  async getPost(postId: string): Promise<Post> {
+  async getPost(postId: string): Promise<Post[]> {
     const post = await this.postRepository.find({ id: postId });
-    return { post } as any;
+    return post;
   }
 
   async updatePost(
@@ -59,7 +58,7 @@ export class PostsService {
     };
     await this.postRepository.save(post);
 
-    return { post } as any;
+    return post;
   }
 
   async deletePost(userid: string, postId: string): Promise<Post> {

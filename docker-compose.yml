@@ -39,14 +39,16 @@ services:
       test: pg_isready -h 127.0.0.1
   nginx:
     # image: nginx
-    image: ehgks0000/stackfolio-nginx
+    # image: ehgks0000/stackfolio-nginx
+    build:
+      context: ./nginx
     container_name: proxy
     ports:
-      - "80:80"
-    # volumes: 
-      # /etc/nginx/conf.d/default.conf
-      # - ./default.conf:/etc/nginx/conf.d/default.conf
-    restart: "unless-stopped"
+      - '80:80'
+    # volumes:
+    # /etc/nginx/conf.d/default.conf
+    # - ./default.conf:/etc/nginx/conf.d/default.conf
+    restart: 'unless-stopped'
 
   # pgAdmin:
   #   container_name: pgadmin_container
