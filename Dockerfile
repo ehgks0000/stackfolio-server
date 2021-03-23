@@ -2,9 +2,9 @@
 FROM node:15.5.1-alpine3.12 as base
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --only=production && npm cache clean --force
 RUN npm install -g @nestjs/cli
 RUN npm install -g pm2
+RUN npm install --only=production && npm cache clean --force
 
 ## Stage 2 (development)
 # We don't COPY in this stage because we bind-mount for dev

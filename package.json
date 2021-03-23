@@ -20,7 +20,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "pm2": "npm run build && pm2-runtime dist/main"
+    "pm2": "nest build && pm2-runtime start ecosystem.config.json"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.5.1",
