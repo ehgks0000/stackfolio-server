@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, Req, Res } from '@nestjs/common';
 import * as multer from 'multer';
 import * as AWS from 'aws-sdk';
+// import S3 from 'aws-sdk/clients/s3';
 import * as multerS3 from 'multer-s3';
 import { ConfigService } from '@nestjs/config';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';

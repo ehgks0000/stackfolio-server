@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --only=production && npm cache clean --force
 RUN npm install -g @nestjs/cli
+RUN npm install -g pm2
 
 ## Stage 2 (development)
 # We don't COPY in this stage because we bind-mount for dev
@@ -27,3 +28,4 @@ FROM base as prod
 COPY --from=build /app /app
 USER node
 CMD ["node", "dist/main"]
+# CMD ["node", "dist/main"]
