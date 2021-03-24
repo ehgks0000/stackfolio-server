@@ -5,7 +5,8 @@
       "script": "./dist/main.js",
       "watch": true,
       "instances": 0,
-      "exec_mode": "cluster"
+      "exec_mode": "cluster",
+      "node_args": "--max-old-space-size=4096"
       
     }
   ]
