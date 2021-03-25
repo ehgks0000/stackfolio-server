@@ -4,9 +4,9 @@
       "name": "app",
       "script": "./dist/main.js",
       "watch": true,
-      "instances": 0,
+      "instances": 1,
       "exec_mode": "cluster",
-      "node_args": "--max-old-space-size=4096"
+    //   "node_args": "--max_old_space_size=512"
       
     }
   ]

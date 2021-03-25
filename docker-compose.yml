@@ -7,12 +7,15 @@ services:
       context: ./
       target: dev
     restart: unless-stopped
-    command: npm run pm2
+    # command: npm run pm2 -- debug 0.0.0.0:9229
+    command: npm run start:debug
     # command: npm run start:dev
     ports:
-      - '3000:3000'
+      - 3000:3000
+      - 9229:9229
     environment:
       - IN_CONTAINER=true
+      - DEBUG=*
       - PORT=3000
       - DATABASE_URL=postgresql://dohan:passwd@pg:5432/stackfolio?schema=public
       # Connection URL: postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA

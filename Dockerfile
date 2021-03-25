@@ -27,5 +27,6 @@ RUN rm -rf ./node_modules
 FROM base as prod
 COPY --from=build /app /app
 USER node
+EXPOSE 3000
 CMD ["node", "dist/main"]
 # CMD ["node", "dist/main"]
