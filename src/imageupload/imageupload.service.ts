@@ -1,12 +1,10 @@
-import { BadRequestException, Injectable, Req, Res } from '@nestjs/common';
+import { Injectable, Req, Res } from '@nestjs/common';
 import * as multer from 'multer';
 import * as AWS from 'aws-sdk';
 // import S3 from 'aws-sdk/clients/s3';
 import * as multerS3 from 'multer-s3';
 import { ConfigService } from '@nestjs/config';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
-import { UserRepository } from 'src/users/repository/user.repository';
-import { User } from 'src/users/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserProfile } from 'src/users/entity/user-profile.entity';
 @Injectable()
@@ -71,6 +69,7 @@ export class ImageuploadService {
     });
     if (!userProfile.avatar) {
       console.log('avatar url이 존재 하지않습니다.');
+      return res.status(401).json({ error: '' });
     }
 
     const url = userProfile.avatar.split('/');
@@ -85,43 +84,14 @@ export class ImageuploadService {
       async (err, data) => {
         if (err) {
           console.error(err);
+          return res.status(401).json({ err: err });
         }
 
         await this.userProfileRepository.save(userProfile);
         console.log('삭제삭제삭제');
+        return res.status(401).json({ data });
       },
     );
-  }
-  // test
-  async uploadFiles(req, files) {
-    let userProfile = await this.userProfileRepository.findOne({
-      user_id: req.user.id,
-    });
-
-    this.upload(req, async (e) => {
-      if (e) {
-        throw new BadRequestException(e);
-      }
-      // 유저 프로필 avatar 여기다 저장
-
-      if (userProfile.avatar !== null) {
-        // const user = this.deleteupload(req);
-      }
-      userProfile = {
-        ...userProfile,
-        avatar: files.avatar,
-        // avatar: req.files[0].location,
-      };
-
-      await this.userProfileRepository.save(userProfile);
-    });
-    return userProfile;
-    // console.log(req.user.id);
-    // console.log(files);
-    // console.log(files.background);
-    // console.log(files.avatar);
-    files.avatar.map((file) => console.log(file));
-    return {} as any;
   }
 }
 

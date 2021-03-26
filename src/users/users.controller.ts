@@ -24,7 +24,6 @@ import { UserProfile } from './entity/user-profile.entity';
 import { User } from './entity/user.entity';
 import { UsersService } from './users.service';
 import docs from './users.docs';
-import { Favorite } from './entity/user-favorite.entity';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 
 @ApiTags('Users')

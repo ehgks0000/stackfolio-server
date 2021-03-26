@@ -2,11 +2,10 @@
   "apps": [
     {
       "name": "app",
-      "script": "./dist/main.js",
-      "watch": true,
+      "script": "dist/main.js",
       "instances": 1,
       "exec_mode": "cluster",
-    //   "node_args": "--max_old_space_size=512"
+      "node_args": "--max_old_space_size=400"
       
     }
   ]

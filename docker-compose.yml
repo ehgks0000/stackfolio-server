@@ -8,7 +8,8 @@ services:
       target: dev
     restart: unless-stopped
     # command: npm run pm2 -- debug 0.0.0.0:9229
-    command: npm run start:debug
+    command: npm run dist
+    # command: npm run start:debug
     # command: npm run start:dev
     ports:
       - 3000:3000

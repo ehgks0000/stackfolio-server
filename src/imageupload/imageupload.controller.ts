@@ -1,19 +1,5 @@
-import {
-  Controller,
-  Delete,
-  Post,
-  Req,
-  Res,
-  UploadedFile,
-  UploadedFiles,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
-import {
-  FileFieldsInterceptor,
-  FileInterceptor,
-  FilesInterceptor,
-} from '@nestjs/platform-express';
+import { Controller, Delete, Post, Req, Res, UseGuards } from '@nestjs/common';
+
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserProfile } from 'src/users/entity/user-profile.entity';
 import { ImageuploadService } from './imageupload.service';
@@ -35,15 +21,15 @@ export class ImageuploadController {
   }
 
   //테스트
-  @Post('upload')
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'avatar', maxCount: 10 },
-      { name: 'background', maxCount: 1 },
-    ]),
-  )
-  uploadFiles(@Req() req, @UploadedFiles() files: Express.Multer.File) {
-    return this.imageUploadService.uploadFiles(req, files);
-  }
+  //   @Post('upload')
+  //   @UseGuards(JwtAuthGuard)
+  //   @UseInterceptors(
+  //     FileFieldsInterceptor([
+  //       { name: 'avatar', maxCount: 10 },
+  //       { name: 'background', maxCount: 1 },
+  //     ]),
+  //   )
+  //   uploadFiles(@Req() req, @UploadedFiles() files: Express.Multer.File) {
+  //     return this.imageUploadService.uploadFiles(req, files);
+  //   }
 }

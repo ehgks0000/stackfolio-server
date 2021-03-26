@@ -20,7 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "pm2": "nest build && pm2-runtime start ecosystem.config.json",
+    "pm2": "npm run build && pm2-runtime start ecosystem.config.json",
+    "dist": "pm2-runtime start ecosystem.config.json",
     "pm22": "pm2-runtime start npm -- run start:dev"
   },
   "dependencies": {
@@ -53,6 +54,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^8.5.1",
+    "pm2": "^4.5.5",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
