@@ -20,8 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "pm2": "npm run build && pm2-runtime start ecosystem.config.json",
-    "dist": "pm2-runtime start ecosystem.config.json",
+    "pm2": "pm2-runtime ecosystem.config.json",
+    "dist": "pm2-runtime ecosystem.config.json",
     "pm22": "pm2-runtime start npm -- run start:dev"
   },
   "dependencies": {

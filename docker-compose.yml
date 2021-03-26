@@ -16,7 +16,7 @@ services:
       - 9229:9229
     environment:
       - IN_CONTAINER=true
-      - DEBUG=*
+      # - DEBUG=*
       - PORT=3000
       - DATABASE_URL=postgresql://dohan:passwd@pg:5432/stackfolio?schema=public
       # Connection URL: postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA

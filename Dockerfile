@@ -2,6 +2,9 @@
 FROM node:15.5.1-alpine3.12 as base
 WORKDIR /app
 COPY package*.json ./
+RUN apt update -y
+RUN apt upgrade -y
+
 RUN npm install -g @nestjs/cli
 RUN npm install -g pm2
 RUN npm install --only=production && npm cache clean --force
@@ -27,6 +30,5 @@ RUN rm -rf ./node_modules
 FROM base as prod
 COPY --from=build /app /app
 USER node
-EXPOSE 3000
 CMD ["node", "dist/main"]
 # CMD ["node", "dist/main"]
