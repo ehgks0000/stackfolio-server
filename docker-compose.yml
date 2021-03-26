@@ -24,8 +24,8 @@ services:
       - ./:/app:delegated
       - /app/node_modules
     depends_on:
-      pg:
-        condition: service_healthy
+      - pg
+        # condition: service_healthy
 
   pg:
     container_name: pg
