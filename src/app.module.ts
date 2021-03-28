@@ -10,7 +10,6 @@ import { config } from './config/configuration';
 import { TagsModule } from './tags/tags.module';
 import { SeriesModule } from './series/series.module';
 import { QuestionModule } from './question/question.module';
-import { ImageuploadModule } from './imageupload/imageupload.module';
 import { FilesModule } from './files/files.module';
 
 @Module({
@@ -24,7 +23,6 @@ import { FilesModule } from './files/files.module';
     TagsModule,
     SeriesModule,
     QuestionModule,
-    ImageuploadModule,
     FilesModule,
   ],
   controllers: [],

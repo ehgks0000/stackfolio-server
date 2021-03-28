@@ -16,7 +16,9 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
   ApiConflictResponse,
+  ApiConsumes,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -29,22 +31,17 @@ import { User } from './entity/user.entity';
 import { UsersService } from './users.service';
 import docs from './users.docs';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
-import { ImageuploadService } from 'src/imageupload/imageupload.service';
 import {
   FileFieldsInterceptor,
   FileInterceptor,
 } from '@nestjs/platform-express';
-import * as multerS3 from 'multer-s3';
-import { diskStorage } from 'multer';
+import { FileUploadDto } from './dto/file-upload.dto';
 
 @ApiTags('Users')
 @Controller('users')
 // @UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly imageUploadService: ImageuploadService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Delete('')
   @UseGuards(JwtAuthGuard)
@@ -123,31 +120,16 @@ export class UsersController {
     return this.usersService.unFollow(req.user.id, userId);
   }
 
-  @Post('avatar')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation(docs.post['avatar'].operation)
-  @ApiOkResponse(docs.post['avatar'].response[200])
-  @ApiBadRequestResponse(docs.post['avatar'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  upload(@Req() req, @Res() res): Promise<UserProfile> {
-    return this.imageUploadService.fileupload(req, res);
-  }
-
-  @Delete('avatar')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation(docs.delete['avatar'].operation)
-  @ApiOkResponse(docs.delete['avatar'].response[200])
-  @ApiBadRequestResponse(docs.delete['avatar'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  deleteAvatar(@Req() req, @Res() res): Promise<void> {
-    return this.imageUploadService.deleteupload(req, res);
-  }
-
   // test
   @Post('upload')
   @UseGuards(JwtAuthGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'avatar image',
+    type: FileUploadDto,
+  })
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse(docs.unauthorized)
   @UseInterceptors(
     FileInterceptor('image', {
       //   storage: diskStorage({}),
@@ -159,15 +141,21 @@ export class UsersController {
       //   },
     }),
   )
-  uploadFile(@Req() req, @UploadedFile() file: Express.Multer.File) {
-    // console.log(file);
-    // console.log(file.buffer);
-    // console.log(file.originalname);
+  uploadFile(
+    @Req() req,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<UserProfile> {
     return this.usersService.addAvatar(
       req.user.id,
       file.buffer,
       file.originalname,
     );
+  }
+
+  @Delete('upload')
+  @UseGuards(JwtAuthGuard)
+  deleteFile(@Req() req): Promise<void> {
+    return this.usersService.deleteAvatar(req.user.id);
   }
 
   // // 팔로워 끊기

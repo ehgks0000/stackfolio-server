@@ -135,7 +135,11 @@ export class UsersService {
       throw new BadRequestException('Invalid user_id');
     }
   }
-  async addAvatar(userId: string, imageBuffer: Buffer, filename: string) {
+  async addAvatar(
+    userId: string,
+    imageBuffer: Buffer,
+    filename: string,
+  ): Promise<UserProfile> {
     const avatar = await this.filesService.uploadAvatarFile(
       userId,
       imageBuffer,
@@ -148,6 +152,18 @@ export class UsersService {
 
     await this.userProfileRepository.save(userProfile);
     return userProfile;
+  }
+
+  async deleteAvatar(userId: string): Promise<void> {
+    const userProfile = await this.userProfileRepository.findOne({
+      user_id: userId,
+    });
+    if (userProfile.avatar) {
+      await this.filesService.deleteAvatarFile(userProfile.avatar);
+
+      userProfile.avatar = null;
+      await this.userProfileRepository.save(userProfile);
+    }
   }
 
   // // 팔로워 끊기

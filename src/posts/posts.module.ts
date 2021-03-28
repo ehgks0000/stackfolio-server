@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ImageuploadService } from 'src/imageupload/imageupload.service';
 import { Favorite } from 'src/users/entity/user-favorite.entity';
 import { UserFavoriteRepository } from 'src/users/repository/user-favorite.repository';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
