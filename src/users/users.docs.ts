@@ -136,6 +136,17 @@ export default {
         [400]: { description: 'Invalid `user_id`' },
       },
     },
+    ['avatar']: {
+      operation: {
+        description: 'Upload a avatar image',
+      },
+      response: {
+        [200]: {
+          description: "Successfully added the user's avatar.",
+        },
+        [400]: { description: 'Invalid `user_id`' },
+      },
+    },
   },
   patch: {
     ['profile']: {
@@ -189,6 +200,15 @@ export default {
       },
       response: {
         [200]: { description: 'favorite 삭제하기', type: Favorite },
+        [400]: {},
+      },
+    },
+    ['avatar']: {
+      operation: {
+        description: "Delete a user's avatar image",
+      },
+      response: {
+        [200]: { description: "Delete a user's avatar image" },
         [400]: {},
       },
     },

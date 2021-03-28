@@ -4,6 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FilesService } from 'src/files/files.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserProfile } from './entity/user-profile.entity';
@@ -19,6 +20,7 @@ export class UsersService {
     private readonly userRepository: UserRepository,
     private readonly userFavoriteRepository: UserFavoriteRepository,
     private readonly userProfileRepository: UserProfileRepository, // private readonly userFollowerRepository: Repository<Follow>,
+    private readonly filesService: FilesService,
   ) {}
 
   async deleteUser(user: User): Promise<User> {
@@ -132,6 +134,20 @@ export class UsersService {
       // the `findOne` method throws an error if the provided `user_id` is not a `uuid`
       throw new BadRequestException('Invalid user_id');
     }
+  }
+  async addAvatar(userId: string, imageBuffer: Buffer, filename: string) {
+    const avatar = await this.filesService.uploadAvatarFile(
+      userId,
+      imageBuffer,
+      filename,
+    );
+    const userProfile = await this.userProfileRepository.findOne({
+      user_id: userId,
+    });
+    userProfile.avatar = avatar;
+
+    await this.userProfileRepository.save(userProfile);
+    return userProfile;
   }
 
   // // 팔로워 끊기

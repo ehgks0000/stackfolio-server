@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserProfile } from 'src/users/entity/user-profile.entity';
+import { FilesService } from 'src/files/files.service';
 @Injectable()
 export class ImageuploadService {
   private s3: any;

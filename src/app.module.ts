@@ -11,6 +11,7 @@ import { TagsModule } from './tags/tags.module';
 import { SeriesModule } from './series/series.module';
 import { QuestionModule } from './question/question.module';
 import { ImageuploadModule } from './imageupload/imageupload.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ImageuploadModule } from './imageupload/imageupload.module';
     SeriesModule,
     QuestionModule,
     ImageuploadModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [],

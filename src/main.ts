@@ -20,11 +20,11 @@ async function bootstrap() {
   const allowedHosts = $.get('allowed-hosts');
   const port = $.get('port');
   //aws s3 설정
-  //   config.update({
-  //     accessKeyId: $.get('aws.id'),
-  //     secretAccessKey: $.get('aws.secret-key'),
-  //     region: 'ap-northeast-2',
-  //   });
+  config.update({
+    accessKeyId: $.get('aws.id'),
+    secretAccessKey: $.get('aws.secretkey'),
+    region: $.get('aws.region'),
+  });
   app.set('trust proxy', 1);
   app.enableCors({ credentials: true, origin: allowedHosts });
   app.use(cookieParser());

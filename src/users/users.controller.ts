@@ -8,7 +8,10 @@ import {
   Post,
   Req,
   Res,
+  UploadedFile,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -27,6 +30,12 @@ import { UsersService } from './users.service';
 import docs from './users.docs';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { ImageuploadService } from 'src/imageupload/imageupload.service';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
+import * as multerS3 from 'multer-s3';
+import { diskStorage } from 'multer';
 
 @ApiTags('Users')
 @Controller('users')
@@ -116,14 +125,49 @@ export class UsersController {
 
   @Post('avatar')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation(docs.post['avatar'].operation)
+  @ApiOkResponse(docs.post['avatar'].response[200])
+  @ApiBadRequestResponse(docs.post['avatar'].response[400])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   upload(@Req() req, @Res() res): Promise<UserProfile> {
     return this.imageUploadService.fileupload(req, res);
   }
 
   @Delete('avatar')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation(docs.delete['avatar'].operation)
+  @ApiOkResponse(docs.delete['avatar'].response[200])
+  @ApiBadRequestResponse(docs.delete['avatar'].response[400])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   deleteAvatar(@Req() req, @Res() res): Promise<void> {
     return this.imageUploadService.deleteupload(req, res);
+  }
+
+  // test
+  @Post('upload')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('image', {
+      //   storage: diskStorage({}),
+      //   fileFilter: (req, file, cb) => {
+      //     file.encoding = 'image/png';
+      //     file.fieldname = 'image';
+      //     file.mimetype = 'image/png';
+      //     cb(null, true);
+      //   },
+    }),
+  )
+  uploadFile(@Req() req, @UploadedFile() file: Express.Multer.File) {
+    // console.log(file);
+    // console.log(file.buffer);
+    // console.log(file.originalname);
+    return this.usersService.addAvatar(
+      req.user.id,
+      file.buffer,
+      file.originalname,
+    );
   }
 
   // // 팔로워 끊기
