@@ -20,27 +20,26 @@ export class PostsService {
 
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
     const post = await this.postRepository.createPost(userId, data);
-    console.log(post);
     return {} as any;
   }
 
-  async getPostsAll() {
+  async getPostsAll(): Promise<Post[]> {
     const posts = await this.postRepository.find();
     console.log('post all');
 
-    return { posts };
+    return posts;
   }
 
   // 유저의 post 불러오기
   async getPosts(userId: string, includePrivate = false): Promise<Post[]> {
     const post = await this.postRepository.find({ user_id: userId });
     // console.log(post);
-    return { post } as any;
+    return post;
   }
   // postid의 post 불러오기
-  async getPost(postId: string): Promise<Post> {
+  async getPost(postId: string): Promise<Post[]> {
     const post = await this.postRepository.find({ id: postId });
-    return { post } as any;
+    return post;
   }
 
   async updatePost(
@@ -59,7 +58,7 @@ export class PostsService {
     };
     await this.postRepository.save(post);
 
-    return { post } as any;
+    return post;
   }
 
   async deletePost(userid: string, postId: string): Promise<Post> {
@@ -69,7 +68,7 @@ export class PostsService {
     });
 
     await this.postRepository.remove(post);
-    return { post } as any;
+    return post;
   }
 
   //   async getLikePosts(userId: string) {
@@ -77,18 +76,18 @@ export class PostsService {
   //     return { posts } as any;
   //   }
 
-  async likePost(userId: string, postId: string) {
+  async likePost(userId: string, postId: string): Promise<void> {
     this.postLikeRepository.createPostLike(userId, postId);
-    return {} as any;
+    // return {} as any;
   }
 
-  async unlikePost(userId: string, postId: string) {
+  async unlikePost(userId: string, postId: string): Promise<void> {
     const unlikePost = await this.postLikeRepository.findOne({
       user_id: userId,
       post_id: postId,
     });
 
     await this.postLikeRepository.remove(unlikePost);
-    return {} as any;
+    // return {} as any;
   }
 }

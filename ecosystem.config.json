@@ -1,0 +1,11 @@
+{
+  "apps": [
+    {
+      "name": "app",
+      "script": "dist/main.js",
+      "instances": 1,
+      "watch": true,
+      "exec_mode": "cluster"
+    }
+  ]
+}

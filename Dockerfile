@@ -1,9 +1,22 @@
 ## Stage 1 (base)
 FROM node:15.5.1-alpine3.12 as base
+
+RUN adduser node root
+# COPY . /home/node/app
+# WORKDIR /home/node/app
+
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --only=production && npm cache clean --force
+
 RUN npm install -g @nestjs/cli
+RUN npm install -g pm2
+ENV PM2_HOME=/app/.pm2
+# ENV PM2_HOME=/home/node/app/.pm2
+RUN npm install --only=production 
+# RUN npm cache clean --force
+
+# RUN chmod -R 775 /home/node/app
+# RUN chown -R node:root /home/node/app
 
 ## Stage 2 (development)
 # We don't COPY in this stage because we bind-mount for dev
@@ -25,5 +38,6 @@ RUN rm -rf ./node_modules
 ## Stage 6 (production)
 FROM base as prod
 COPY --from=build /app /app
-USER node
+USER 1000
 CMD ["node", "dist/main"]
+# CMD ["node", "dist/main"]

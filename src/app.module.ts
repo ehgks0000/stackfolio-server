@@ -10,6 +10,7 @@ import { config } from './config/configuration';
 import { TagsModule } from './tags/tags.module';
 import { SeriesModule } from './series/series.module';
 import { QuestionModule } from './question/question.module';
+import { ImageuploadModule } from './imageupload/imageupload.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { QuestionModule } from './question/question.module';
     TagsModule,
     SeriesModule,
     QuestionModule,
+    ImageuploadModule,
   ],
   controllers: [],
   providers: [],

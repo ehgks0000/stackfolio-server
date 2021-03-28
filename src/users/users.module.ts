@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from './repository/user.repository';
 import { UserProfileRepository } from './repository/user-profile.repository';
 import { UserFavoriteRepository } from './repository/user-favorite.repository';
+import { ImageuploadModule } from 'src/imageupload/imageupload.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UserFavoriteRepository } from './repository/user-favorite.repository';
       UserProfileRepository,
       UserFavoriteRepository,
     ]),
+    ImageuploadModule,
   ],
   providers: [UsersService],
   controllers: [UsersController],

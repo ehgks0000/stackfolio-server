@@ -6,7 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
-import { Favorite } from './entity/user-favorite.entity';
 import { UserProfile } from './entity/user-profile.entity';
 import { User } from './entity/user.entity';
 import { UserFavoriteRepository } from './repository/user-favorite.repository';

@@ -13,6 +13,10 @@ const validationSchema = Joi.object({
   PASSPORT_GOOGLE_CLIENT_ID: Joi.string().required(),
   PASSPORT_GOOGLE_CLIENT_SECRET: Joi.string().required(),
   PASSPORT_GOOGLE_CALLBACK_URL: Joi.string().required(),
+
+  AWS_S3_BUCKET_NAME: Joi.string().required(),
+  AWS_ACCESS_KEY_ID: Joi.string().required(),
+  AWS_SECRET_ACCESS_KEY: Joi.string().required(),
 });
 
 /** @todo Add client host */
@@ -28,6 +32,12 @@ const configuration = () => ({
       ['client-secret']: process.env.PASSPORT_GOOGLE_CLIENT_SECRET,
       ['callback-url']: process.env.PASSPORT_GOOGLE_CALLBACK_URL,
     },
+  },
+  aws: {
+    ['bucketname']: process.env.AWS_S3_BUCKET_NAME,
+    ['id']: process.env.AWS_ACCESS_KEY_ID,
+    ['secretkey']: process.env.AWS_SECRET_ACCESS_KEY,
+    ['region']: process.env.AWS_REGION,
   },
 });
 

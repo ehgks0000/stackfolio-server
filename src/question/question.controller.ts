@@ -10,14 +10,23 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { CreateCommentQuestionDto } from './dto/create_comment_question';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { Question } from './entity/question.entity';
 import { QuestionService } from './question.service';
+import docs from './question.docs';
+import { QuestionComment } from './entity/question-comment.entity';
 
+@ApiTags('Questions')
 @Controller('question')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
@@ -25,12 +34,15 @@ export class QuestionController {
   @Post('')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  createPost(@Req() req, @Body() data: CreateQuestionDto) {
+  @ApiOperation(docs.post['question'].operation)
+  @ApiOkResponse(docs.post['question'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  createPost(@Req() req, @Body() data: CreateQuestionDto): Promise<Question> {
     return this.questionService.createQuestion(req.user.id, data);
   }
 
   @Get()
-  getQuestionAll() {
+  getQuestionAll(): Promise<Question[]> {
     return this.questionService.getQuestionAll();
   }
 
@@ -49,7 +61,10 @@ export class QuestionController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @ApiBearerAuth()
-  likePost(@Req() req, @Param('question_id') questionId: string) {
+  likePost(
+    @Req() req,
+    @Param('question_id') questionId: string,
+  ): Promise<void> {
     return this.questionService.likePost(req.user.id, questionId);
   }
 
@@ -57,7 +72,10 @@ export class QuestionController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @ApiBearerAuth()
-  unlikePost(@Req() req, @Param('question_id') questionId: string) {
+  unlikePost(
+    @Req() req,
+    @Param('question_id') questionId: string,
+  ): Promise<void> {
     return this.questionService.unlikePost(req.user.id, questionId);
   }
 
@@ -72,7 +90,9 @@ export class QuestionController {
   }
 
   @Get('comment/:question_id')
-  getComments(@Param('question_id') question_id: string) {
+  getComments(
+    @Param('question_id') question_id: string,
+  ): Promise<QuestionComment[]> {
     return this.questionService.getComments(question_id);
   }
 
@@ -82,7 +102,7 @@ export class QuestionController {
     @Req() req,
     @Param('question_id') question_id: string,
     @Body() data: CreateCommentQuestionDto,
-  ) {
+  ): Promise<void> {
     return this.questionService.createComment(req.user.id, question_id, data);
   }
 }
