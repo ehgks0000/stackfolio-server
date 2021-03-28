@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -25,12 +26,16 @@ import { User } from './entity/user.entity';
 import { UsersService } from './users.service';
 import docs from './users.docs';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
+import { ImageuploadService } from 'src/imageupload/imageupload.service';
 
 @ApiTags('Users')
 @Controller('users')
 // @UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly imageUploadService: ImageuploadService,
+  ) {}
 
   @Delete('')
   @UseGuards(JwtAuthGuard)
@@ -107,6 +112,18 @@ export class UsersController {
   // eslint-disable-next-line
   unFollowing(@Req() req, @Param('user_id') userId: string): Promise<void> {
     return this.usersService.unFollow(req.user.id, userId);
+  }
+
+  @Post('avatar')
+  @UseGuards(JwtAuthGuard)
+  upload(@Req() req, @Res() res): Promise<UserProfile> {
+    return this.imageUploadService.fileupload(req, res);
+  }
+
+  @Delete('avatar')
+  @UseGuards(JwtAuthGuard)
+  deleteAvatar(@Req() req, @Res() res): Promise<void> {
+    return this.imageUploadService.deleteupload(req, res);
   }
 
   // // 팔로워 끊기

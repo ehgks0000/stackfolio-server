@@ -6,12 +6,10 @@ RUN adduser node root
 # WORKDIR /home/node/app
 
 WORKDIR /app
-
 COPY package*.json ./
 
 RUN npm install -g @nestjs/cli
 RUN npm install -g pm2
-
 ENV PM2_HOME=/app/.pm2
 # ENV PM2_HOME=/home/node/app/.pm2
 RUN npm install --only=production 

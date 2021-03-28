@@ -42,3 +42,4 @@ pgadmin
 
 stack-folio.pem
 .env
+.pm2
