@@ -7,4 +7,8 @@ export class CreatePostDto {
 
   @IsString()
   contents: string;
+
+  @IsString()
+  @IsOptional()
+  tags?: string[];
 }

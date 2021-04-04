@@ -119,4 +119,9 @@ export class PostsController {
   deletePost(@Req() req, @Param('post_id') postId: string): Promise<_Post> {
     return this.postsService.deletePost(req.user.id, postId);
   }
+
+  @Get('tag')
+  getTags() {
+    return this.postsService.getTags();
+  }
 }
