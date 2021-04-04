@@ -58,15 +58,15 @@ export class PostRepository extends Repository<Post> {
         // 새로 태그 생성하지 않고 post에 태그 걸어주기
         if (!preTag) {
           //다른 레포지토리 불러와서 생성이 되나?
-          // const newTags = await this.tagRepository.createTag(tag);
+          const newTag = await this.tagRepository.createTag(tag);
 
-          const newTag = new Tag();
-          newTag.title = tag;
-          await tagsRepository.save(newTag);
-          post.tags = [newTag];
-          // post.tags = [...post.tags, newTag];
+          // const newTag = new Tag();
+          // newTag.title = tag;
+          // await tagsRepository.save(newTag);
+          // post.tags = [newTag];
+          post.tags = [...post.tags, newTag];
         } else {
-          post.tags = [preTag];
+          post.tags = [...post.tags, preTag];
         }
       });
     }

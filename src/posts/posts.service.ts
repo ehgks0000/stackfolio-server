@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Tag } from 'src/tags/entity/tag.entity';
 import { TagRepository } from 'src/tags/repository/tag.repository';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
 import { UserRepository } from 'src/users/repository/user.repository';
@@ -17,6 +18,7 @@ export class PostsService {
     private readonly userRepository: UserRepository,
     private readonly userProfileRepository: UserProfileRepository,
     private readonly postLikeRepository: PostLikeRepository,
+
     private readonly tagRepository: TagRepository,
   ) {}
 
@@ -110,7 +112,13 @@ export class PostsService {
     // return {} as any;
   }
 
-  async getTags() {
+  //test createTags
+  async createTag(): Promise<Tag> {
+    const tag = await this.tagRepository.createTag('test tag');
+    return tag;
+  }
+
+  async getTags(): Promise<Tag[] | undefined> {
     const tags = await this.tagRepository.find();
     return tags;
   }
