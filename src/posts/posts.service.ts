@@ -60,6 +60,7 @@ export class PostsService {
       contents: data.contents,
     };
     if (data.tags) {
+      // data.tags.
       data.tags.map(async (tag) => {
         const preTag = await this.tagRepository.findOne({
           title: tag,

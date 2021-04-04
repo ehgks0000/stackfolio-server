@@ -48,6 +48,7 @@ export class PostRepository extends Repository<Post> {
 
     // 태그 만들기
     if (data.tags) {
+      console.log(data.tags);
       data.tags.map(async (tag) => {
         const preTag = await tagsRepository.findOne({
           title: tag,
@@ -63,6 +64,7 @@ export class PostRepository extends Repository<Post> {
           newTag.title = tag;
           await tagsRepository.save(newTag);
           post.tags = [newTag];
+          // post.tags = [...post.tags, newTag];
         } else {
           post.tags = [preTag];
         }
