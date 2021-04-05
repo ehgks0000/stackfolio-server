@@ -82,6 +82,10 @@ export class Post {
   @OneToMany((type) => PostComment, (comment) => comment.post)
   comments: Comment[];
 
+  //   @Column('uuid')
+  //   @IsUUID('4')
+  //   tag_id: string;
+
   @ManyToMany((type) => Tag)
   @JoinTable({
     name: 'post_tag',

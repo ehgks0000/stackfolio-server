@@ -15,8 +15,6 @@ export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: PostRepository,
-    private readonly userRepository: UserRepository,
-    private readonly userProfileRepository: UserProfileRepository,
     private readonly postLikeRepository: PostLikeRepository,
 
     private readonly tagRepository: TagRepository,
@@ -24,11 +22,15 @@ export class PostsService {
 
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
     const post = await this.postRepository.createPost(userId, data);
-    return {} as any;
+    return post;
   }
 
   async getPostsAll(): Promise<Post[]> {
-    const posts = await this.postRepository.find();
+    const posts = await this.postRepository.find({
+      relations: ['tags'],
+      order: { created_at: 'DESC' },
+    });
+    // posts
     console.log('post all');
 
     return posts;
@@ -51,33 +53,7 @@ export class PostsService {
     postId: string,
     data: UpdatePostDto,
   ): Promise<Post> {
-    let post = await this.postRepository.findOne({
-      id: postId,
-      user_id: userId,
-    });
-
-    post = {
-      ...post,
-      title: data.title,
-      contents: data.contents,
-    };
-    if (data.tags) {
-      // data.tags.
-      data.tags.map(async (tag) => {
-        const preTag = await this.tagRepository.findOne({
-          title: tag,
-        });
-        if (!preTag) {
-          const newTag = await this.tagRepository.createTag(tag);
-          post.tags = [newTag];
-        } else {
-          post.tags = [preTag];
-        }
-        // 태그 배열 하나 넣을 때마다 저장을 해야하나?
-        await this.postRepository.save(post);
-      });
-    }
-    await this.postRepository.save(post);
+    const post = await this.postRepository.updatePost(userId, postId, data);
 
     return post;
   }
