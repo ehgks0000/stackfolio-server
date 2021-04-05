@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Tag } from 'src/tags/entity/tag.entity';
+import { TagRepository } from 'src/tags/repository/tag.repository';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
 import { UserRepository } from 'src/users/repository/user.repository';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -16,6 +18,8 @@ export class PostsService {
     private readonly userRepository: UserRepository,
     private readonly userProfileRepository: UserProfileRepository,
     private readonly postLikeRepository: PostLikeRepository,
+
+    private readonly tagRepository: TagRepository,
   ) {}
 
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
@@ -54,8 +58,25 @@ export class PostsService {
 
     post = {
       ...post,
-      ...data,
+      title: data.title,
+      contents: data.contents,
     };
+    if (data.tags) {
+      // data.tags.
+      data.tags.map(async (tag) => {
+        const preTag = await this.tagRepository.findOne({
+          title: tag,
+        });
+        if (!preTag) {
+          const newTag = await this.tagRepository.createTag(tag);
+          post.tags = [newTag];
+        } else {
+          post.tags = [preTag];
+        }
+        // 태그 배열 하나 넣을 때마다 저장을 해야하나?
+        await this.postRepository.save(post);
+      });
+    }
     await this.postRepository.save(post);
 
     return post;
@@ -89,5 +110,16 @@ export class PostsService {
 
     await this.postLikeRepository.remove(unlikePost);
     // return {} as any;
+  }
+
+  //test createTags
+  async createTag(): Promise<Tag> {
+    const tag = await this.tagRepository.createTag('test tag');
+    return tag;
+  }
+
+  async getTags(): Promise<Tag[] | undefined> {
+    const tags = await this.tagRepository.find();
+    return tags;
   }
 }

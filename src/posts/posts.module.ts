@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TagRepository } from 'src/tags/repository/tag.repository';
 import { Favorite } from 'src/users/entity/user-favorite.entity';
 import { UserFavoriteRepository } from 'src/users/repository/user-favorite.repository';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
@@ -22,6 +23,7 @@ import { PostRepository } from './repository/post.repository';
       UserRepository,
       UserProfileRepository,
       UserFavoriteRepository,
+      TagRepository,
     ]),
   ],
   controllers: [PostsController],

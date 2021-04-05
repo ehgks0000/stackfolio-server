@@ -121,6 +121,10 @@ export class UsersController {
   }
 
   // test
+  //   @ApiOkResponse(docs.patch['profile'].response[200])
+  //   @ApiBadRequestResponse(docs.patch['profile'].response[400])
+  //   @ApiConflictResponse(docs.patch['profile'].response[409])
+
   @Post('upload')
   @UseGuards(JwtAuthGuard)
   @ApiConsumes('multipart/form-data')
@@ -129,6 +133,7 @@ export class UsersController {
     type: FileUploadDto,
   })
   @ApiBearerAuth()
+  @ApiOkResponse(docs.post['upload'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
   @UseInterceptors(
     FileInterceptor('image', {
@@ -154,6 +159,9 @@ export class UsersController {
 
   @Delete('upload')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse(docs.delete['upload'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   deleteFile(@Req() req): Promise<void> {
     return this.usersService.deleteAvatar(req.user.id);
   }

@@ -88,7 +88,7 @@ export class Post {
     joinColumn: { name: 'post_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
   })
-  tags: Tag[];
+  tags?: Tag[];
 
   //   @ManyToMany((type) => User, (user) => user.favorites)
   //   users: User[];

@@ -23,6 +23,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post as _Post } from './entity/post.entity';
 import { PostsService } from './posts.service';
 import docs from './posts.docs';
+import { Tag } from 'src/tags/entity/tag.entity';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -118,5 +119,15 @@ export class PostsController {
   @ApiUnauthorizedResponse(docs.unauthorized)
   deletePost(@Req() req, @Param('post_id') postId: string): Promise<_Post> {
     return this.postsService.deletePost(req.user.id, postId);
+  }
+
+  @Post('tag')
+  createTag(): Promise<Tag> {
+    return this.postsService.createTag();
+  }
+
+  @Get('tag')
+  getTags(): Promise<Tag[] | undefined> {
+    return this.postsService.getTags();
   }
 }

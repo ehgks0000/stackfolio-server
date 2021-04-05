@@ -12,15 +12,21 @@ import { User } from 'src/users/entity/user.entity';
 import { UserProfile } from 'src/users/entity/user-profile.entity';
 import { PostInformation } from '../entity/post-information.entity';
 import { PostMetadata } from '../entity/post-metadata.entity';
+import { Tag } from 'src/tags/entity/tag.entity';
+import { TagRepository } from 'src/tags/repository/tag.repository';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
-  async createPost(userId: string, data: CreatePostDto) {
+  constructor(private readonly tagRepository: TagRepository) {
+    super();
+  }
+  async createPost(userId: string, data: CreatePostDto): Promise<Post> {
     const userRepository = getRepository(User);
     const userProfileRepository = getRepository(UserProfile);
     const postRepository = getRepository(Post);
     const postInformationRepository = getRepository(PostInformation);
     const postMetadataRepository = getRepository(PostMetadata);
+    const tagsRepository = getRepository(Tag);
 
     // const post = postRepository.create();
 
@@ -39,6 +45,31 @@ export class PostRepository extends Repository<Post> {
     post.contents = data.contents;
     // post.author = user;
     post.user_id = user.id;
+
+    // 태그 만들기
+    if (data.tags) {
+      console.log(data.tags);
+      data.tags.map(async (tag) => {
+        const preTag = await tagsRepository.findOne({
+          title: tag,
+        });
+
+        // 다른 유저가 같은 이름의 태그를 만들어 놓으면
+        // 새로 태그 생성하지 않고 post에 태그 걸어주기
+        if (!preTag) {
+          //다른 레포지토리 불러와서 생성이 되나?
+          const newTag = await this.tagRepository.createTag(tag);
+
+          // const newTag = new Tag();
+          // newTag.title = tag;
+          // await tagsRepository.save(newTag);
+          // post.tags = [newTag];
+          post.tags = [...post.tags, newTag];
+        } else {
+          post.tags = [...post.tags, preTag];
+        }
+      });
+    }
 
     const information = new PostInformation();
     const metadata = new PostMetadata();

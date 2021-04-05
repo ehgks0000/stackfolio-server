@@ -9,16 +9,23 @@ services:
     restart: unless-stopped
     # command: npm run pm2 -- debug 0.0.0.0:9229
     # command: npm run dist
+    # command: npm run dist
     command: npm run start:dev
     ports:
       - 3000:3000
       - 9229:9229
+    env_file:
+      - .env
     environment:
       - IN_CONTAINER=true
       # - DEBUG=*
       - PORT=3000
       - DATABASE_URL=postgresql://dohan:passwd@pg:5432/stackfolio?schema=public
-      # Connection URL: postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA
+    #   - G_MAIL_ID=${G_MAIL_ID}
+    #   - G_MAIL_CLIENT_ID=${G_MAIL_CLIENT_ID}
+    #   - G_MAIL_CLIENT_SECRET=${G_MAIL_CLIENT_SECRET}
+    #   - G_MAIL_REFRESH_TOKEN=${G_MAIL_REFRESH_TOKEN}
+    # Connection URL: postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA
     volumes:
       - ./:/app:delegated
       - /app/node_modules

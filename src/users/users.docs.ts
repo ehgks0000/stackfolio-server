@@ -136,13 +136,14 @@ export default {
         [400]: { description: 'Invalid `user_id`' },
       },
     },
-    ['avatar']: {
+    ['upload']: {
       operation: {
         description: 'Upload a avatar image',
       },
       response: {
         [200]: {
           description: "Successfully added the user's avatar.",
+          type: UserProfile,
         },
         [400]: { description: 'Invalid `user_id`' },
       },
@@ -203,7 +204,7 @@ export default {
         [400]: {},
       },
     },
-    ['avatar']: {
+    ['upload']: {
       operation: {
         description: "Delete a user's avatar image",
       },
