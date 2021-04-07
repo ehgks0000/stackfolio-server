@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { Tag } from './entity/tag.entity';
 import { TagsService } from './tags.service';
 
@@ -12,7 +12,7 @@ export class TagsController {
   }
 
   @Post()
-  createTag(): Promise<Tag> {
-    return this.tagsService.createTag();
+  createTag(@Body() tag: string): Promise<Tag> {
+    return this.tagsService.createTag(tag);
   }
 }

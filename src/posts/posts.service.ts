@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FilesService } from 'src/files/files.service';
 import { Tag } from 'src/tags/entity/tag.entity';
 import { TagRepository } from 'src/tags/repository/tag.repository';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
@@ -16,8 +17,8 @@ export class PostsService {
     @InjectRepository(Post)
     private readonly postRepository: PostRepository,
     private readonly postLikeRepository: PostLikeRepository,
-
     private readonly tagRepository: TagRepository,
+    private readonly filesService: FilesService,
   ) {}
 
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
@@ -97,5 +98,47 @@ export class PostsService {
   async getTags(): Promise<Tag[] | undefined> {
     const tags = await this.tagRepository.find();
     return tags;
+  }
+
+  async uploadThumbnail(
+    userId: string,
+    postId: string,
+    buffer: Buffer,
+    originalname: string,
+  ): Promise<string> {
+    // const { buffer, originalname } = files.thumbnail;
+    const key = `${postId}`;
+    return this.filesService.uploadFile(key, buffer, originalname);
+  }
+
+  async uploadContentImages(
+    userId: string,
+    postId: string,
+    buffer: Buffer,
+    originalname: string,
+  ): Promise<string> {
+    const key = `${originalname}`;
+    return this.filesService.uploadFile(key, buffer, originalname);
+  }
+
+  async deleteThumbnail(userId: string, postId: string): Promise<void> {
+    const post = await this.postRepository.findOne(
+      {
+        id: postId,
+        user_id: userId,
+      },
+      { relations: ['information'] },
+    );
+
+    if (post.information.thumbnail) {
+      await this.filesService.deleteFile(post.information.thumbnail);
+
+      post.information.thumbnail = null;
+      await this.postRepository.save(post);
+    }
+    // return post;
+  }
+  async deleteContentImages(): Promise<any> {
+    return;
   }
 }

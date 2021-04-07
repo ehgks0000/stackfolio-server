@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { FilesService } from 'src/files/files.service';
 import { TagRepository } from 'src/tags/repository/tag.repository';
 import { TagsService } from 'src/tags/tags.service';
 import { Favorite } from 'src/users/entity/user-favorite.entity';
@@ -28,7 +29,7 @@ import { PostRepository } from './repository/post.repository';
     ]),
   ],
   controllers: [PostsController],
-  providers: [PostsService, TagsService, TagRepository],
+  providers: [PostsService, TagsService, TagRepository, FilesService],
   exports: [PostsService, TypeOrmModule],
 })
 export class PostsModule {}

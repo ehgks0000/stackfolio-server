@@ -135,17 +135,7 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse(docs.post['upload'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
-  @UseInterceptors(
-    FileInterceptor('image', {
-      //   storage: diskStorage({}),
-      //   fileFilter: (req, file, cb) => {
-      //     file.encoding = 'image/png';
-      //     file.fieldname = 'image';
-      //     file.mimetype = 'image/png';
-      //     cb(null, true);
-      //   },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('image'))
   uploadFile(
     @Req() req,
     @UploadedFile() file: Express.Multer.File,

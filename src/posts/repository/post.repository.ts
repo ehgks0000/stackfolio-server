@@ -16,6 +16,7 @@ import { Tag } from 'src/tags/entity/tag.entity';
 import { TagRepository } from 'src/tags/repository/tag.repository';
 import { UpdatePostDto } from '../dto/update-post.dto';
 import { boolean } from 'joi';
+import { FilesService } from 'src/files/files.service';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
@@ -25,6 +26,17 @@ export class PostRepository extends Repository<Post> {
     const postInformationRepository = getRepository(PostInformation);
     const postMetadataRepository = getRepository(PostMetadata);
     const tagsRepository = getRepository(Tag);
+
+    const {
+      title,
+      contents,
+      tags,
+      slug,
+      thumbnail,
+      description,
+      is_private,
+      published,
+    } = data;
 
     const userProfile = await userProfileRepository.findOne(
       {
@@ -36,14 +48,14 @@ export class PostRepository extends Repository<Post> {
     const user = userProfile.user;
 
     const post = new Post();
-    post.title = data.title;
-    post.contents = data.contents;
+    post.title = title;
+    post.contents = contents;
     post.user_id = user.id;
     post.tags = [];
 
     // 태그 만들기
-    if (data.tags) {
-      data.tags.map(async (tag) => {
+    if (tags) {
+      tags.map(async (tag) => {
         const preTag = await tagsRepository.findOne({
           title: tag,
         });
@@ -65,19 +77,16 @@ export class PostRepository extends Repository<Post> {
       });
     }
 
-    console.log('포스트', post);
-    console.log('태그들 배열', post.tags);
-
     const information = new PostInformation();
-    information.slug = data?.slug;
-    information.thumbnail = data?.thumbnail;
-    information.description = data?.description;
+    information.slug = slug;
+    information.thumbnail = thumbnail;
+    information.description = description;
     const metadata = new PostMetadata();
-    metadata.is_private = Boolean(data?.is_private);
-    metadata.published = Boolean(data?.published);
+    metadata.is_private = Boolean(is_private);
+    metadata.published = Boolean(published);
+
     post.information = information;
     post.metadata = metadata;
-    // post.tags = [tags];
 
     try {
       await postInformationRepository.save(information);
@@ -101,6 +110,17 @@ export class PostRepository extends Repository<Post> {
     const postMetadataRepository = getRepository(PostMetadata);
     const tagsRepository = getRepository(Tag);
 
+    const {
+      title,
+      contents,
+      tags,
+      slug,
+      thumbnail,
+      description,
+      is_private,
+      published,
+    } = data;
+
     let post = await postRepository.findOne(
       {
         id: postId,
@@ -111,13 +131,13 @@ export class PostRepository extends Repository<Post> {
 
     post = {
       ...post,
-      title: data.title,
-      contents: data.contents,
+      title,
+      contents,
     };
     post.tags = [];
-    if (data.tags) {
-      // data.tags.
-      data.tags.map(async (tag) => {
+
+    if (tags) {
+      tags.map(async (tag) => {
         const preTag = await tagsRepository.findOne({
           title: tag,
         });
@@ -126,7 +146,7 @@ export class PostRepository extends Repository<Post> {
           const newTag = tagsRepository.create({
             title: tag,
           });
-
+          //   post.tags= [...post.tags, newTag.id]
           post.tags = [...post.tags, newTag];
           await tagsRepository.save(newTag);
         } else {
@@ -134,8 +154,21 @@ export class PostRepository extends Repository<Post> {
         }
       });
     }
+    const information = post.information;
+    information.slug = slug;
+    information.thumbnail = thumbnail;
+    information.description = description;
+
+    const metadata = post.metadata;
+    metadata.is_private = Boolean(is_private);
+    metadata.published = Boolean(published);
+
+    post.information = information;
+    post.metadata = metadata;
 
     try {
+      await postInformationRepository.save(information);
+      await postMetadataRepository.save(metadata);
       await postRepository.save(post);
     } catch (error) {
       console.error(error);

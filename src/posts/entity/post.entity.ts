@@ -84,7 +84,7 @@ export class Post {
 
   //   @Column('uuid')
   //   @IsUUID('4')
-  //   tag_id: string;
+  //   tag_id?: string;
 
   @ManyToMany((type) => Tag)
   @JoinTable({

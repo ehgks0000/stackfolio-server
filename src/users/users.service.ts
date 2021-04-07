@@ -140,7 +140,7 @@ export class UsersService {
     imageBuffer: Buffer,
     filename: string,
   ): Promise<UserProfile> {
-    const avatar = await this.filesService.uploadAvatarFile(
+    const avatar = await this.filesService.uploadFile(
       userId,
       imageBuffer,
       filename,
@@ -159,7 +159,7 @@ export class UsersService {
       user_id: userId,
     });
     if (userProfile.avatar) {
-      await this.filesService.deleteAvatarFile(userProfile.avatar);
+      await this.filesService.deleteFile(userProfile.avatar);
 
       userProfile.avatar = null;
       await this.userProfileRepository.save(userProfile);
