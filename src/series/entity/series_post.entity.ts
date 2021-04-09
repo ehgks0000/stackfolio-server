@@ -25,10 +25,10 @@ export class Series_posts {
   @CreateDateColumn()
   readonly updated_at: Date;
 
-  @Column()
+  @Column({ default: 1 })
   @IsNumber()
   @Index({ unique: true })
-  readonly order: number;
+  order: number;
 
   @Column('uuid')
   @IsUUID('4')
