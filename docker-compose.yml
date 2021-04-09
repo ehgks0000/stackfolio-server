@@ -21,10 +21,7 @@ services:
       # - DEBUG=*
       - PORT=3000
       - DATABASE_URL=postgresql://dohan:passwd@pg:5432/stackfolio?schema=public
-    #   - G_MAIL_ID=${G_MAIL_ID}
-    #   - G_MAIL_CLIENT_ID=${G_MAIL_CLIENT_ID}
-    #   - G_MAIL_CLIENT_SECRET=${G_MAIL_CLIENT_SECRET}
-    #   - G_MAIL_REFRESH_TOKEN=${G_MAIL_REFRESH_TOKEN}
+
     # Connection URL: postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA
     volumes:
       - ./:/app:delegated

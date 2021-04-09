@@ -45,4 +45,9 @@ export class CreatePostDto {
   @IsString()
   @IsOptional()
   is_private?: string;
+
+  @ApiProperty({ description: 'post-metadata is_private 입니다.' })
+  @IsString()
+  @IsOptional()
+  series_id?: string;
 }

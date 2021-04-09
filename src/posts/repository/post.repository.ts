@@ -36,6 +36,7 @@ export class PostRepository extends Repository<Post> {
       description,
       is_private,
       published,
+      series_id,
     } = data;
 
     const userProfile = await userProfileRepository.findOne(
@@ -52,6 +53,10 @@ export class PostRepository extends Repository<Post> {
     post.contents = contents;
     post.user_id = user.id;
     post.tags = [];
+
+    // 포스트의 시리즈 추가
+    post.series_id = series_id;
+    // post.series = [];
 
     // 태그 만들기
     if (tags) {

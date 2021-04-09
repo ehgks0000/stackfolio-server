@@ -49,10 +49,18 @@ export class Series {
   @IsUUID('4')
   user_id!: string;
 
+  @Column('uuid')
+  @IsUUID('4')
+  post_id!: string[];
+
   @ManyToOne(() => User, (user) => user.series)
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @OneToMany(() => Series_posts, (series_posts) => series_posts.series)
-  series_posts: Series_posts[];
+  @OneToMany(() => Post, (posts) => posts.series)
+  @JoinColumn({ name: 'post_id' })
+  posts: Post[];
+
+  // @OneToMany(() => Series_posts, (series_posts) => series_posts.series)
+  // series_posts: Series_posts[];
 }

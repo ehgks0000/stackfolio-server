@@ -11,7 +11,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { User } from '../../users/entity/user.entity';
 import { PostInformation } from './post-information.entity';
 import { PostMetadata } from './post-metadata.entity';
@@ -19,6 +19,7 @@ import { Tag } from 'src/tags/entity/tag.entity';
 import { PostComment } from './post-comment.entity';
 import { Favorite } from 'src/users/entity/user-favorite.entity';
 import { Series_posts } from 'src/series/entity/series_post.entity';
+import { Series } from 'src/series/entity/series.entity';
 
 @Entity()
 export class Post {
@@ -100,6 +101,19 @@ export class Post {
   @OneToMany((type) => Favorite, (favorites) => favorites.post)
   favorites!: Favorite[];
 
-  @OneToMany(() => Series_posts, (series_posts) => series_posts.post)
-  series_posts: Series_posts[];
+  @Column('uuid')
+  @IsUUID('4')
+  @IsOptional()
+  series_id?: string;
+
+  @ManyToOne(() => Series, (series) => series.posts)
+  @JoinColumn({ name: 'series_id', referencedColumnName: 'id' })
+  // @JoinColumn({ name: 'series_id' })
+  @IsOptional()
+  series?: Series;
+
+  // @OneToMany(() => Series_posts, (series_posts) => series_posts.post)
+  // @JoinColumn({ name: 'series_posts_id', referencedColumnName: 'id' })
+  // @IsOptional()
+  // series_posts?: Series_posts[];
 }
