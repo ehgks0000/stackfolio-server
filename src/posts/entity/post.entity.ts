@@ -10,6 +10,7 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  RelationId,
 } from 'typeorm';
 import { IsString, IsUUID } from 'class-validator';
 import { User } from '../../users/entity/user.entity';
@@ -83,9 +84,15 @@ export class Post {
   @OneToMany((type) => PostComment, (comment) => comment.post)
   comments: Comment[];
 
-  //   @Column('uuid')
+  //   @Column('uuid', { nullable: true })
   //   @IsUUID('4')
-  //   tag_id?: string;
+  //   tag_id?: string[];
+
+  //   @RelationId()
+  //   tag_id: [];
+
+  @RelationId((self: Post) => self.tags)
+  tag_id: string[];
 
   @ManyToMany((type) => Tag)
   @JoinTable({

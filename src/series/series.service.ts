@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Post } from 'src/posts/entity/post.entity';
 import { CreateSeriesDto } from './dto/create-series.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { UpdateSeriesDto } from './dto/update-series.dto';
 import { Series } from './entity/series.entity';
 import { SeriesRepository } from './repository/series.repository';
 
@@ -9,10 +10,17 @@ import { SeriesRepository } from './repository/series.repository';
 export class SeriesService {
   constructor(private readonly seriesRepository: SeriesRepository) {}
 
+  //시리즈 생성
   async createSeries(userId: string, data: CreateSeriesDto): Promise<Series> {
     return this.seriesRepository.createSeries(userId, data);
   }
-  async insertPost(seriesId: string, userId: string, postId: string) {
+
+  // 게시글을 시리즈에 등록
+  async insertPost(
+    seriesId: string,
+    userId: string,
+    postId: string,
+  ): Promise<void> {
     return this.seriesRepository.insertPost(seriesId, userId, postId);
   }
   //내 아이디의 전체 시리즈 목록
@@ -23,11 +31,29 @@ export class SeriesService {
     });
   }
   // 내 아이디의 한 시리즈의 게시글 목록
-  async getPostsOfSeries(userId: string, seriesId: string) {
+  async getPostsOfSeries(userId: string, seriesId: string): Promise<Series[]> {
     return this.seriesRepository.find({ id: seriesId, user_id: userId });
   }
-  async updateSeries() {
-    return;
+  async updateSeries(
+    userId: string,
+    seriesId: string,
+    data: UpdateSeriesDto,
+  ): Promise<void> {
+    let updatedSeries = await this.seriesRepository.findOne({
+      id: seriesId,
+      user_id: userId,
+    });
+
+    const { description, name, slug, thumbnail } = data;
+    updatedSeries = {
+      ...updatedSeries,
+      description,
+      name,
+      slug,
+      thumbnail,
+    };
+
+    await this.seriesRepository.save(updatedSeries);
   }
   async updateOrderOfSeries(seriesId: string, data: UpdateOrderDto) {
     return this.seriesRepository.updateOrder(seriesId, data);

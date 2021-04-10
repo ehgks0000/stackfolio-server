@@ -12,7 +12,6 @@ export class SeriesRepository extends Repository<Series> {
     const { name, description, thumbnail, slug } = data;
 
     const mySeries = await this.find({ user_id: userId });
-
     mySeries.forEach((series) => {
       if (series.name === name) {
         throw new BadRequestException('내 시리즈 중 이미 있는 이름입니다.');
@@ -31,7 +30,11 @@ export class SeriesRepository extends Repository<Series> {
     return newSeries;
   }
 
-  async insertPost(seriesId: string, userId: string, postId: string) {
+  async insertPost(
+    seriesId: string,
+    userId: string,
+    postId: string,
+  ): Promise<void> {
     const postRepository = getRepository(Post);
 
     const series = await this.findOne({

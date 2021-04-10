@@ -6,6 +6,6 @@ export class CreateTagDto {
     description: "a new Tag's title",
     example: 'JavaScript',
   })
-  @IsString()
-  tag: string;
+  @IsString({ each: true })
+  tags: string[];
 }

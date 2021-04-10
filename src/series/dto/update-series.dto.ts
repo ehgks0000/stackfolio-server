@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
 
-export class CreateSeriesDto {
+export class UpdateSeriesDto {
   @ApiProperty({
     description: "a new Tag's title",
     example: 'JavaScript',
   })
   @IsString()
   @IsOptional()
-  name: string;
+  name?: string;
 
   @ApiProperty({
     description: "a new Tag's title",

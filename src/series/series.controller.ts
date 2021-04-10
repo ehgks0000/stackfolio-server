@@ -12,6 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateSeriesDto } from './dto/create-series.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { UpdateSeriesDto } from './dto/update-series.dto';
 import { Series } from './entity/series.entity';
 import { SeriesService } from './series.service';
 
@@ -35,7 +36,7 @@ export class SeriesController {
     @Req() req,
     @Query('seriesId') seriesId: string,
     @Query('postId') postId: string,
-  ) {
+  ): Promise<void> {
     return this.seriesService.insertPost(seriesId, req.user.id, postId);
   }
 
@@ -46,13 +47,22 @@ export class SeriesController {
   }
 
   @Get('posts')
-  async getPostsOfSeries() {
-    return;
+  @UseGuards(JwtAuthGuard)
+  async getPostsOfSeries(
+    @Req() req,
+    @Query('seriesId') seriesId: string,
+  ): Promise<Series[]> {
+    return this.seriesService.getPostsOfSeries(req.user.id, seriesId);
   }
 
   @Patch('')
-  async updateSeries() {
-    return;
+  @UseGuards(JwtAuthGuard)
+  async updateSeries(
+    @Req() req,
+    @Query('seriesId') seriesId: string,
+    @Body() data: UpdateSeriesDto,
+  ): Promise<void> {
+    return this.seriesService.updateSeries(req.user.id, seriesId, data);
   }
 
   @Patch('order')

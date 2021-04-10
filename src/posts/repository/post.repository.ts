@@ -17,6 +17,7 @@ import { TagRepository } from 'src/tags/repository/tag.repository';
 import { UpdatePostDto } from '../dto/update-post.dto';
 import { boolean } from 'joi';
 import { FilesService } from 'src/files/files.service';
+import { POINT_CONVERSION_HYBRID } from 'constants';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
@@ -34,8 +35,8 @@ export class PostRepository extends Repository<Post> {
       slug,
       thumbnail,
       description,
-      is_private,
-      published,
+      is_private = 'false',
+      published = 'false',
     } = data;
 
     const userProfile = await userProfileRepository.findOne(
@@ -51,31 +52,31 @@ export class PostRepository extends Repository<Post> {
     post.title = title;
     post.contents = contents;
     post.user_id = user.id;
-    post.tags = [];
+    // post.tags = [];
 
-    // 태그 만들기
-    if (tags) {
-      tags.map(async (tag) => {
-        const preTag = await tagsRepository.findOne({
-          title: tag,
-        });
+    // // 태그 만들기
+    // if (tags) {
+    //   tags.map(async (tag) => {
+    //     const preTag = await tagsRepository.findOne({
+    //       title: tag,
+    //     });
 
-        // 다른 유저가 같은 이름의 태그를 만들어 놓으면
-        // 새로 태그 생성하지 않고 post에 태그 걸어주기
-        if (!preTag) {
-          const newTag = tagsRepository.create({
-            title: tag,
-          });
-          console.log('새태그 : ', newTag);
+    //     // 다른 유저가 같은 이름의 태그를 만들어 놓으면
+    //     // 새로 태그 생성하지 않고 post에 태그 걸어주기
+    //     if (!preTag) {
+    //       const newTag = tagsRepository.create({
+    //         title: tag,
+    //       });
+    //       console.log('새태그 : ', newTag);
 
-          post.tags = [...post.tags, newTag];
-          await tagsRepository.save(newTag);
-        } else {
-          console.log('이미 있는 태그 : ', preTag);
-          post.tags = [...post.tags, preTag];
-        }
-      });
-    }
+    //       post.tags = [...post.tags, newTag];
+    //       await tagsRepository.save(newTag);
+    //     } else {
+    //       console.log('이미 있는 태그 : ', preTag);
+    //       post.tags = [...post.tags, preTag];
+    //     }
+    //   });
+    // }
 
     const information = new PostInformation();
     information.slug = slug;
@@ -134,26 +135,7 @@ export class PostRepository extends Repository<Post> {
       title,
       contents,
     };
-    post.tags = [];
 
-    if (tags) {
-      tags.map(async (tag) => {
-        const preTag = await tagsRepository.findOne({
-          title: tag,
-        });
-        if (!preTag) {
-          //   const newTag = await tagsRepository.createTag(tag);
-          const newTag = tagsRepository.create({
-            title: tag,
-          });
-          //   post.tags= [...post.tags, newTag.id]
-          post.tags = [...post.tags, newTag];
-          await tagsRepository.save(newTag);
-        } else {
-          post.tags = [...post.tags, preTag];
-        }
-      });
-    }
     const information = post.information;
     information.slug = slug;
     information.thumbnail = thumbnail;
