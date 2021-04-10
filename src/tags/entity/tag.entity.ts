@@ -5,6 +5,7 @@ import {
   Entity,
   ManyToMany,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { Post } from 'src/posts/entity/post.entity';
@@ -29,8 +30,10 @@ export class Tag {
   title: string;
 
   /** Relations */
+  @RelationId((self: Tag) => self.posts)
+  post_id: string[];
 
-  @ManyToMany((type) => Post, (post) => post.tags)
+  @ManyToMany((type) => Post, (posts) => posts.tags)
   posts: Post[];
 
   //   @ManyToMany((type) => Question, (questions) => questions.tags)

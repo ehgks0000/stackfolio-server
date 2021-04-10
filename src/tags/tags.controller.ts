@@ -47,9 +47,9 @@ export class TagsController {
     return this.tagsService.getPostsOfTag(tagId);
   }
   // 태그(이름)을 갖고있는 전체 게시글
-  @Get('posts/:tag')
-  @UseGuards(JwtAuthGuard)
-  getPostsOfTagByTittle(@Param('tag') tagName: string) {
+  @Get('name')
+  //   @UseGuards(JwtAuthGuard)
+  getPostsOfTagName(@Query('tag') tagName: string) {
     return this.tagsService.getPostsOfTagByTittle(tagName);
   }
 }

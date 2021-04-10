@@ -94,7 +94,7 @@ export class Post {
   @RelationId((self: Post) => self.tags)
   tag_id: string[];
 
-  @ManyToMany((type) => Tag)
+  @ManyToMany((type) => Tag, (tags) => tags.posts)
   @JoinTable({
     name: 'post_tag',
     joinColumn: { name: 'post_id', referencedColumnName: 'id' },

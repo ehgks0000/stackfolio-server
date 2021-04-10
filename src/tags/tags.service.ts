@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Post } from 'src/posts/entity/post.entity';
 import { PostRepository } from 'src/posts/repository/post.repository';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entity/tag.entity';
@@ -63,7 +64,7 @@ export class TagsService {
     return;
   }
   //태그를 사용하는 "나의" 전체 게시글
-  async getMyPostsOfTag(tagId: string, userId: string) {
+  async getMyPostsOfTag(tagId: string, userId: string): Promise<Post[]> {
     const posts = await this.postRepository.find({
       where: { tag_id: tagId, user_id: userId },
     });
@@ -73,18 +74,22 @@ export class TagsService {
   }
 
   //태그를 사용하는 전체 게시글
-  async getPostsOfTag(tagId: string) {
+  async getPostsOfTag(tagId: string): Promise<Post[]> {
     const posts = await this.postRepository.find({
       where: { tag_id: tagId },
     });
 
     return posts;
   }
+  //태그 제목으로 게시글
+  //   : Promise<Post[]>
   async getPostsOfTagByTittle(tagName: string) {
-    const posts = await this.postRepository.find({
+    const { posts } = await this.tagRepository.findOne({
       where: { title: tagName },
+      relations: ['posts'],
     });
 
+    console.log(posts);
     return posts;
   }
 }
