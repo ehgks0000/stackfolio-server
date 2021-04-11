@@ -21,7 +21,7 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
     userId: string,
     question_id: string,
     data: CreateCommentQuestionDto,
-  ) {
+  ): Promise<void> {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
 
@@ -37,11 +37,11 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
 
       const question = await questionRepository.findOne({ id: question_id });
       if (!question) {
-        throw new NotFoundException('댓글 달 질문글이 존재 하지않습니다.');
+        throw new NotFoundException('질문글이 존재 하지않습니다.');
       }
       const user = await userProfileRepository.findOne({ user_id: userId });
       if (!user) {
-        throw new NotFoundException('댓글 달 유저가 존재 하지않습니다.');
+        throw new NotFoundException('유저가 존재 하지않습니다.');
       }
 
       // 대댓글이 아닌 깊이가 0인 댓글인 경우

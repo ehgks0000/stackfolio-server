@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
 import { User } from 'src/users/entity/user.entity';
 import {
@@ -15,22 +16,28 @@ import { Question } from './question.entity';
 @Entity()
 export class QuestionComment {
   /** Columns */
+  // @ApiProperty({ required: false })
+  // @ApiProperty({ readOnly: true })
 
   @PrimaryGeneratedColumn()
   readonly id: number;
 
+  @ApiProperty({ required: false })
   @Column({ default: 1 })
   @IsOptional()
   group?: number;
 
+  @ApiProperty({ required: false })
   @Column({ default: 0 })
   @IsOptional()
   sorts?: number;
 
+  @ApiProperty({ required: false })
   @Column({ default: 0 })
   @IsOptional()
   depth?: number;
 
+  @ApiProperty()
   @Column('text')
   @IsString()
   contents: string;
@@ -52,10 +59,12 @@ export class QuestionComment {
   // @IsOptional()
   // deleted: boolean;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   user_id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   question_id: string;

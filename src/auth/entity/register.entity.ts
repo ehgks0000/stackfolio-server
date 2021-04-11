@@ -9,6 +9,7 @@ import {
 import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { nanoid } from 'nanoid';
 import { Provider } from 'src/users/entity/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 @Unique(['email'])
@@ -26,6 +27,7 @@ export class Register {
   @IsString()
   code: string;
 
+  @ApiProperty({ required: false })
   @Column({
     type: 'enum',
     enum: Provider,
@@ -35,10 +37,12 @@ export class Register {
   @IsOptional()
   provider?: Provider;
 
+  @ApiProperty({ required: false })
   @Column({ length: 255, nullable: true })
   @IsString()
   social_id?: string;
 
+  @ApiProperty()
   @Column({ length: 255 })
   @IsEmail()
   email: string;

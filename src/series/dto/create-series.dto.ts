@@ -3,24 +3,32 @@ import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateSeriesDto {
   @ApiProperty({
-    description: 'This is a Series Name!',
-    example: 'JavaScript Study',
+    description: "a new Tag's title",
+    example: 'JavaScript',
   })
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 'These are contents of JavaScript Study' })
-  @IsEmail()
+  @ApiProperty({
+    description: "a new Tag's title",
+    example: 'JavaScript',
+  })
+  @IsString()
   @IsOptional()
-  @Length(3, 50)
   description?: string;
 
-  @ApiProperty({ example: 'Series Representative Image' })
+  @ApiProperty({
+    description: "a new Tag's title",
+    example: 'JavaScript',
+  })
   @IsString()
   @IsOptional()
   thumbnail?: string;
 
-  @ApiProperty({ required: false, example: 'This is slug' })
+  @ApiProperty({
+    description: "a new Tag's title",
+    example: 'JavaScript',
+  })
   @IsString()
   @IsOptional()
   slug?: string;

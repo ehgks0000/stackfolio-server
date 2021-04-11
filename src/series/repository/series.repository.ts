@@ -1,23 +1,23 @@
-import { User } from 'src/users/entity/user.entity';
+import { BadRequestException } from '@nestjs/common';
+import { Post } from 'src/posts/entity/post.entity';
 import { EntityRepository, getRepository, Repository } from 'typeorm';
 import { CreateSeriesDto } from '../dto/create-series.dto';
-import { UpdateSeriesDto } from '../dto/update-series.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
 import { Series } from '../entity/series.entity';
-
 @EntityRepository(Series)
 export class SeriesRepository extends Repository<Series> {
   // eslint-disable-next-line
   async createSeries(userId: string, data: CreateSeriesDto) {
-    const userRepository = getRepository(User);
-
-    const user = await userRepository.findOne({ id: userId });
+    const newSeries = new Series();
     const { name, description, thumbnail, slug } = data;
 
-    const newSeries = new Series();
-    // newSeries = {
-    //   data,
-    // };
+    const mySeries = await this.find({ user_id: userId });
+    mySeries.forEach((series) => {
+      if (series.name === name) {
+        throw new BadRequestException('내 시리즈 중 이미 있는 이름입니다.');
+      }
+    });
+
     newSeries.name = name;
     newSeries.description = description;
     newSeries.thumbnail = thumbnail;
@@ -25,46 +25,49 @@ export class SeriesRepository extends Repository<Series> {
 
     newSeries.user_id = userId;
 
-    // user.series = [...user.series, newSeries];
-
-    // await userRepository.save(user);
     await this.save(newSeries);
 
     return newSeries;
   }
 
-  async updateSeries(
-    userId: string,
+  async insertPost(
     seriesId: string,
-    data: UpdateSeriesDto,
-  ): Promise<Series> {
-    // 시리즈 이름만 넣자
-
-    const { name, description, thumbnail, slug } = data;
-    const updatedSeries = await this.findOne({ id: seriesId, user_id: userId });
-    // updatedSeries = {
-    //   ...updatedSeries,
-    //   data,
-    // };
-    updatedSeries.name = name;
-    updatedSeries.description = description;
-    updatedSeries.thumbnail = thumbnail;
-    updatedSeries.slug = slug;
-
-    await this.save(updatedSeries);
-    return updatedSeries;
-  }
-
-  async updateOrderOfSeries(
     userId: string,
-    seriesId: string,
-    data: UpdateOrderDto,
-  ): Promise<Series> {
-    const series = await this.findOne({ id: seriesId, user_id: userId });
+    postId: string,
+  ): Promise<void> {
+    const postRepository = getRepository(Post);
 
-    series.post_id = data.postIds;
+    const series = await this.findOne({
+      where: { id: seriesId, user_id: userId },
+      relations: ['posts'],
+    });
+
+    const post = await postRepository.findOne({ id: postId });
+    console.log(series);
+    series.posts = [...series.posts, post];
+    console.log(series);
+
+    // console.log(post);
+    // post.series_id = seriesId;
+    // console.log(post);
+
+    // await postRepository.save(post);
 
     await this.save(series);
-    return series;
+    // return mySeries;
+  }
+
+  async updateOrder(seriesId: string, data: UpdateOrderDto) {
+    const postRepository = getRepository(Post);
+    const series = await this.findOne({ id: seriesId });
+
+    series.posts = [];
+
+    const posts = await postRepository.findByIds(data.post_ids);
+
+    // 왜 postId의 순서가 바뀌지 않을까?
+    series.posts = posts;
+    await this.save(series);
+    // return series;
   }
 }

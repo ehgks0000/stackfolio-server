@@ -33,6 +33,7 @@ import {
   FileFieldsInterceptor,
   FileInterceptor,
 } from '@nestjs/platform-express';
+import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -171,8 +172,13 @@ export class PostsController {
     return this.postsService.deleteThumbnail(req.user.id, postId);
   }
 
-  @Post('tag')
-  createTag() {
-    return;
-  }
+  //   @Post('tag')
+  //   @UseGuards(JwtAuthGuard)
+  //   createTag(
+  //     @Req() req,
+  //     @Query('postId') postId: string,
+  //     @Body() data: CreateTagDto,
+  //   ) {
+  //     return this.postsService.createTag(req.user.id, postId, data);
+  //   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilesService } from 'src/files/files.service';
+import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
 import { Tag } from 'src/tags/entity/tag.entity';
 import { TagRepository } from 'src/tags/repository/tag.repository';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
@@ -90,10 +91,14 @@ export class PostsService {
   }
 
   //test createTags
-  async createTag(): Promise<Tag> {
-    const tag = await this.tagRepository.createTag('test tag');
-    return tag;
-  }
+  //   async createTag(
+  //     userId: string,
+  //     postId: string,
+  //     data: CreateTagDto,
+  //   ): Promise<Tag> {
+  //     const tag = await this.tagRepository.createTag(userId, postId, data);
+  //     return tag;
+  //   }
 
   async getTags(): Promise<Tag[] | undefined> {
     const tags = await this.tagRepository.find();

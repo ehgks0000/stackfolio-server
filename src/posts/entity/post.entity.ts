@@ -10,6 +10,7 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  RelationId,
 } from 'typeorm';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { User } from '../../users/entity/user.entity';
@@ -18,8 +19,9 @@ import { PostMetadata } from './post-metadata.entity';
 import { Tag } from 'src/tags/entity/tag.entity';
 import { PostComment } from './post-comment.entity';
 import { Favorite } from 'src/users/entity/user-favorite.entity';
-import { Series_posts } from 'src/series/entity/series_post.entity';
 import { Series } from 'src/series/entity/series.entity';
+import { ApiProperty } from '@nestjs/swagger';
+// import { Series_posts } from 'src/series/entity/series_post.entity';
 
 @Entity()
 export class Post {
@@ -36,25 +38,42 @@ export class Post {
   @UpdateDateColumn()
   readonly updated_at: Date;
 
+  // @ApiProperty({ required: false })
+  // @ApiProperty({ readOnly: true })
+
+  @ApiProperty()
   @Column({ length: 255 })
   @IsString()
   title: string;
 
+  @ApiProperty()
   @Column('text')
   @IsString()
   contents: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   user_id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   post_information_id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   post_metadata_id: string;
+
+  @ApiProperty({ readOnly: true })
+  @RelationId((self: Post) => self.tags)
+  tag_id: string[];
+
+  @ApiProperty({ readOnly: true })
+  @Column('uuid', { nullable: true })
+  @IsUUID('4')
+  series_id?: string;
 
   /** Relations */
 
@@ -81,17 +100,13 @@ export class Post {
   author: User;
 
   @OneToMany((type) => PostComment, (comment) => comment.post)
-  comments: Comment[];
+  comments: PostComment[];
 
-  //   @Column('uuid')
-  //   @IsUUID('4')
-  //   tag_id?: string;
-
-  @ManyToMany((type) => Tag)
+  @ManyToMany((type) => Tag, (tags) => tags.posts)
   @JoinTable({
     name: 'post_tag',
-    joinColumn: { name: 'post_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
+    // joinColumn: { name: 'post_id', referencedColumnName: 'id' },
+    // inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
   })
   tags?: Tag[];
 
@@ -101,19 +116,7 @@ export class Post {
   @OneToMany((type) => Favorite, (favorites) => favorites.post)
   favorites!: Favorite[];
 
-  @Column('uuid')
-  @IsUUID('4')
-  @IsOptional()
-  series_id?: string;
-
   @ManyToOne(() => Series, (series) => series.posts)
   @JoinColumn({ name: 'series_id', referencedColumnName: 'id' })
-  // @JoinColumn({ name: 'series_id' })
-  @IsOptional()
-  series?: Series;
-
-  // @OneToMany(() => Series_posts, (series_posts) => series_posts.post)
-  // @JoinColumn({ name: 'series_posts_id', referencedColumnName: 'id' })
-  // @IsOptional()
-  // series_posts?: Series_posts[];
+  series: Series;
 }

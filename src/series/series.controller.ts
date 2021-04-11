@@ -21,54 +21,56 @@ import { SeriesService } from './series.service';
 export class SeriesController {
   constructor(private readonly seriesService: SeriesService) {}
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  getSeries(@Req() req): Promise<Series[]> {
-    return this.seriesService.getSeries(req.user.id);
-  }
-
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  getSeriesOfPosts(
-    @Req() req,
-    @Query('seriesId') seriesId: string,
-  ): Promise<Series[]> {
-    return this.seriesService.getSeriesOfPosts(req.user.id, seriesId);
-  }
-
   @Post()
   @UseGuards(JwtAuthGuard)
-  createSeries(@Req() req, @Body() data: CreateSeriesDto): Promise<Series> {
+  async createSeries(
+    @Req() req,
+    @Body() data: CreateSeriesDto,
+  ): Promise<Series> {
     return this.seriesService.createSeries(req.user.id, data);
   }
 
-  @Patch()
+  @Post('posts')
   @UseGuards(JwtAuthGuard)
-  updateSeries(
+  async inserPost(
+    @Req() req,
+    @Query('seriesId') seriesId: string,
+    @Query('postId') postId: string,
+  ): Promise<void> {
+    return this.seriesService.insertPost(seriesId, req.user.id, postId);
+  }
+
+  @Get('')
+  @UseGuards(JwtAuthGuard)
+  async getSeries(@Req() req): Promise<Series[]> {
+    return this.seriesService.getSeries(req.user.id);
+  }
+
+  @Get('posts')
+  @UseGuards(JwtAuthGuard)
+  async getPostsOfSeries(
+    @Req() req,
+    @Query('seriesId') seriesId: string,
+  ): Promise<Series[]> {
+    return this.seriesService.getPostsOfSeries(req.user.id, seriesId);
+  }
+
+  @Patch('')
+  @UseGuards(JwtAuthGuard)
+  async updateSeries(
     @Req() req,
     @Query('seriesId') seriesId: string,
     @Body() data: UpdateSeriesDto,
-  ): Promise<Series> {
+  ): Promise<void> {
     return this.seriesService.updateSeries(req.user.id, seriesId, data);
   }
 
-  // @Post()
-  // @UseGuards(JwtAuthGuard)
-  // insertPostToSeries(
-  //   @Req() req,
-  //   @Query('postId') postId: string,
-  //   @Query('seriesId') seriesId: string,
-  // ) {
-  //   return this.seriesService.insertPostToSeries(postId, seriesId);
-  // }
-
-  @Patch()
-  @UseGuards(JwtAuthGuard)
-  updateOrderSeriesPost(
+  @Patch('order')
+  async updateOrderOfSeries(
     @Req() req,
     @Query('seriesId') seriesId: string,
     @Body() data: UpdateOrderDto,
-  ): Promise<Series> {
-    return this.seriesService.updateOrderOfSeries(req.user.id, seriesId, data);
+  ) {
+    return this.seriesService.updateOrderOfSeries(seriesId, data);
   }
 }
