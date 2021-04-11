@@ -9,17 +9,20 @@ services:
     restart: unless-stopped
     # command: npm run pm2 -- debug 0.0.0.0:9229
     # command: npm run dist
-    command: npm run dist
-    # command: npm run start:dev
+    # command: npm run dist
+    command: npm run start:dev
     ports:
       - 3000:3000
       - 9229:9229
+    env_file:
+      - .env
     environment:
       - IN_CONTAINER=true
       # - DEBUG=*
       - PORT=3000
       - DATABASE_URL=postgresql://dohan:passwd@pg:5432/stackfolio?schema=public
-      # Connection URL: postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA
+
+    # Connection URL: postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA
     volumes:
       - ./:/app:delegated
       - /app/node_modules
@@ -29,7 +32,7 @@ services:
 
   pg:
     container_name: pg
-    image: postgres:13.1
+    image: postgres:latest
     restart: always
     environment:
       - POSTGRES_USER=dohan
@@ -37,7 +40,7 @@ services:
       - POSTGRES_DB=stackfolio
     volumes:
       - ./db/data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/1-init.sql
+    #   - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - '5432:5432'
     healthcheck:

@@ -11,6 +11,7 @@ import {
 import { IsUUID } from 'class-validator';
 import { User } from 'src/users/entity/user.entity';
 import { Question } from './question.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 @Unique(['user_id', 'question_id'])
@@ -31,14 +32,20 @@ export class QuestionLike {
   @CreateDateColumn()
   readonly created_at: Date;
 
+  // @ApiProperty({ required: false })
+  // @ApiProperty({ readOnly: true })
+
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   user_id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid', { nullable: true })
   @IsUUID('4')
   question_id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid', { nullable: true })
   @IsUUID('4')
   question_comment_id: string;

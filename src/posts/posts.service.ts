@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FilesService } from 'src/files/files.service';
+import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
+import { Tag } from 'src/tags/entity/tag.entity';
+import { TagRepository } from 'src/tags/repository/tag.repository';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
 import { UserRepository } from 'src/users/repository/user.repository';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -13,18 +17,22 @@ export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: PostRepository,
-    private readonly userRepository: UserRepository,
-    private readonly userProfileRepository: UserProfileRepository,
     private readonly postLikeRepository: PostLikeRepository,
+    private readonly tagRepository: TagRepository,
+    private readonly filesService: FilesService,
   ) {}
 
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
     const post = await this.postRepository.createPost(userId, data);
-    return {} as any;
+    return post;
   }
 
   async getPostsAll(): Promise<Post[]> {
-    const posts = await this.postRepository.find();
+    const posts = await this.postRepository.find({
+      relations: ['tags'],
+      order: { created_at: 'DESC' },
+    });
+    // posts
     console.log('post all');
 
     return posts;
@@ -47,16 +55,7 @@ export class PostsService {
     postId: string,
     data: UpdatePostDto,
   ): Promise<Post> {
-    let post = await this.postRepository.findOne({
-      id: postId,
-      user_id: userId,
-    });
-
-    post = {
-      ...post,
-      ...data,
-    };
-    await this.postRepository.save(post);
+    const post = await this.postRepository.updatePost(userId, postId, data);
 
     return post;
   }
@@ -89,5 +88,62 @@ export class PostsService {
 
     await this.postLikeRepository.remove(unlikePost);
     // return {} as any;
+  }
+
+  //test createTags
+  //   async createTag(
+  //     userId: string,
+  //     postId: string,
+  //     data: CreateTagDto,
+  //   ): Promise<Tag> {
+  //     const tag = await this.tagRepository.createTag(userId, postId, data);
+  //     return tag;
+  //   }
+
+  async getTags(): Promise<Tag[] | undefined> {
+    const tags = await this.tagRepository.find();
+    return tags;
+  }
+
+  async uploadThumbnail(
+    userId: string,
+    postId: string,
+    buffer: Buffer,
+    originalname: string,
+  ): Promise<string> {
+    // const { buffer, originalname } = files.thumbnail;
+    const key = `${postId}`;
+    return this.filesService.uploadFile(key, buffer, originalname);
+  }
+
+  async uploadContentImages(
+    userId: string,
+    postId: string,
+    buffer: Buffer,
+    originalname: string,
+  ): Promise<string> {
+    const key = `${originalname}`;
+    return this.filesService.uploadFile(key, buffer, originalname);
+  }
+
+  async deleteThumbnail(userId: string, postId: string): Promise<void> {
+    const post = await this.postRepository.findOne(
+      {
+        id: postId,
+        user_id: userId,
+      },
+      { relations: ['information'] },
+    );
+
+    if (post.information.thumbnail) {
+      await this.filesService.deleteFile(post.information.thumbnail);
+
+      post.information.thumbnail = null;
+      await this.postRepository.save(post);
+    }
+    // return post;
+  }
+  async deleteContentImages(): Promise<any> {
+    return;
   }
 }

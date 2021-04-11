@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ImageuploadService } from 'src/imageupload/imageupload.service';
+import { FilesService } from 'src/files/files.service';
+import { TagRepository } from 'src/tags/repository/tag.repository';
+import { TagsService } from 'src/tags/tags.service';
 import { Favorite } from 'src/users/entity/user-favorite.entity';
 import { UserFavoriteRepository } from 'src/users/repository/user-favorite.repository';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
@@ -23,10 +25,11 @@ import { PostRepository } from './repository/post.repository';
       UserRepository,
       UserProfileRepository,
       UserFavoriteRepository,
+      //   TagRepository,
     ]),
   ],
   controllers: [PostsController],
-  providers: [PostsService],
+  providers: [PostsService, TagsService, TagRepository, FilesService],
   exports: [PostsService, TypeOrmModule],
 })
 export class PostsModule {}

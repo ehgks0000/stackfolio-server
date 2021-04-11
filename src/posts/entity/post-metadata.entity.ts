@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Post } from './post.entity';
 import { IsBoolean, IsOptional } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class PostMetadata {
@@ -19,15 +20,17 @@ export class PostMetadata {
   @UpdateDateColumn()
   published_at: Date;
 
+  @ApiProperty({ required: false })
   @Column({ default: false })
   @IsBoolean()
   @IsOptional()
-  published: boolean;
+  published?: boolean;
 
+  @ApiProperty({ required: false })
   @Column({ default: false })
   @IsBoolean()
   @IsOptional()
-  is_private: boolean;
+  is_private?: boolean;
 
   /** Relations */
 

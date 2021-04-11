@@ -16,14 +16,15 @@ export class MailService {
       })
       .then((s) => {
         // this.logger.verbose(`email 발송 성공 [${email}]`);
-        // console.log("이메일 발송 성공",s);
+        // console.log('이메일 발송 성공', s);
       })
       .catch((e) => {
-        // console.log("이메일 발송 에러",e);
+        // console.log('이메일 발송 에러', e);
       });
   }
 
   sendRegisterMail(to: string, redirectUrl: string): void {
+    console.log('메일전송');
     const subject = 'StackFolio 회원가입';
     const content = `<a href=${redirectUrl}>회원가입</a>`;
     this.sendMail(to, subject, content);

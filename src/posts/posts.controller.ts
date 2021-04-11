@@ -7,8 +7,12 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
+  UploadedFile,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,11 +27,21 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post as _Post } from './entity/post.entity';
 import { PostsService } from './posts.service';
 import docs from './posts.docs';
+import { Tag } from 'src/tags/entity/tag.entity';
+import { TagsService } from 'src/tags/tags.service';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
+import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly tagsService: TagsService,
+  ) {}
 
   @Post('')
   @UseGuards(JwtAuthGuard)
@@ -68,7 +82,7 @@ export class PostsController {
     return this.postsService.getPost(postId);
   }
 
-  @Patch(':post_id')
+  @Patch('')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation(docs.patch[':post_id'].operation)
@@ -76,7 +90,7 @@ export class PostsController {
   @ApiUnauthorizedResponse(docs.unauthorized)
   updatePost(
     @Req() req,
-    @Param('post_id') postId: string,
+    @Query('post_id') postId: string,
     @Body() data: UpdatePostDto,
   ): Promise<_Post> {
     return this.postsService.updatePost(req.user.id, postId, data);
@@ -119,4 +133,52 @@ export class PostsController {
   deletePost(@Req() req, @Param('post_id') postId: string): Promise<_Post> {
     return this.postsService.deletePost(req.user.id, postId);
   }
+
+  @Post('upload/thumbnail')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('thumbnail'))
+  async uploadThumbnail(
+    @Req() req,
+    @Query('post_id') postId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<string> {
+    return await this.postsService.uploadThumbnail(
+      req.user.id,
+      postId,
+      file.buffer,
+      file.originalname,
+    );
+  }
+
+  @Post('upload/contentImages')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('contentImages'))
+  async uploadContentImages(
+    @Req() req,
+    @Query('post_id') postId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<string> {
+    return await this.postsService.uploadContentImages(
+      req.user.id,
+      postId,
+      file.buffer,
+      file.originalname,
+    );
+  }
+
+  @Delete('thumbnail/test')
+  @UseGuards(JwtAuthGuard)
+  deleteThumbnail(@Req() req, @Query('post_id') postId: string): Promise<void> {
+    return this.postsService.deleteThumbnail(req.user.id, postId);
+  }
+
+  //   @Post('tag')
+  //   @UseGuards(JwtAuthGuard)
+  //   createTag(
+  //     @Req() req,
+  //     @Query('postId') postId: string,
+  //     @Body() data: CreateTagDto,
+  //   ) {
+  //     return this.postsService.createTag(req.user.id, postId, data);
+  //   }
 }

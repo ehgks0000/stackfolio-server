@@ -28,19 +28,22 @@ export class QuestionInformation {
   @UpdateDateColumn()
   readonly updated_at: Date;
 
-  @ApiProperty()
+  // @ApiProperty({ required: false })
+  // @ApiProperty({ readOnly: true })
+
+  @ApiProperty({ required: false })
   @Column({ length: 255, nullable: true })
   @IsString()
   @IsOptional()
   description?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Column({ length: 255, nullable: true })
   @IsString()
   @IsOptional()
   thumbnail?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Column({ length: 255, nullable: true })
   @IsString()
   @IsOptional()

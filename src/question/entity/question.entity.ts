@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsUUID } from 'class-validator';
 import { User } from 'src/users/entity/user.entity';
 import {
@@ -28,22 +29,29 @@ export class Question {
   @CreateDateColumn()
   readonly updated_at: Date;
 
+  // @ApiProperty({ required: false })
+  // @ApiProperty({ readOnly: true })
+  @ApiProperty()
   @Column('text')
   @IsString()
   title: string;
 
+  @ApiProperty()
   @Column('text')
   @IsString()
   contents: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   user_id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   question_information_id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   question_metadata_id: string;
@@ -78,5 +86,5 @@ export class Question {
   likes: QuestionLike[];
 
   @OneToMany((type) => QuestionComment, (comments) => comments.question)
-  comments: Comment[];
+  comments: QuestionComment[];
 }

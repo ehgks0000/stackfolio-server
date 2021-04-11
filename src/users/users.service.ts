@@ -4,6 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FilesService } from 'src/files/files.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserProfile } from './entity/user-profile.entity';
@@ -19,6 +20,7 @@ export class UsersService {
     private readonly userRepository: UserRepository,
     private readonly userFavoriteRepository: UserFavoriteRepository,
     private readonly userProfileRepository: UserProfileRepository, // private readonly userFollowerRepository: Repository<Follow>,
+    private readonly filesService: FilesService,
   ) {}
 
   async deleteUser(user: User): Promise<User> {
@@ -131,6 +133,36 @@ export class UsersService {
     } catch (err) {
       // the `findOne` method throws an error if the provided `user_id` is not a `uuid`
       throw new BadRequestException('Invalid user_id');
+    }
+  }
+  async addAvatar(
+    userId: string,
+    imageBuffer: Buffer,
+    filename: string,
+  ): Promise<UserProfile> {
+    const avatar = await this.filesService.uploadFile(
+      userId,
+      imageBuffer,
+      filename,
+    );
+    const userProfile = await this.userProfileRepository.findOne({
+      user_id: userId,
+    });
+    userProfile.avatar = avatar;
+
+    await this.userProfileRepository.save(userProfile);
+    return userProfile;
+  }
+
+  async deleteAvatar(userId: string): Promise<void> {
+    const userProfile = await this.userProfileRepository.findOne({
+      user_id: userId,
+    });
+    if (userProfile.avatar) {
+      await this.filesService.deleteFile(userProfile.avatar);
+
+      userProfile.avatar = null;
+      await this.userProfileRepository.save(userProfile);
     }
   }
 

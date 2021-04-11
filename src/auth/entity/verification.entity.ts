@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { IsString, IsUUID } from 'class-validator';
 import { nanoid } from 'nanoid';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Verification {
@@ -26,6 +27,7 @@ export class Verification {
   @IsString()
   code: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   user_id: string;

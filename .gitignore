@@ -34,12 +34,13 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # volume
-/db
-db/data
-db-data
+
+/db/data
+
 /pgadmin
 pgadmin
 
 stack-folio.pem
 .env
 .pm2
+.vscode

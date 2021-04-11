@@ -12,17 +12,32 @@ import { User } from 'src/users/entity/user.entity';
 import { UserProfile } from 'src/users/entity/user-profile.entity';
 import { PostInformation } from '../entity/post-information.entity';
 import { PostMetadata } from '../entity/post-metadata.entity';
+import { Tag } from 'src/tags/entity/tag.entity';
+import { TagRepository } from 'src/tags/repository/tag.repository';
+import { UpdatePostDto } from '../dto/update-post.dto';
+import { boolean } from 'joi';
+import { FilesService } from 'src/files/files.service';
+import { POINT_CONVERSION_HYBRID } from 'constants';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
-  async createPost(userId: string, data: CreatePostDto) {
-    const userRepository = getRepository(User);
+  async createPost(userId: string, data: CreatePostDto): Promise<Post> {
     const userProfileRepository = getRepository(UserProfile);
     const postRepository = getRepository(Post);
     const postInformationRepository = getRepository(PostInformation);
     const postMetadataRepository = getRepository(PostMetadata);
+    const tagsRepository = getRepository(Tag);
 
-    // const post = postRepository.create();
+    const {
+      title,
+      contents,
+      tags,
+      slug,
+      thumbnail,
+      description,
+      is_private = 'false',
+      published = 'false',
+    } = data;
 
     const userProfile = await userProfileRepository.findOne(
       {
@@ -32,22 +47,47 @@ export class PostRepository extends Repository<Post> {
     );
 
     const user = userProfile.user;
-    // console.log('유저 프로필 : ', user);
 
     const post = new Post();
-    post.title = data.title;
-    post.contents = data.contents;
-    // post.author = user;
+    post.title = title;
+    post.contents = contents;
     post.user_id = user.id;
+    // post.tags = [];
+
+    // // 태그 만들기
+    // if (tags) {
+    //   tags.map(async (tag) => {
+    //     const preTag = await tagsRepository.findOne({
+    //       title: tag,
+    //     });
+
+    //     // 다른 유저가 같은 이름의 태그를 만들어 놓으면
+    //     // 새로 태그 생성하지 않고 post에 태그 걸어주기
+    //     if (!preTag) {
+    //       const newTag = tagsRepository.create({
+    //         title: tag,
+    //       });
+    //       console.log('새태그 : ', newTag);
+
+    //       post.tags = [...post.tags, newTag];
+    //       await tagsRepository.save(newTag);
+    //     } else {
+    //       console.log('이미 있는 태그 : ', preTag);
+    //       post.tags = [...post.tags, preTag];
+    //     }
+    //   });
+    // }
 
     const information = new PostInformation();
+    information.slug = slug;
+    information.thumbnail = thumbnail;
+    information.description = description;
     const metadata = new PostMetadata();
+    metadata.is_private = Boolean(is_private);
+    metadata.published = Boolean(published);
+
     post.information = information;
     post.metadata = metadata;
-
-    // await postInformationRepository.save(information);
-    // await postMetadataRepository.save(metadata);
-    // await postRepository.save(post);
 
     try {
       await postInformationRepository.save(information);
@@ -57,6 +97,65 @@ export class PostRepository extends Repository<Post> {
     } catch (err) {
       console.error(err);
     }
+    return post;
+  }
+
+  async updatePost(
+    userId: string,
+    postId: string,
+    data: UpdatePostDto,
+  ): Promise<Post> {
+    const userProfileRepository = getRepository(UserProfile);
+    const postRepository = getRepository(Post);
+    const postInformationRepository = getRepository(PostInformation);
+    const postMetadataRepository = getRepository(PostMetadata);
+    const tagsRepository = getRepository(Tag);
+
+    const {
+      title,
+      contents,
+      tags,
+      slug,
+      thumbnail,
+      description,
+      is_private,
+      published,
+    } = data;
+
+    let post = await postRepository.findOne(
+      {
+        id: postId,
+        user_id: userId,
+      },
+      { relations: ['tags', 'information', 'metadata'] },
+    );
+
+    post = {
+      ...post,
+      title,
+      contents,
+    };
+
+    const information = post.information;
+    information.slug = slug;
+    information.thumbnail = thumbnail;
+    information.description = description;
+
+    const metadata = post.metadata;
+    metadata.is_private = Boolean(is_private);
+    metadata.published = Boolean(published);
+
+    post.information = information;
+    post.metadata = metadata;
+
+    try {
+      await postInformationRepository.save(information);
+      await postMetadataRepository.save(metadata);
+      await postRepository.save(post);
+    } catch (error) {
+      console.error(error);
+    }
+
     return post;
   }
 }
