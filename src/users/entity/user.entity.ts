@@ -11,6 +11,10 @@ import {
   ManyToMany,
   JoinTable,
   OneToOne,
+  AfterLoad,
+  AfterInsert,
+  JoinColumn,
+  RelationId,
 } from 'typeorm';
 import {
   IsString,
@@ -26,7 +30,7 @@ import { PostComment } from 'src/posts/entity/post-comment.entity';
 import { Favorite } from './user-favorite.entity';
 import { Series } from 'src/series/entity/series.entity';
 import { Question } from 'src/question/entity/question.entity';
-import { QuestionLike } from 'src/question/entity/question-like.entity';
+// import { PostLike } from 'src/posts/entity/post-like.entity';
 
 export enum Provider {
   LOCAL = 'local',
@@ -84,9 +88,21 @@ export class User {
   @IsBoolean()
   @IsOptional()
   is_verified: boolean;
+  /** Relations ID*/
+
+  @RelationId((self: User) => self.posts)
+  post_id: string[];
+
+  @RelationId((self: User) => self.post_like)
+  post_like_ids: string[];
+
+  @RelationId((self: User) => self.question_like)
+  question_like_ids: string[];
+
+  //   @Column({ nullable: true })
+  //   post_like_ids?: string[];
 
   /** Relations */
-
   @ManyToMany((type) => User, (user) => user.following, {
     cascade: true,
     onDelete: 'CASCADE',
@@ -101,22 +117,15 @@ export class User {
   @ManyToMany((type) => User, (user) => user.followers, { onDelete: 'CASCADE' })
   following: User[];
 
-  //   @ManyToMany((type) => Post, { cascade: true })
-  //   @JoinTable({
-  //     name: 'favorite',
-  //     joinColumn: { name: 'user_id', referencedColumnName: 'id' },
-  //     inverseJoinColumn: { name: 'post_id', referencedColumnName: 'id' },
-  //   })
-  //   favorites: Post[];
-
   @OneToMany((type) => Post, (post) => post.author)
+  //   @JoinColumn({ name: 'post_count', referencedColumnName: '' })
   posts: Post[];
 
   @OneToMany((type) => Post, (question) => question.author)
   questions: Question[];
 
-  @OneToMany((type) => QuestionLike, (question_like) => question_like.author)
-  question_like: QuestionLike[];
+  //   @OneToMany((type) => QuestionLike, (question_like) => question_like.author)
+  //   question_like: QuestionLike[];
 
   // postcomments와 questioncomments 2개로 나눠야하나?
   @OneToMany((type) => PostComment, (comment) => comment.user)
@@ -125,7 +134,7 @@ export class User {
   @ApiProperty()
   @OneToOne((type) => UserProfile, (userProfile) => userProfile.user, {
     cascade: true,
-    eager: true,
+    // eager: true,
   })
   profile: UserProfile;
 
@@ -136,4 +145,30 @@ export class User {
 
   @OneToMany((type) => Series, (series) => series.user)
   series: Series[];
+
+  //내가 좋아요 한 게시글
+  @ManyToMany((type) => Post, (post_like) => post_like.user_like)
+  @JoinTable({
+    name: 'post_like',
+    joinColumn: { name: 'post_like_ids', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_like_ids', referencedColumnName: 'id' },
+  })
+  post_like: Post[];
+
+  // 내가 좋아요 한 질문글
+  @ManyToMany((type) => Question, (question_like) => question_like.user_like)
+  @JoinTable({
+    name: 'question_like',
+  })
+  question_like: Question[];
+
+  //   @ManyToMany((type) => PostComment, (comment_like) => comment_like.user_like)
+  //   @JoinTable({ name: 'comment_like' })
+  //   comment_like: PostComment[];
+
+  @AfterLoad()
+  test() {
+    console.log('유저 entity :');
+    // console.log('유저 entity : 포스트들', this.posts);
+  }
 }

@@ -28,14 +28,49 @@ export class UsersService {
     return user;
   }
 
+  async getMyUser(user_id: string) {
+    // const user = await this.userRepository.findOne({ id: user_id });
+    const profile = await this.userProfileRepository
+      .createQueryBuilder('user_profile')
+      .leftJoinAndSelect('user_profile.user', 'user')
+      //   .leftJoinAndSelect('user.posts', 'posts')
+      .where('user.id = :id', { id: user_id })
+      .getOne();
+
+    // console.log('쿼리빌더 테스트', test);
+
+    // const userProfile = await this.userProfileRepository.findOne({
+    //   where: { user_id: user_id },
+    //   relations: ['user'],
+    // });
+    // await this.userProfileRepository.findAndCount();
+    return profile;
+  }
+
   async getUserProfile(user_id: string): Promise<UserProfileResponseDto> {
     try {
-      const user = await this.userRepository.findOne(user_id, {
-        relations: ['followers', 'following', 'posts'],
-      });
+      //   const user = await this.userRepository.findOne(user_id, {
+      //     relations: ['followers', 'following', 'posts'],
+      //   });
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.profile', 'user_profile')
+        .leftJoinAndSelect('user.followers', 'followers')
+        .leftJoinAndSelect('user.following', 'following')
+        .leftJoinAndSelect('user.posts', 'posts')
+        .where('user.id = :id', { id: user_id })
+        .getOne();
+
+      console.log('유저의 프로필', user);
+
+      //   const user = await this.userRepository.findOne({
+      //     where: { id: user_id },
+      //     relations: ['followers', 'following', 'posts'],
+      //   });
       if (!user) {
         throw new Error();
       }
+
       return {
         profile: user.profile,
         followers: user.followers.length,
@@ -52,13 +87,19 @@ export class UsersService {
     userId: string,
     data: UpdateUserDto,
   ): Promise<UserProfile> {
-    let userProfile = await this.userProfileRepository.findOne({
+    const userProfile = await this.userProfileRepository.findOne({
       user_id: userId,
     });
-    userProfile = {
-      ...userProfile,
-      ...data,
-    };
+    const { username, bio, about, avatar, social_links } = data;
+    userProfile.username = username;
+    userProfile.bio = bio;
+    userProfile.about = about;
+    userProfile.avatar = avatar;
+    userProfile.social_links = social_links;
+    // userProfile = {
+    //   ...userProfile,
+    //   ...data,
+    // };
     try {
       const updatedUserProfile = await this.userProfileRepository.save(
         userProfile,
@@ -108,7 +149,7 @@ export class UsersService {
       if (!user) {
         throw new Error();
       }
-      user.followers = [me];
+      user.followers = [...user.followers, me];
       this.userRepository.save(user);
     } catch (err) {
       // the `findOne` method throws an error if the provided `user_id` is not a `uuid`
@@ -158,12 +199,13 @@ export class UsersService {
     const userProfile = await this.userProfileRepository.findOne({
       user_id: userId,
     });
-    if (userProfile.avatar) {
-      await this.filesService.deleteFile(userProfile.avatar);
-
-      userProfile.avatar = null;
-      await this.userProfileRepository.save(userProfile);
+    if (!userProfile.avatar) {
+      throw new BadRequestException('');
     }
+    await this.filesService.deleteFile(userProfile.avatar);
+
+    userProfile.avatar = null;
+    await this.userProfileRepository.save(userProfile);
   }
 
   // // 팔로워 끊기

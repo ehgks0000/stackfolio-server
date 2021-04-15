@@ -11,14 +11,14 @@ import { PostInformation } from './entity/post-information.entity';
 import { PostMetadata } from './entity/post-metadata.entity';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
-import { PostLikeRepository } from './repository/post-like.repository';
+// import { PostLikeRepository } from './repository/post-like.repository';
 import { PostRepository } from './repository/post.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       PostRepository,
-      PostLikeRepository,
+      //   PostLikeRepository,
       PostInformation,
       PostMetadata,
       Favorite,

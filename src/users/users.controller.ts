@@ -54,6 +54,12 @@ export class UsersController {
     return this.usersService.deleteUser(req.user);
   }
 
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  getMyUser(@Req() req) {
+    return this.usersService.getMyUser(req.user.id);
+  }
+
   @Get('profile/:user_id')
   @ApiOperation(docs.get['profile/:user_id'].operation)
   @ApiOkResponse(docs.get['profile/:user_id'].response[200])

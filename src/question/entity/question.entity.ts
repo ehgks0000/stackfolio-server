@@ -6,14 +6,15 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  RelationId,
 } from 'typeorm';
 import { QuestionComment } from './question-comment.entity';
 import { QuestionInformation } from './question-information.entity';
-import { QuestionLike } from './question-like.entity';
 import { QuestionMetadata } from './question-metadata.entity';
 
 @Entity()
@@ -41,6 +42,8 @@ export class Question {
   @IsString()
   contents: string;
 
+  /** Relation ID */
+
   @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
@@ -56,6 +59,10 @@ export class Question {
   @IsUUID('4')
   question_metadata_id: string;
 
+  @RelationId((self: Question) => self.user_like)
+  user_like_ids: string[];
+
+  /** Relation */
   @OneToOne(
     (type) => QuestionInformation,
     (information) => information.question,
@@ -82,8 +89,13 @@ export class Question {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   author: User;
 
-  @OneToMany((type) => QuestionLike, (likes) => likes.question_id)
-  likes: QuestionLike[];
+  @ManyToMany((type) => User, (user_like) => user_like.question_like, {
+    cascade: true,
+  })
+  user_like: User[];
+
+  //   @OneToMany((type) => QuestionLike, (likes) => likes.question_id)
+  //   likes: QuestionLike[];
 
   @OneToMany((type) => QuestionComment, (comments) => comments.question)
   comments: QuestionComment[];

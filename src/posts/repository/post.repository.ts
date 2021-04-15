@@ -22,6 +22,7 @@ import { POINT_CONVERSION_HYBRID } from 'constants';
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
+    const userRepository = getRepository(User);
     const userProfileRepository = getRepository(UserProfile);
     const postRepository = getRepository(Post);
     const postInformationRepository = getRepository(PostInformation);
@@ -39,19 +40,32 @@ export class PostRepository extends Repository<Post> {
       published = 'false',
     } = data;
 
-    const userProfile = await userProfileRepository.findOne(
-      {
-        user_id: userId,
-      },
-      { relations: ['user'] },
-    );
+    // const userProfile = await userProfileRepository.findOne(
+    //   {
+    //     user_id: userId,
+    //   },
+    //   { relations: ['user'] },
+    // );
 
-    const user = userProfile.user;
+    // const user = userProfile.user;
+    const user = await userRepository.findOne({
+      where: { id: userId },
+      relations: ['profile'],
+    });
+    if (!user) {
+      throw new BadRequestException('');
+    }
 
     const post = new Post();
     post.title = title;
     post.contents = contents;
-    post.user_id = user.id;
+
+    // user.posts = [...user.posts, post];
+    post.user_id = userId;
+    // post.author.profile.post_count += 1;
+    user.profile.post_count += 1;
+
+    // post.user_id = user.id;
     // post.tags = [];
 
     // // 태그 만들기
@@ -92,6 +106,7 @@ export class PostRepository extends Repository<Post> {
     try {
       await postInformationRepository.save(information);
       await postMetadataRepository.save(metadata);
+      await userRepository.save(user);
       await postRepository.save(post);
       //   await userRepository.save(user);
     } catch (err) {

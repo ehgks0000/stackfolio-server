@@ -65,7 +65,7 @@ export class QuestionController {
     @Req() req,
     @Param('question_id') questionId: string,
   ): Promise<void> {
-    return this.questionService.likePost(req.user.id, questionId);
+    return this.questionService.likeQuestion(req.user, questionId);
   }
 
   @Post('unlike/:question_id')
@@ -76,7 +76,7 @@ export class QuestionController {
     @Req() req,
     @Param('question_id') questionId: string,
   ): Promise<void> {
-    return this.questionService.unlikePost(req.user.id, questionId);
+    return this.questionService.unlikeQuestion(req.user.id, questionId);
   }
 
   @Delete(':question_id')

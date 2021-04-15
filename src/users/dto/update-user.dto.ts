@@ -28,4 +28,14 @@ export class UpdateUserDto {
   @IsObject()
   @IsOptional()
   social_links?: SocialLinks;
+
+  //   @ApiProperty({ required: false })
+  //   @IsObject()
+  //   @IsOptional()
+  //   exp?: number;
+
+  //   @ApiProperty({ required: false })
+  //   @IsObject()
+  //   @IsOptional()
+  //   level?: number;
 }

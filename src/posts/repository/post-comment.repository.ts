@@ -16,7 +16,7 @@ import { User } from 'src/users/entity/user.entity';
 import { UserProfile } from 'src/users/entity/user-profile.entity';
 import { PostInformation } from '../entity/post-information.entity';
 import { PostMetadata } from '../entity/post-metadata.entity';
-import { PostLike } from '../entity/post-like.entity';
+// import { PostLike } from '../entity/post-like.entity';
 import { PostComment } from '../entity/post-comment.entity';
 import { CreateCommentPostDto } from '../dto/create_comment_post';
 
@@ -58,6 +58,7 @@ export class PostCommentRepository extends Repository<PostComment> {
           .getRawOne();
 
         const comment = new PostComment();
+
         comment.group = max + 1;
         // comment.sorts = ;
         // comment.depth = ;
@@ -67,6 +68,8 @@ export class PostCommentRepository extends Repository<PostComment> {
 
         console.log(comment);
         // await questionCommentRepository.save(comment);
+        post.comment_count += 1;
+        await queryRunner.manager.save(post);
         await queryRunner.manager.save(comment);
 
         // return comment;
@@ -134,6 +137,8 @@ export class PostCommentRepository extends Repository<PostComment> {
           console.log('1번', comment);
 
           //   await questionCommentRepository.save(comment);
+          post.comment_count += 1;
+          await queryRunner.manager.save(post);
           await queryRunner.manager.save(comment);
         } else {
           //3. UPDATE BOARD SET SORTS = SORTS + 1
@@ -177,7 +182,8 @@ export class PostCommentRepository extends Repository<PostComment> {
 
           console.log('2번', comment);
           //   await questionCommentRepository.save(comment);
-
+          post.comment_count += 1;
+          await queryRunner.manager.save(post);
           await queryRunner.manager.save(comment);
         }
         //   await questionCommentRepository.save(comment);

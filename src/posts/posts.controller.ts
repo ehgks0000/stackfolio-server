@@ -60,7 +60,7 @@ export class PostsController {
     return this.postsService.getPostsAll();
   }
 
-  @Get('')
+  @Get('my')
   @UseGuards(JwtAuthGuard)
   @ApiOperation(docs.get['posts'].operation)
   @ApiOkResponse(docs.get['posts'].response[200])
@@ -110,7 +110,7 @@ export class PostsController {
   @ApiOkResponse(docs.post['like/:post_id'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
   likePost(@Req() req, @Param('post_id') postId: string): Promise<void> {
-    return this.postsService.likePost(req.user.id, postId);
+    return this.postsService.likePost(req.user, postId);
   }
 
   @Post('unlike/:post_id')

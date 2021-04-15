@@ -1,20 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Question } from './entity/question.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionRepository } from './repository/question.repository';
 import { CreateQuestionDto } from './dto/create-question.dto';
-import { QuestionLikeRepository } from './repository/question-like.repository';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { QuestionCommentRepository } from './repository/question-comment.repository';
 import { CreateCommentQuestionDto } from './dto/create_comment_question';
 import { QuestionComment } from './entity/question-comment.entity';
+import { User } from 'src/users/entity/user.entity';
 
 @Injectable()
 export class QuestionService {
   constructor(
     @InjectRepository(Question)
     private readonly questionRepository: QuestionRepository,
-    private readonly questionLikeRepository: QuestionLikeRepository,
     private readonly questionCommentRepository: QuestionCommentRepository,
   ) {}
 
@@ -60,20 +59,32 @@ export class QuestionService {
     return { question } as any;
   }
 
-  // 질문 게시판 좋아요, 싫어요
-  async likePost(userId: string, questionId: string): Promise<void> {
-    this.questionLikeRepository.createQuestionLike(userId, questionId);
-    // return {} as any;
-  }
-
-  async unlikePost(userId: string, questionId: string): Promise<void> {
-    const unlikePost = await this.questionLikeRepository.findOne({
-      user_id: userId,
-      question_id: questionId,
+  // 질문 게시글 좋아요, 싫어요
+  async likeQuestion(me: User, questionId: string): Promise<void> {
+    const question = await this.questionRepository.findOne({
+      where: { id: questionId },
+      relations: ['user_like'],
     });
 
-    await this.questionLikeRepository.remove(unlikePost);
-    // return {} as any;
+    question.user_like_ids.forEach((id) => {
+      if (id === me.id) {
+        throw new BadRequestException('이미 좋아요 했습니다.');
+      }
+    });
+
+    question.user_like = [...question.user_like, me];
+    await this.questionRepository.save(question);
+  }
+
+  async unlikeQuestion(userId: string, questionId: string): Promise<void> {
+    const unlikeQuestion = await this.questionRepository.findOne({
+      id: questionId,
+    });
+    unlikeQuestion.user_like = unlikeQuestion.user_like.filter((user) => {
+      user.id !== userId;
+    });
+
+    await this.questionRepository.save(unlikeQuestion);
   }
   async getComments(question_id: string): Promise<QuestionComment[]> {
     const comments = await this.questionCommentRepository.find({

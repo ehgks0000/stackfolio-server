@@ -21,6 +21,7 @@ import { PostComment } from './post-comment.entity';
 import { Favorite } from 'src/users/entity/user-favorite.entity';
 import { Series } from 'src/series/entity/series.entity';
 import { ApiProperty } from '@nestjs/swagger';
+// import { PostLike } from './post-like.entity';
 // import { Series_posts } from 'src/series/entity/series_post.entity';
 
 @Entity()
@@ -51,6 +52,11 @@ export class Post {
   @IsString()
   contents: string;
 
+  @Column({ default: 0 })
+  comment_count: number;
+
+  /** Relations ID*/
+
   @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
@@ -75,6 +81,12 @@ export class Post {
   @IsUUID('4')
   series_id?: string;
 
+  //   @ApiProperty({ readOnly: true })
+  //   @Column('uuid', { nullable: true })
+  @RelationId((self: Post) => self.user_like)
+  @IsUUID('4')
+  user_like_ids?: string[];
+
   /** Relations */
 
   @OneToOne((type) => PostInformation, (information) => information.post, {
@@ -93,7 +105,7 @@ export class Post {
 
   @ManyToOne((type) => User, (user) => user.posts, {
     cascade: true,
-    eager: true,
+    // eager: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
@@ -119,4 +131,10 @@ export class Post {
   @ManyToOne(() => Series, (series) => series.posts)
   @JoinColumn({ name: 'series_id', referencedColumnName: 'id' })
   series: Series;
+
+  @ManyToMany((type) => User, (user_like) => user_like.post_like, {
+    cascade: true,
+  })
+  user_like?: User[];
+  //게시글을 좋아요 한 유저들
 }

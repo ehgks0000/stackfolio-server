@@ -7,6 +7,8 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -71,4 +73,8 @@ export class PostComment {
   @ManyToOne((type) => Post, (post) => post.comments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id', referencedColumnName: 'id' })
   post: Post;
+
+  //   @ManyToMany((type) => User, (user_like) => user_like.comment_like)
+  //   //   @JoinTable({ name: 'comment_like' })
+  //   user_like: User[];
 }

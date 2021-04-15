@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilesService } from 'src/files/files.service';
 import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
 import { Tag } from 'src/tags/entity/tag.entity';
 import { TagRepository } from 'src/tags/repository/tag.repository';
+import { User } from 'src/users/entity/user.entity';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
 import { UserRepository } from 'src/users/repository/user.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entity/post.entity';
-import { PostLikeRepository } from './repository/post-like.repository';
+// import { PostLikeRepository } from './repository/post-like.repository';
 import { PostRepository } from './repository/post.repository';
 
 @Injectable()
@@ -17,7 +18,8 @@ export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: PostRepository,
-    private readonly postLikeRepository: PostLikeRepository,
+    private readonly userRepository: UserRepository,
+    // private readonly postLikeRepository: PostLikeRepository,
     private readonly tagRepository: TagRepository,
     private readonly filesService: FilesService,
   ) {}
@@ -29,7 +31,8 @@ export class PostsService {
 
   async getPostsAll(): Promise<Post[]> {
     const posts = await this.postRepository.find({
-      relations: ['tags'],
+      //   relations: ['tags'],
+      relations: ['tags', 'user_like'],
       order: { created_at: 'DESC' },
     });
     // posts
@@ -75,19 +78,32 @@ export class PostsService {
   //     return { posts } as any;
   //   }
 
-  async likePost(userId: string, postId: string): Promise<void> {
-    this.postLikeRepository.createPostLike(userId, postId);
-    // return {} as any;
+  async likePost(me: User, postId: string): Promise<void> {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['user_like'],
+    });
+    post.user_like_ids.forEach((id) => {
+      if (id === me.id) {
+        throw new BadRequestException('이미 좋아요 했습니다.');
+      }
+    });
+    post.user_like = [...post.user_like, me];
+
+    // await this.userRepository.save(user);
+    await this.postRepository.save(post);
   }
 
   async unlikePost(userId: string, postId: string): Promise<void> {
-    const unlikePost = await this.postLikeRepository.findOne({
-      user_id: userId,
-      post_id: postId,
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['user_like'],
+    });
+    post.user_like = post.user_like.filter((user) => {
+      user.id !== userId;
     });
 
-    await this.postLikeRepository.remove(unlikePost);
-    // return {} as any;
+    await this.postRepository.save(post);
   }
 
   //test createTags
