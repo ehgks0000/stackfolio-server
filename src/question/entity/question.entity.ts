@@ -89,14 +89,14 @@ export class Question {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   author: User;
 
-  @ManyToMany((type) => User, (user_like) => user_like.question_like, {
-    cascade: true,
-  })
-  user_like: User[];
-
   //   @OneToMany((type) => QuestionLike, (likes) => likes.question_id)
   //   likes: QuestionLike[];
 
   @OneToMany((type) => QuestionComment, (comments) => comments.question)
   comments: QuestionComment[];
+
+  @ManyToMany((type) => User, (user_like) => user_like.question_like, {
+    cascade: true,
+  })
+  user_like: User[];
 }

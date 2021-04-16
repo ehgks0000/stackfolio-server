@@ -30,6 +30,7 @@ import { PostComment } from 'src/posts/entity/post-comment.entity';
 import { Favorite } from './user-favorite.entity';
 import { Series } from 'src/series/entity/series.entity';
 import { Question } from 'src/question/entity/question.entity';
+import { QuestionComment } from 'src/question/entity/question-comment.entity';
 // import { PostLike } from 'src/posts/entity/post-like.entity';
 
 export enum Provider {
@@ -88,6 +89,7 @@ export class User {
   @IsBoolean()
   @IsOptional()
   is_verified: boolean;
+
   /** Relations ID*/
 
   @RelationId((self: User) => self.posts)
@@ -99,23 +101,7 @@ export class User {
   @RelationId((self: User) => self.question_like)
   question_like_ids: string[];
 
-  //   @Column({ nullable: true })
-  //   post_like_ids?: string[];
-
   /** Relations */
-  @ManyToMany((type) => User, (user) => user.following, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
-  @JoinTable({
-    name: 'follow',
-    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'follower_id', referencedColumnName: 'id' },
-  })
-  followers: User[];
-
-  @ManyToMany((type) => User, (user) => user.followers, { onDelete: 'CASCADE' })
-  following: User[];
 
   @OneToMany((type) => Post, (post) => post.author)
   //   @JoinColumn({ name: 'post_count', referencedColumnName: '' })
@@ -123,9 +109,6 @@ export class User {
 
   @OneToMany((type) => Post, (question) => question.author)
   questions: Question[];
-
-  //   @OneToMany((type) => QuestionLike, (question_like) => question_like.author)
-  //   question_like: QuestionLike[];
 
   // postcomments와 questioncomments 2개로 나눠야하나?
   @OneToMany((type) => PostComment, (comment) => comment.user)
@@ -146,6 +129,20 @@ export class User {
   @OneToMany((type) => Series, (series) => series.user)
   series: Series[];
 
+  @ManyToMany((type) => User, (user) => user.following, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinTable({
+    name: 'follow',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'follower_id', referencedColumnName: 'id' },
+  })
+  followers: User[];
+
+  @ManyToMany((type) => User, (user) => user.followers, { onDelete: 'CASCADE' })
+  following: User[];
+
   //내가 좋아요 한 게시글
   @ManyToMany((type) => Post, (post_like) => post_like.user_like)
   @JoinTable({
@@ -162,9 +159,21 @@ export class User {
   })
   question_like: Question[];
 
-  //   @ManyToMany((type) => PostComment, (comment_like) => comment_like.user_like)
-  //   @JoinTable({ name: 'comment_like' })
-  //   comment_like: PostComment[];
+  //내가 좋아요한 댓글(게시글)
+  @ManyToMany(
+    (type) => PostComment,
+    (post_comment_like) => post_comment_like.user_like,
+  )
+  @JoinTable({ name: 'post_comment_like' })
+  post_comment_like: PostComment[];
+
+  //내가 좋아요한 댓글(질문글)
+  @ManyToMany(
+    (type) => QuestionComment,
+    (question_comment_like) => question_comment_like.user_like,
+  )
+  @JoinTable({ name: 'question_comment_like' })
+  question_comment_like: QuestionComment[];
 
   @AfterLoad()
   test() {

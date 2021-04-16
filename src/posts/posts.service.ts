@@ -29,27 +29,64 @@ export class PostsService {
     return post;
   }
 
+  //전체 게시글 & is_private = false 인것만
   async getPostsAll(): Promise<Post[]> {
-    const posts = await this.postRepository.find({
-      //   relations: ['tags'],
-      relations: ['tags', 'user_like'],
-      order: { created_at: 'DESC' },
-    });
-    // posts
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.tags', 'tags')
+      .leftJoinAndSelect('post.user_like', 'user_like')
+      .leftJoinAndSelect('post.metadata', 'metadata')
+      .where('metadata.is_private = false')
+      .orderBy('post.created_at', 'DESC')
+      .getMany();
     console.log('post all');
 
     return posts;
   }
+  async getPostsOfMy(userId: string): Promise<Post[]> {
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.tags', 'tags')
+      .leftJoinAndSelect('post.user_like', 'user_like')
+      .leftJoinAndSelect('post.metadata', 'metadata')
+      .where('post.user_id= :userId', { userId: userId })
+      .orderBy('post.created_at', 'DESC')
+      .getMany();
+    return posts;
+  }
 
   // 유저의 post 불러오기
-  async getPosts(userId: string, includePrivate = false): Promise<Post[]> {
-    const post = await this.postRepository.find({ user_id: userId });
+  // public인것만
+  // 전체공개 (is_private = false) 인 post만 불러오기
+  async getPostsByUserId(
+    userId: string,
+    // includePrivate = false,
+  ): Promise<Post[]> {
+    // const posts = await this.postRepository.find({
+    //   where: { user_id: userId },
+    //   relations: ['post_metadata'],
+    // });
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.metadata', 'metadata')
+      .where('post.user_id= :userId', { userId: userId })
+      .andWhere('metadata.is_private = false')
+      .getMany();
+
     // console.log(post);
-    return post;
+    return posts;
   }
   // postid의 post 불러오기
-  async getPost(postId: string): Promise<Post[]> {
-    const post = await this.postRepository.find({ id: postId });
+  // public인 것만
+  async getPostByPostId(postId: string): Promise<Post> {
+    // const posts = await this.postRepository.find({ id: postId });
+    const post = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.metadata', 'metadata')
+      .where('post.id = :postId', { postId: postId })
+      .andWhere('metadata.is_private = false')
+      .getOne();
+
     return post;
   }
 

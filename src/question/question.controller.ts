@@ -46,6 +46,12 @@ export class QuestionController {
     return this.questionService.getQuestionAll();
   }
 
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  getMyQuestion(@Req() req): Promise<Question[]> {
+    return this.questionService.getMyQuestions(req.user.id);
+  }
+
   @Patch(':question_id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

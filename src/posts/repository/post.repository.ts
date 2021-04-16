@@ -18,16 +18,19 @@ import { UpdatePostDto } from '../dto/update-post.dto';
 import { boolean } from 'joi';
 import { FilesService } from 'src/files/files.service';
 import { POINT_CONVERSION_HYBRID } from 'constants';
+import { TagsService } from 'src/tags/tags.service';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
+  //   constructor(private readonly tagService: TagsService) {}
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
+    // const tagService: TagsService;
     const userRepository = getRepository(User);
     const userProfileRepository = getRepository(UserProfile);
     const postRepository = getRepository(Post);
     const postInformationRepository = getRepository(PostInformation);
     const postMetadataRepository = getRepository(PostMetadata);
-    const tagsRepository = getRepository(Tag);
+    const tagRepository = getRepository(Tag);
 
     const {
       title,
@@ -66,7 +69,33 @@ export class PostRepository extends Repository<Post> {
     user.profile.post_count += 1;
 
     // post.user_id = user.id;
-    // post.tags = [];
+    post.tags = [];
+    let newTags = [];
+    let dummy = [];
+    if (tags) {
+      //   tagService.createTag(userId, post.id, tags);
+      const checkTags = tags.map(async (tag) => {
+        const preTag = await tagRepository.findOne({ title: tag });
+        if (!preTag) {
+          const newTag = tagRepository.create({ title: tag });
+          newTags = [...newTags, newTag];
+        } else {
+          dummy = [...dummy, preTag];
+        }
+      });
+
+      await Promise.all(checkTags)
+        .then(async () => {
+          await tagRepository.save(newTags);
+          dummy = [...dummy, ...newTags];
+          post.tags = dummy;
+
+          dummy = null;
+        })
+        .then(async () => {
+          //   await postRepository.save(post);
+        });
+    }
 
     // // 태그 만들기
     // if (tags) {
@@ -97,8 +126,8 @@ export class PostRepository extends Repository<Post> {
     information.thumbnail = thumbnail;
     information.description = description;
     const metadata = new PostMetadata();
-    metadata.is_private = Boolean(is_private);
-    metadata.published = Boolean(published);
+    metadata.is_private = JSON.parse(is_private);
+    metadata.published = JSON.parse(published);
 
     post.information = information;
     post.metadata = metadata;
@@ -133,8 +162,8 @@ export class PostRepository extends Repository<Post> {
       slug,
       thumbnail,
       description,
-      is_private,
-      published,
+      is_private = 'false',
+      published = 'false',
     } = data;
 
     let post = await postRepository.findOne(
@@ -157,8 +186,8 @@ export class PostRepository extends Repository<Post> {
     information.description = description;
 
     const metadata = post.metadata;
-    metadata.is_private = Boolean(is_private);
-    metadata.published = Boolean(published);
+    metadata.is_private = JSON.parse(is_private);
+    metadata.published = JSON.parse(published);
 
     post.information = information;
     post.metadata = metadata;

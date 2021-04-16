@@ -76,6 +76,9 @@ export class Post {
   @RelationId((self: Post) => self.tags)
   tag_id: string[];
 
+  //   @Column()
+  //   tag_name: string[];
+
   @ApiProperty({ readOnly: true })
   @Column('uuid', { nullable: true })
   @IsUUID('4')
@@ -103,6 +106,12 @@ export class Post {
   @JoinColumn({ name: 'post_metadata_id', referencedColumnName: 'id' })
   metadata: PostMetadata;
 
+  @OneToMany((type) => PostComment, (comment) => comment.post)
+  comments: PostComment[];
+
+  @OneToMany((type) => Favorite, (favorites) => favorites.post)
+  favorites!: Favorite[];
+
   @ManyToOne((type) => User, (user) => user.posts, {
     cascade: true,
     // eager: true,
@@ -111,26 +120,20 @@ export class Post {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   author: User;
 
-  @OneToMany((type) => PostComment, (comment) => comment.post)
-  comments: PostComment[];
-
-  @ManyToMany((type) => Tag, (tags) => tags.posts)
-  @JoinTable({
-    name: 'post_tag',
-    // joinColumn: { name: 'post_id', referencedColumnName: 'id' },
-    // inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
-  })
-  tags?: Tag[];
-
   //   @ManyToMany((type) => User, (user) => user.favorites)
   //   users: User[];
-
-  @OneToMany((type) => Favorite, (favorites) => favorites.post)
-  favorites!: Favorite[];
 
   @ManyToOne(() => Series, (series) => series.posts)
   @JoinColumn({ name: 'series_id', referencedColumnName: 'id' })
   series: Series;
+
+  @ManyToMany((type) => Tag, (tags) => tags.posts)
+  @JoinTable({
+    name: 'post_tag',
+    // joinColumn: { name: 'tag_name', referencedColumnName: 'title' },
+    // inverseJoinColumn: { name: 'tag_name', referencedColumnName: 'title' },
+  })
+  tags?: Tag[];
 
   @ManyToMany((type) => User, (user_like) => user_like.post_like, {
     cascade: true,

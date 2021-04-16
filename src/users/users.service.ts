@@ -28,7 +28,7 @@ export class UsersService {
     return user;
   }
 
-  async getMyUser(user_id: string) {
+  async getMyUser(user_id: string): Promise<UserProfile> {
     // const user = await this.userRepository.findOne({ id: user_id });
     const profile = await this.userProfileRepository
       .createQueryBuilder('user_profile')

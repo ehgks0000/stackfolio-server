@@ -61,7 +61,7 @@ export class TagsService {
         await this.postRepository.save(post);
       });
 
-    return dummy;
+    return post.tags;
   }
   // 태그 수정 없이 createTag를 해서 post에 삽입
   // async updateTags() {

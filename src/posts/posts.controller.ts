@@ -65,21 +65,21 @@ export class PostsController {
   @ApiOperation(docs.get['posts'].operation)
   @ApiOkResponse(docs.get['posts'].response[200])
   getMyPosts(@Req() req): Promise<_Post[]> {
-    return this.postsService.getPosts(req.user.id, true);
+    return this.postsService.getPostsOfMy(req.user.id);
   }
 
   @Get('user/:user_id')
   @ApiOperation(docs.get['user/:user_id'].operation)
   @ApiOkResponse(docs.get['user/:user_id'].response[200])
   getPosts(@Param('user_id') userId: string): Promise<_Post[]> {
-    return this.postsService.getPosts(userId);
+    return this.postsService.getPostsByUserId(userId);
   }
 
   @Get(':post_id')
   @ApiOperation(docs.get[':post_id'].operation)
   @ApiOkResponse(docs.get[':post_id'].response[200])
-  getPost(@Param('post_id') postId: string): Promise<_Post[]> {
-    return this.postsService.getPost(postId);
+  getPost(@Param('post_id') postId: string): Promise<_Post> {
+    return this.postsService.getPostByPostId(postId);
   }
 
   @Patch('')

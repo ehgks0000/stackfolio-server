@@ -11,6 +11,7 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { Post } from './post.entity';
@@ -54,6 +55,8 @@ export class PostComment {
   @UpdateDateColumn()
   readonly updated_at: Date;
 
+  /** Relations IDs*/
+
   @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
@@ -64,8 +67,10 @@ export class PostComment {
   @IsUUID('4')
   post_id: string;
 
-  /** Relations */
+  @RelationId((self: PostComment) => self.user_like)
+  user_like_ids: string[];
 
+  /** Relations */
   @ManyToOne((type) => User, (user) => user.comments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
@@ -74,7 +79,9 @@ export class PostComment {
   @JoinColumn({ name: 'post_id', referencedColumnName: 'id' })
   post: Post;
 
-  //   @ManyToMany((type) => User, (user_like) => user_like.comment_like)
-  //   //   @JoinTable({ name: 'comment_like' })
-  //   user_like: User[];
+  @ManyToMany((type) => User, (user_like) => user_like.post_comment_like, {
+    cascade: true,
+  })
+  //   @JoinTable({ name: 'comment_like' })
+  user_like: User[];
 }

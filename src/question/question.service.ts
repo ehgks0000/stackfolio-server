@@ -30,6 +30,17 @@ export class QuestionService {
     return questions;
   }
 
+  async getMyQuestions(userId: string): Promise<Question[]> {
+    const questions = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.user_like', 'user_like')
+      .leftJoinAndSelect('question.comments', 'comments')
+      .where('question.user_id= :userId', { userId: userId })
+      .getMany();
+
+    return questions;
+  }
+
   async updateQuestion(
     userId: string,
     questionId: string,
