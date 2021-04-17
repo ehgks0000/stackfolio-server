@@ -50,16 +50,16 @@ export enum Provider {
 export class User {
   /** Columns */
 
-  @ApiProperty()
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
-  @ApiProperty()
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly created_at: Date;
 
-  @ApiProperty()
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @UpdateDateColumn()
   readonly updated_at: Date;
@@ -91,13 +91,15 @@ export class User {
   is_verified: boolean;
 
   /** Relations ID*/
-
+  @ApiProperty({ readOnly: true })
   @RelationId((self: User) => self.posts)
   post_id: string[];
 
+  @ApiProperty({ readOnly: true })
   @RelationId((self: User) => self.post_like)
   post_like_ids: string[];
 
+  @ApiProperty({ readOnly: true })
   @RelationId((self: User) => self.question_like)
   question_like_ids: string[];
 

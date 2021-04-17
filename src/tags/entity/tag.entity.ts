@@ -14,24 +14,25 @@ import { ApiProperty } from '@nestjs/swagger';
 @Entity()
 export class Tag {
   /** Columns */
-
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly created_at: Date;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @UpdateDateColumn()
   readonly updated_at: Date;
 
-  @ApiProperty()
   // @ApiProperty({ required: false })
-  // @ApiProperty({ readOnly: true })
+  @ApiProperty({ readOnly: true, required: true })
   @Column({ length: 255 })
   @MinLength(2)
-  title: string;
+  title!: string;
 
   /** Relations */
   @ApiProperty({ readOnly: true })

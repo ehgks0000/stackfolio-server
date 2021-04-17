@@ -11,6 +11,7 @@ import { PostInformation } from './entity/post-information.entity';
 import { PostMetadata } from './entity/post-metadata.entity';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { PostCommentRepository } from './repository/post-comment.repository';
 // import { PostLikeRepository } from './repository/post-like.repository';
 import { PostRepository } from './repository/post.repository';
 
@@ -18,6 +19,7 @@ import { PostRepository } from './repository/post.repository';
   imports: [
     TypeOrmModule.forFeature([
       PostRepository,
+      PostCommentRepository,
       //   PostLikeRepository,
       PostInformation,
       PostMetadata,

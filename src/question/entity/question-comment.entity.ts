@@ -21,6 +21,7 @@ export class QuestionComment {
   // @ApiProperty({ required: false })
   // @ApiProperty({ readOnly: true })
 
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn()
   readonly id: number;
 

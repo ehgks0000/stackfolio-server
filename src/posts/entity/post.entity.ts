@@ -28,13 +28,16 @@ import { ApiProperty } from '@nestjs/swagger';
 export class Post {
   /** Columns */
 
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly created_at: Date;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @UpdateDateColumn()
   readonly updated_at: Date;
@@ -51,7 +54,11 @@ export class Post {
   @Column('text')
   @IsString()
   contents: string;
-
+  /* 
+    @todo 
+    댓글 수를 유저 엔티티에서 어떻게 불러올수있을까
+  */
+  @ApiProperty({ readOnly: true })
   @Column({ default: 0 })
   comment_count: number;
 
@@ -86,6 +93,7 @@ export class Post {
 
   //   @ApiProperty({ readOnly: true })
   //   @Column('uuid', { nullable: true })
+  @ApiProperty({ readOnly: true })
   @RelationId((self: Post) => self.user_like)
   @IsUUID('4')
   user_like_ids?: string[];

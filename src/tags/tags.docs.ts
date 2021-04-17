@@ -15,7 +15,7 @@ export default {
         [400]: { description: 'Tags does not exist' },
       },
     },
-    ['tags/posts/user']: {
+    ['tags/my/posts']: {
       operation: {
         description: 'Returns posts of my tags.',
       },
@@ -27,39 +27,39 @@ export default {
         [400]: { description: 'Posts(of my tags) does not exist' },
       },
     },
-    ['tags/posts']: {
+    ['tags/id']: {
       operation: {
-        description: 'Returns posts of tags.',
+        description: 'Return posts with a tag ID.',
       },
       response: {
         [200]: {
-          description: 'Returns posts of tags.',
+          description: 'Return posts with a tag ID.',
           type: Post,
         },
-        [400]: { description: 'Posts(of tags) does not exist' },
+        [400]: { description: 'Posts(wiht the tag ID) does not exist' },
       },
     },
     ['tags/name']: {
       operation: {
-        description: "Returns posts of tag's name.",
+        description: 'Return posts with tag Name',
       },
       response: {
         [200]: {
-          description: "Returns posts of tag's name.",
+          description: 'Return posts with tag name',
           type: Post,
         },
-        [400]: { description: "Posts(of tag's name) does not exist" },
+        [400]: { description: 'Posts(with tag Name) does not exist' },
       },
     },
   },
   post: {
     ['tags']: {
       operation: {
-        description: 'Returns Tags and Insert to Post',
+        description: 'Return Tags',
       },
       response: {
         [200]: {
-          description: 'Returns Tags and Insert to Post',
+          description: 'Return Tags',
           type: Tag,
         },
         [400]: { description: 'Error Create Tags' },

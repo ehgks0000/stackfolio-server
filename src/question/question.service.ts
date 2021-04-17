@@ -60,14 +60,14 @@ export class QuestionService {
     return question;
   }
 
-  async deletePost(userid: string, questionId: string): Promise<Question> {
+  async deleteQuestion(userid: string, questionId: string): Promise<Question> {
     const question = await this.questionRepository.findOne({
       id: questionId,
       user_id: userid,
     });
 
     await this.questionRepository.remove(question);
-    return { question } as any;
+    return question;
   }
 
   // 질문 게시글 좋아요, 싫어요

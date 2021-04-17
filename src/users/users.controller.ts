@@ -56,7 +56,10 @@ export class UsersController {
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  getMyUser(@Req() req) {
+  @ApiOperation(docs.get['user'].operation)
+  @ApiOkResponse(docs.get['user'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  getMyUser(@Req() req): Promise<UserProfile> {
     return this.usersService.getMyUser(req.user.id);
   }
 

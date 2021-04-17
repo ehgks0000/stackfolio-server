@@ -29,7 +29,6 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
     await queryRunner.startTransaction();
 
     try {
-      const questionCommentRepository = getRepository(QuestionComment);
       const questionRepository = getRepository(Question);
       const userProfileRepository = getRepository(UserProfile);
 
@@ -46,8 +45,7 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
 
       // 대댓글이 아닌 깊이가 0인 댓글인 경우
       if (!group) {
-        const { max } = await questionCommentRepository
-          .createQueryBuilder('questioncomment')
+        const { max } = await this.createQueryBuilder('questioncomment')
           .select('MAX(questioncomment.group)')
           .where(`questioncomment.question_id = :question_id`, {
             question_id: question_id,
@@ -64,6 +62,8 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
 
         console.log(comment);
         // await questionCommentRepository.save(comment);
+        question.comment_count += 1;
+        await queryRunner.manager.save(question);
         await queryRunner.manager.save(comment);
 
         // return comment;
@@ -79,8 +79,7 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
         //  AND DEPTH <= (원글의 DEPTH)
         //----------
         // 쿼리 빌더
-        let { min } = await questionCommentRepository
-          .createQueryBuilder('comment')
+        let { min } = await this.createQueryBuilder('comment')
           .select('MIN(sorts)')
           .where(
             `comment.group = :group AND comment.sorts > :sorts AND comment.depth <= :depth`,
@@ -103,10 +102,7 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
           // 4. INSERT INTO BOARD VALUES
           //    (번호, (원글의 GROUP), (3번값), (원글의 DEPTH +1) ,' 제목')
 
-          const {
-            max: max_2,
-          } = await questionCommentRepository
-            .createQueryBuilder('comment')
+          const { max: max_2 } = await this.createQueryBuilder('comment')
             .select('MAX(sorts)')
             .where('comment.group = :group', { group: group })
             .getRawOne();
@@ -135,6 +131,8 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
           console.log('1번', comment);
 
           //   await questionCommentRepository.save(comment);
+          question.comment_count += 1;
+          await queryRunner.manager.save(question);
           await queryRunner.manager.save(comment);
         } else {
           //3. UPDATE BOARD SET SORTS = SORTS + 1
@@ -158,7 +156,7 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
             //   .execute();
             // ---------------------------
             //   생쿼리 ? 에러 : group에 쌍따움표로 안감싸면 오류 왜? // 쿼리빌더로 하면 제대로 실행안됨 왜?
-            await questionCommentRepository.query(
+            await this.query(
               `UPDATE question_comment SET sorts = sorts + 1 WHERE "group" = ${group} AND "sorts" >= ${min}`,
             );
           } catch (error) {
@@ -178,7 +176,8 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
 
           console.log('2번', comment);
           //   await questionCommentRepository.save(comment);
-
+          question.comment_count += 1;
+          await queryRunner.manager.save(question);
           await queryRunner.manager.save(comment);
         }
         //   await questionCommentRepository.save(comment);

@@ -20,8 +20,9 @@ import { Post } from './post.entity';
 export class PostComment {
   /** Columns */
 
-  @PrimaryGeneratedColumn('uuid')
-  readonly id: string;
+  @ApiProperty({ readOnly: true })
+  @PrimaryGeneratedColumn()
+  readonly id: number;
 
   @ApiProperty({ required: false })
   @Column({ default: 1 })
@@ -43,14 +44,17 @@ export class PostComment {
   @IsString()
   contents: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @DeleteDateColumn()
   readonly deleted_at: Date;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly created_at: Date;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @UpdateDateColumn()
   readonly updated_at: Date;
@@ -67,6 +71,7 @@ export class PostComment {
   @IsUUID('4')
   post_id: string;
 
+  @ApiProperty({ readOnly: true })
   @RelationId((self: PostComment) => self.user_like)
   user_like_ids: string[];
 

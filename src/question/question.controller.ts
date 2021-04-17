@@ -42,12 +42,18 @@ export class QuestionController {
   }
 
   @Get()
+  @ApiOperation(docs.get['question'].operation)
+  @ApiOkResponse(docs.get['question'].response[200])
   getQuestionAll(): Promise<Question[]> {
     return this.questionService.getQuestionAll();
   }
 
   @Get('my')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation(docs.get['question/my'].operation)
+  @ApiOkResponse(docs.get['question/my'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   getMyQuestion(@Req() req): Promise<Question[]> {
     return this.questionService.getMyQuestions(req.user.id);
   }
@@ -55,6 +61,9 @@ export class QuestionController {
   @Patch(':question_id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation(docs.patch['question/:question_id'].operation)
+  @ApiOkResponse(docs.patch['question/:question_id'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   updatePost(
     @Req() req,
     @Param('question_id') questionId: string,
@@ -67,7 +76,10 @@ export class QuestionController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @ApiBearerAuth()
-  likePost(
+  @ApiOperation(docs.post['question/like/:question_id'].operation)
+  @ApiOkResponse(docs.post['question/like/:question_id'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  likeQuestion(
     @Req() req,
     @Param('question_id') questionId: string,
   ): Promise<void> {
@@ -78,7 +90,10 @@ export class QuestionController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @ApiBearerAuth()
-  unlikePost(
+  @ApiOperation(docs.post['question/unlike/:question_id'].operation)
+  @ApiOkResponse(docs.post['question/unlike/:question_id'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  unlikeQuestion(
     @Req() req,
     @Param('question_id') questionId: string,
   ): Promise<void> {
@@ -88,14 +103,19 @@ export class QuestionController {
   @Delete(':question_id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  deletePost(
+  @ApiOperation(docs.delete['question/:question_id'].operation)
+  @ApiOkResponse(docs.delete['question/:question_id'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  deleteQuestion(
     @Req() req,
     @Param('question_id') question_id: string,
   ): Promise<Question> {
-    return this.questionService.deletePost(req.user.id, question_id);
+    return this.questionService.deleteQuestion(req.user.id, question_id);
   }
 
   @Get('comment/:question_id')
+  @ApiOperation(docs.get['question/comment/:question_id'].operation)
+  @ApiOkResponse(docs.get['question/comment/:question_id'].response[200])
   getComments(
     @Param('question_id') question_id: string,
   ): Promise<QuestionComment[]> {
@@ -104,6 +124,10 @@ export class QuestionController {
 
   @Post('comment/:question_id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation(docs.post['question/comment/:question_id'].operation)
+  @ApiOkResponse(docs.post['question/comment/:question_id'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   createComment(
     @Req() req,
     @Param('question_id') question_id: string,

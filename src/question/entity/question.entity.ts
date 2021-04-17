@@ -19,13 +19,16 @@ import { QuestionMetadata } from './question-metadata.entity';
 
 @Entity()
 export class Question {
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly created_at: Date;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly updated_at: Date;
@@ -41,6 +44,10 @@ export class Question {
   @Column('text')
   @IsString()
   contents: string;
+
+  @ApiProperty({ readOnly: true })
+  @Column({ default: 0 })
+  comment_count: number;
 
   /** Relation ID */
 
@@ -59,6 +66,7 @@ export class Question {
   @IsUUID('4')
   question_metadata_id: string;
 
+  @ApiProperty({ readOnly: true })
   @RelationId((self: Question) => self.user_like)
   user_like_ids: string[];
 

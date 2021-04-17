@@ -8,8 +8,11 @@ import { User } from 'src/users/entity/user.entity';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
 import { UserRepository } from 'src/users/repository/user.repository';
 import { CreatePostDto } from './dto/create-post.dto';
+import { CreateCommentPostDto } from './dto/create_comment_post';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PostComment } from './entity/post-comment.entity';
 import { Post } from './entity/post.entity';
+import { PostCommentRepository } from './repository/post-comment.repository';
 // import { PostLikeRepository } from './repository/post-like.repository';
 import { PostRepository } from './repository/post.repository';
 
@@ -22,6 +25,7 @@ export class PostsService {
     // private readonly postLikeRepository: PostLikeRepository,
     private readonly tagRepository: TagRepository,
     private readonly filesService: FilesService,
+    private readonly postCommentRepository: PostCommentRepository,
   ) {}
 
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
@@ -132,6 +136,16 @@ export class PostsService {
   }
 
   async unlikePost(userId: string, postId: string): Promise<void> {
+    // await this.postRepository
+    //   .createQueryBuilder()
+    //   .delete()
+    //   .from('post_like')
+    //   .where('post_like_ids = :postId AND user_like_ids = :userId', {
+    //     postId: postId,
+    //     userId: userId,
+    //   })
+    //   .execute();
+
     const post = await this.postRepository.findOne({
       where: { id: postId },
       relations: ['user_like'],
@@ -153,10 +167,10 @@ export class PostsService {
   //     return tag;
   //   }
 
-  async getTags(): Promise<Tag[] | undefined> {
-    const tags = await this.tagRepository.find();
-    return tags;
-  }
+  //   async getTags(): Promise<Tag[] | undefined> {
+  //     const tags = await this.tagRepository.find();
+  //     return tags;
+  //   }
 
   async uploadThumbnail(
     userId: string,
@@ -196,7 +210,35 @@ export class PostsService {
     }
     // return post;
   }
-  async deleteContentImages(): Promise<any> {
+  /**
+   *
+   * @todo
+   * 게시글의 이미지 삭제하기
+   * 파일 서비스로 옮겨야 할까?
+   
+   */
+  async deleteContentImages(userId: string, postId: string): Promise<any> {
     return;
+  }
+
+  async getComments(post_id: string): Promise<PostComment[]> {
+    const comments = await this.postCommentRepository.find({
+      //   post_id,
+      where: {
+        post_id,
+      },
+      order: { group: 'ASC', sorts: 'ASC' },
+    });
+    return comments;
+  }
+
+  async createComment(
+    userId: string,
+    post_id: string,
+    data: CreateCommentPostDto,
+  ): Promise<void> {
+    await this.postCommentRepository.createPostComment(userId, post_id, data);
+
+    // return {} as any;
   }
 }

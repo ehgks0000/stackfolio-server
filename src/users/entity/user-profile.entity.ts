@@ -44,13 +44,16 @@ export class SocialLinks {
 export class UserProfile {
   /** Columns */
 
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly created_at: Date;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @UpdateDateColumn()
   readonly updated_at: Date;
@@ -90,6 +93,7 @@ export class UserProfile {
   //   @RelationId((self: UserProfile) => self.user)
   //   user_id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column({ default: 0 })
   post_count: number;
   //   @RelationId((self: User) => self.posts)

@@ -16,13 +16,16 @@ import { ApiProperty } from '@nestjs/swagger';
 export class Verification {
   /** Columns */
 
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly created_at: Date;
 
+  @ApiProperty({ readOnly: true })
   @Column({ length: 255 })
   @IsString()
   code: string;

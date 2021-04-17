@@ -12,16 +12,16 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Favorite {
-  @ApiProperty()
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
-  @ApiProperty()
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   user_id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
   post_id!: string;

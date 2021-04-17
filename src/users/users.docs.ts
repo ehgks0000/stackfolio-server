@@ -17,6 +17,18 @@ export default {
         [400]: { description: 'User does not exist' },
       },
     },
+    ['user']: {
+      operation: {
+        description: 'Return my Profile',
+      },
+      response: {
+        [200]: {
+          description: 'Return my Profile',
+          type: UserProfile,
+        },
+        [400]: { description: 'My Profile does not exist' },
+      },
+    },
     ['profile']: {
       operation: {
         description:

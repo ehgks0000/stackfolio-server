@@ -31,8 +31,12 @@ export class SeriesService {
     });
   }
   // 내 아이디의 한 시리즈의 게시글 목록
-  async getPostsOfSeries(userId: string, seriesId: string): Promise<Series[]> {
-    return this.seriesRepository.find({ id: seriesId, user_id: userId });
+  async getPostsOfSeries(userId: string, seriesId: string): Promise<Post[]> {
+    const series = await this.seriesRepository.findOne({
+      where: { id: seriesId, user_id: userId },
+      relations: ['post'],
+    });
+    return series.posts;
   }
   async updateSeries(
     userId: string,

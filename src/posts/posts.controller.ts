@@ -16,6 +16,8 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -34,6 +36,9 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
+import { FileUploadDto } from './dto/file-upload.dto';
+import { PostComment } from './entity/post-comment.entity';
+import { CreateCommentPostDto } from './dto/create_comment_post';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -62,8 +67,8 @@ export class PostsController {
 
   @Get('my')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation(docs.get['posts'].operation)
-  @ApiOkResponse(docs.get['posts'].response[200])
+  @ApiOperation(docs.get['posts/my'].operation)
+  @ApiOkResponse(docs.get['posts/my'].response[200])
   getMyPosts(@Req() req): Promise<_Post[]> {
     return this.postsService.getPostsOfMy(req.user.id);
   }
@@ -133,9 +138,24 @@ export class PostsController {
   deletePost(@Req() req, @Param('post_id') postId: string): Promise<_Post> {
     return this.postsService.deletePost(req.user.id, postId);
   }
+  /**
+   * 
+   * @todo
+   * 썸네일 및 내용 이미지를 게시글에 추가하는걸
+   *  옮겨야하나 파일 서비스로
+   
+   */
 
   @Post('upload/thumbnail')
   @UseGuards(JwtAuthGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'thumbnail image',
+    type: FileUploadDto,
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse(docs.post['upload/thumbnail'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   @UseInterceptors(FileInterceptor('thumbnail'))
   async uploadThumbnail(
     @Req() req,
@@ -152,6 +172,14 @@ export class PostsController {
 
   @Post('upload/contentImages')
   @UseGuards(JwtAuthGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'content image',
+    type: FileUploadDto,
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse(docs.post['upload/contentImages'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   @UseInterceptors(FileInterceptor('contentImages'))
   async uploadContentImages(
     @Req() req,
@@ -165,20 +193,57 @@ export class PostsController {
       file.originalname,
     );
   }
+  /**
+   *
+   * @todo
+   *    포스트 글 안의 이미지는 어떻게 삭제해야하나?
+   *  이미지 테이블을 만들어 1:1관계로 하고 삭제?
+   */
 
-  @Delete('thumbnail/test')
+  @Delete('delete/thumbnail')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse(docs.delete['delete/thumbnail'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   deleteThumbnail(@Req() req, @Query('post_id') postId: string): Promise<void> {
     return this.postsService.deleteThumbnail(req.user.id, postId);
   }
 
-  //   @Post('tag')
-  //   @UseGuards(JwtAuthGuard)
-  //   createTag(
-  //     @Req() req,
-  //     @Query('postId') postId: string,
-  //     @Body() data: CreateTagDto,
-  //   ) {
-  //     return this.postsService.createTag(req.user.id, postId, data);
-  //   }
+  /**
+   *
+   * @todo
+   *  게시글에 이미지 넣는거 삭제
+   *  */
+  @Delete('delete/comtentimage')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse(docs.delete['delete/thumbnail'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  deleteContentImage(
+    @Req() req,
+    @Query('post_id') postId: string,
+  ): Promise<void> {
+    return this.postsService.deleteContentImages(req.user.id, postId);
+  }
+
+  @Get('comment/:post_id')
+  @ApiOperation(docs.get['post/comment/:post_id'].operation)
+  @ApiOkResponse(docs.get['post/comment/:post_id'].response[200])
+  getComments(@Param('post_id') post_id: string): Promise<PostComment[]> {
+    return this.postsService.getComments(post_id);
+  }
+
+  @Post('comment/:post_id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation(docs.post['post/comment/:post_id'].operation)
+  @ApiOkResponse(docs.post['post/comment/:post_id'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  createComment(
+    @Req() req,
+    @Param('post_id') post_id: string,
+    @Body() data: CreateCommentPostDto,
+  ): Promise<void> {
+    return this.postsService.createComment(req.user.id, post_id, data);
+  }
 }
