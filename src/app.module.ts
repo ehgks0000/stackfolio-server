@@ -12,6 +12,8 @@ import { SeriesModule } from './series/series.module';
 import { QuestionModule } from './question/question.module';
 import { FilesModule } from './files/files.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     QuestionModule,
     FilesModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

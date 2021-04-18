@@ -18,7 +18,8 @@ import { QuestionInformation } from 'src/question/entity/question-information.en
 import { QuestionMetadata } from 'src/question/entity/question-metadata.entity';
 import { UserInterest } from 'src/users/entity/user-interest.entity';
 
-const inContainer = Boolean(process.env.IN_CONTAINER);
+const inContainer = JSON.parse(process.env.IN_CONTAINER);
+// const inContainer = Boolean(process.env.IN_CONTAINER);
 const isDev = process.env.NODE_ENV === 'development';
 
 const entities = [

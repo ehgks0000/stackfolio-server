@@ -4,13 +4,16 @@ FROM node:15.5.1-alpine3.12 as base
 RUN adduser node root
 # COPY . /home/node/app
 # WORKDIR /home/node/app
-
+RUN mkdir /app
 WORKDIR /app
+# COPY ./ ./
 COPY package*.json ./
+COPY dist ./
+# COPY tsconfig.* ./
 
 RUN npm install -g @nestjs/cli
-RUN npm install -g pm2
-ENV PM2_HOME=/app/.pm2
+# RUN npm install -g pm2
+# ENV PM2_HOME=/app/.pm2
 # ENV PM2_HOME=/home/node/app/.pm2
 RUN npm install --only=production 
 # RUN npm cache clean --force

@@ -2,18 +2,18 @@ version: '3.7'
 
 services:
   server:
-    container_name: server
+    # container_name: server
     build:
       context: ./
       target: dev
     restart: unless-stopped
     # command: npm run pm2 -- debug 0.0.0.0:9229
     # command: npm run dist
-    # command: npm run dist
-    command: npm run start:dev
-    ports:
-      - 3000:3000
-      - 9229:9229
+    # command: npm run start:dev
+    command: npm run start:prod
+    # ports:
+    #   - 3000:3000
+    #   - 9229:9229
     env_file:
       - .env
     environment:
@@ -32,19 +32,21 @@ services:
 
   pg:
     container_name: pg
-    image: postgres:latest
+    image: postgres:13.2-alpine
     restart: always
     environment:
       - POSTGRES_USER=dohan
       - POSTGRES_PASSWORD=passwd
       - POSTGRES_DB=stackfolio
     volumes:
-      - ./db/data:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
+    #   - ./db/data:/var/lib/postgresql/data
     #   - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - '5432:5432'
     healthcheck:
       test: pg_isready -h 127.0.0.1
+
   nginx:
     # image: nginx
     # image: ehgks0000/stackfolio-nginx
@@ -57,20 +59,21 @@ services:
     # /etc/nginx/conf.d/default.conf
     # - ./default.conf:/etc/nginx/conf.d/default.conf
     restart: 'unless-stopped'
-
-  # pgAdmin:
-  #   container_name: pgadmin_container
-  #   image: dpage/pgadmin4
-  #   restart: always
-  #   environment:
-  #     - PGADMIN_DEFAULT_EMAIL=dohan@pgadmin.com
-  #     - PGADMIN_DEFAULT_PASSWORD=passwd
-  #     - PGADMIN_LISTEN_PORT=80
-  #   ports:
-  #     - '8080:80'
-  #   volumes:
-  #     - ./pgadmin/data:/var/lib/pgadmin
-  #   depends_on:
-  #     - pg
-  #   links:
-  #     - 'pg:pgsql-server'
+volumes:
+  db:
+# pgAdmin:
+#   container_name: pgadmin_container
+#   image: dpage/pgadmin4
+#   restart: always
+#   environment:
+#     - PGADMIN_DEFAULT_EMAIL=dohan@pgadmin.com
+#     - PGADMIN_DEFAULT_PASSWORD=passwd
+#     - PGADMIN_LISTEN_PORT=80
+#   ports:
+#     - '8080:80'
+#   volumes:
+#     - ./pgadmin/data:/var/lib/pgadmin
+#   depends_on:
+#     - pg
+#   links:
+#     - 'pg:pgsql-server'
