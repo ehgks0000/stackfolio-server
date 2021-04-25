@@ -27,6 +27,30 @@ export default {
         [400]: { description: 'Error get Questions' },
       },
     },
+    ['user/:user_id']: {
+      operation: {
+        description: 'Return a list of user questions by user ID',
+      },
+      response: {
+        [200]: {
+          description: 'Return a list of user questions by user ID',
+          type: Question,
+        },
+        [400]: { description: "User's questions does not exist" },
+      },
+    },
+    [':question_id']: {
+      operation: {
+        description: 'Return a list of user questions by post ID',
+      },
+      response: {
+        [200]: {
+          description: 'Return a list of user questions by post ID',
+          type: Question,
+        },
+        [400]: { description: 'Question does not exist by id' },
+      },
+    },
     ['question/comment/:question_id']: {
       operation: {
         description: 'Return Questions Comments with question ID.',

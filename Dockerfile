@@ -6,9 +6,9 @@ RUN adduser node root
 # WORKDIR /home/node/app
 RUN mkdir /app
 WORKDIR /app
-# COPY ./ ./
+# COPY . ./
 COPY package*.json ./
-COPY dist ./
+# COPY dist ./
 # COPY tsconfig.* ./
 
 RUN npm install -g @nestjs/cli
@@ -16,7 +16,7 @@ RUN npm install -g @nestjs/cli
 # ENV PM2_HOME=/app/.pm2
 # ENV PM2_HOME=/home/node/app/.pm2
 RUN npm install --only=production 
-# RUN npm cache clean --force
+RUN npm cache clean --force
 
 # RUN chmod -R 775 /home/node/app
 # RUN chown -R node:root /home/node/app

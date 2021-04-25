@@ -25,20 +25,44 @@ export class QuestionService {
     return question;
   }
 
+  //전체 질문
   async getQuestionAll(): Promise<Question[]> {
     const questions = await this.questionRepository.find();
     return questions;
   }
-
+  //내 질문
   async getMyQuestions(userId: string): Promise<Question[]> {
     const questions = await this.questionRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.user_like', 'user_like')
       .leftJoinAndSelect('question.comments', 'comments')
       .where('question.user_id= :userId', { userId: userId })
+      .orderBy('question.created_at', 'DESC')
       .getMany();
 
     return questions;
+  }
+  //공개된것만
+  async getQuestionsByUserId(userId: string): Promise<Question[]> {
+    const questions = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.metadata', 'metadata')
+      .where('question.user_id= :userId', { userId: userId })
+      .andWhere('metadata.is_private = false')
+      .getMany();
+
+    return questions;
+  }
+
+  //공개된것만
+  async getQuestionByQuestionId(questionId: string): Promise<Question> {
+    const question = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.metadata', 'metadata')
+      .where('question.id= :questionId', { questionId: questionId })
+      .andWhere('metadata.is_private =false')
+      .getOne();
+    return question;
   }
 
   async updateQuestion(
@@ -46,16 +70,11 @@ export class QuestionService {
     questionId: string,
     data: UpdateQuestionDto,
   ): Promise<Question> {
-    let question = await this.questionRepository.findOne({
-      id: questionId,
-      user_id: userId,
-    });
-
-    question = {
-      ...question,
-      ...data,
-    };
-    await this.questionRepository.save(question);
+    const question = await this.questionRepository.updateQuestion(
+      userId,
+      questionId,
+      data,
+    );
 
     return question;
   }
@@ -97,6 +116,7 @@ export class QuestionService {
 
     await this.questionRepository.save(unlikeQuestion);
   }
+
   async getComments(question_id: string): Promise<QuestionComment[]> {
     const comments = await this.questionCommentRepository.find({
       //   question_id,

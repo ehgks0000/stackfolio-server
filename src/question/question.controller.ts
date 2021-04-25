@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -54,11 +55,25 @@ export class QuestionController {
   @ApiOperation(docs.get['question/my'].operation)
   @ApiOkResponse(docs.get['question/my'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
-  getMyQuestion(@Req() req): Promise<Question[]> {
+  getMyQuestions(@Req() req): Promise<Question[]> {
     return this.questionService.getMyQuestions(req.user.id);
   }
 
-  @Patch(':question_id')
+  @Get('user/:user_id')
+  @ApiOperation(docs.get['user/:user_id'].operation)
+  @ApiOkResponse(docs.get['user/:user_id'].response[200])
+  getPosts(@Param('user_id') userId: string): Promise<Question[]> {
+    return this.questionService.getQuestionsByUserId(userId);
+  }
+
+  @Get(':question_id')
+  @ApiOperation(docs.get[':question_id'].operation)
+  @ApiOkResponse(docs.get[':question_id'].response[200])
+  getPost(@Param('question_id') questionId: string): Promise<Question> {
+    return this.questionService.getQuestionByQuestionId(questionId);
+  }
+
+  @Patch('')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation(docs.patch['question/:question_id'].operation)
@@ -66,7 +81,7 @@ export class QuestionController {
   @ApiUnauthorizedResponse(docs.unauthorized)
   updatePost(
     @Req() req,
-    @Param('question_id') questionId: string,
+    @Query('question_id') questionId: string,
     @Body() data: UpdateQuestionDto,
   ): Promise<Question> {
     return this.questionService.updateQuestion(req.user.id, questionId, data);

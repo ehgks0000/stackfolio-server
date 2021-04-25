@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsUUID } from 'class-validator';
+import { Tag } from 'src/tags/entity/tag.entity';
 import { User } from 'src/users/entity/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -46,7 +48,7 @@ export class Question {
   contents: string;
 
   @ApiProperty({ readOnly: true })
-  @Column({ default: 0 })
+  @Column({ default: 0, nullable: true })
   comment_count: number;
 
   /** Relation ID */
@@ -69,6 +71,10 @@ export class Question {
   @ApiProperty({ readOnly: true })
   @RelationId((self: Question) => self.user_like)
   user_like_ids: string[];
+
+  @ApiProperty({ readOnly: true })
+  @RelationId((self: Question) => self.tags)
+  tag_id: string[];
 
   /** Relation */
   @OneToOne(
@@ -102,6 +108,12 @@ export class Question {
 
   @OneToMany((type) => QuestionComment, (comments) => comments.question)
   comments: QuestionComment[];
+
+  @ManyToMany((type) => Tag, (tags) => tags.questions)
+  @JoinTable({
+    name: 'question_tag',
+  })
+  tags?: Tag[];
 
   @ManyToMany((type) => User, (user_like) => user_like.question_like, {
     cascade: true,

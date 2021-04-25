@@ -31,7 +31,6 @@ import { Favorite } from './user-favorite.entity';
 import { Series } from 'src/series/entity/series.entity';
 import { Question } from 'src/question/entity/question.entity';
 import { QuestionComment } from 'src/question/entity/question-comment.entity';
-// import { PostLike } from 'src/posts/entity/post-like.entity';
 
 export enum Provider {
   LOCAL = 'local',
@@ -176,10 +175,4 @@ export class User {
   )
   @JoinTable({ name: 'question_comment_like' })
   question_comment_like: QuestionComment[];
-
-  @AfterLoad()
-  test() {
-    console.log('유저 entity :');
-    // console.log('유저 entity : 포스트들', this.posts);
-  }
 }

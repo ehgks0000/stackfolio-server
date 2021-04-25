@@ -21,9 +21,6 @@ export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: PostRepository,
-    private readonly userRepository: UserRepository,
-    // private readonly postLikeRepository: PostLikeRepository,
-    private readonly tagRepository: TagRepository,
     private readonly filesService: FilesService,
     private readonly postCommentRepository: PostCommentRepository,
   ) {}
@@ -60,16 +57,8 @@ export class PostsService {
   }
 
   // 유저의 post 불러오기
-  // public인것만
-  // 전체공개 (is_private = false) 인 post만 불러오기
-  async getPostsByUserId(
-    userId: string,
-    // includePrivate = false,
-  ): Promise<Post[]> {
-    // const posts = await this.postRepository.find({
-    //   where: { user_id: userId },
-    //   relations: ['post_metadata'],
-    // });
+  //   공개된것만
+  async getPostsByUserId(userId: string): Promise<Post[]> {
     const posts = await this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.metadata', 'metadata')
@@ -81,7 +70,7 @@ export class PostsService {
     return posts;
   }
   // postid의 post 불러오기
-  // public인 것만
+  //   공개된것만
   async getPostByPostId(postId: string): Promise<Post> {
     // const posts = await this.postRepository.find({ id: postId });
     const post = await this.postRepository
@@ -97,7 +86,7 @@ export class PostsService {
   async updatePost(
     userId: string,
     postId: string,
-    data: UpdatePostDto,
+    data: CreatePostDto,
   ): Promise<Post> {
     const post = await this.postRepository.updatePost(userId, postId, data);
 

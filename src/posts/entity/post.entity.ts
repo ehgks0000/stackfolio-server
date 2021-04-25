@@ -21,6 +21,7 @@ import { PostComment } from './post-comment.entity';
 import { Favorite } from 'src/users/entity/user-favorite.entity';
 import { Series } from 'src/series/entity/series.entity';
 import { ApiProperty } from '@nestjs/swagger';
+// import { Post_tag } from 'src/tags/entity/post_tag.entity';
 // import { PostLike } from './post-like.entity';
 // import { Series_posts } from 'src/series/entity/series_post.entity';
 
@@ -142,6 +143,9 @@ export class Post {
     // inverseJoinColumn: { name: 'tag_name', referencedColumnName: 'title' },
   })
   tags?: Tag[];
+
+  //   @OneToMany(() => Post_tag, (taggss) => taggss.tag)
+  //   taggss: Post_tag[];
 
   @ManyToMany((type) => User, (user_like) => user_like.post_like, {
     cascade: true,

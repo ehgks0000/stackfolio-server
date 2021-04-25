@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilesService } from 'src/files/files.service';
+import { getConnection } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserProfile } from './entity/user-profile.entity';
@@ -28,23 +29,48 @@ export class UsersService {
     return user;
   }
 
-  async getMyUser(user_id: string): Promise<UserProfile> {
+  async getMyUser(user_id: string): Promise<any> {
     // const user = await this.userRepository.findOne({ id: user_id });
     const profile = await this.userProfileRepository
       .createQueryBuilder('user_profile')
       .leftJoinAndSelect('user_profile.user', 'user')
-      //   .leftJoinAndSelect('user.posts', 'posts')
+      .leftJoinAndSelect('user.posts', 'posts')
+      //   .leftJoinAndSelect('posts.tags', 'tags')
       .where('user.id = :id', { id: user_id })
       .getOne();
 
-    // console.log('쿼리빌더 테스트', test);
+    //유저의 리스트 목록 들에서 태그를 뽑는다.
+    const ttt = [];
+    // const ttt: tagInterface[] = [];
+    profile.user.posts.forEach((post) => {
+      post.tag_id.forEach((tag) => {
+        // ttt.push({ tag: tag, count: 1 });
+        ttt.push(tag);
+      });
+    });
 
-    // const userProfile = await this.userProfileRepository.findOne({
-    //   where: { user_id: user_id },
-    //   relations: ['user'],
-    // });
-    // await this.userProfileRepository.findAndCount();
-    return profile;
+    // 뽑은 태그 숫자를 만듬
+    const tagJson = ttt.reduce((acc, curr) => {
+      if (typeof acc[curr] == 'undefined') {
+        acc[curr] = 1;
+      } else {
+        acc[curr] += 1;
+      }
+      return acc;
+    }, {});
+
+    //JSON을 Array로 바꿔서 정렬
+    const tagArray = [];
+    for (const c in tagJson) {
+      tagArray.push([c, tagJson[c]]);
+    }
+    tagArray.sort((a, b) => {
+      return b[1] - a[1];
+    });
+
+    console.log(tagArray);
+
+    return { profile, tags: tagArray };
   }
 
   async getUserProfile(user_id: string): Promise<UserProfileResponseDto> {

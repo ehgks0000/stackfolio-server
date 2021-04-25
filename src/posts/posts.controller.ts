@@ -96,7 +96,7 @@ export class PostsController {
   updatePost(
     @Req() req,
     @Query('post_id') postId: string,
-    @Body() data: UpdatePostDto,
+    @Body() data: CreatePostDto,
   ): Promise<_Post> {
     return this.postsService.updatePost(req.user.id, postId, data);
   }

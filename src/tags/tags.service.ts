@@ -72,6 +72,7 @@ export class TagsService {
     const posts = await this.postRepository.find({
       where: { tag_id: tagId, user_id: userId },
     });
+    // posts.length;
 
     return posts;
     // await this.tagRepository.find({ where: { id: tagId } });
@@ -99,6 +100,8 @@ export class TagsService {
 
   //조인테이블만 삭제 (post와 tag 테이블의 관계도 같이 삭제)
   // Post_tag
+  // 차집합으로 빼주지 않아도 post repository에서 수정을 하게되면
+  // 조인테이블에서 자동 삭제됨
   async deleteTag(
     userId: string,
     postId: string,

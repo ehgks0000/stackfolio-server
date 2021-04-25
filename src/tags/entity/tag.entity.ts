@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Post } from 'src/posts/entity/post.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Question } from 'src/question/entity/question.entity';
 
 @Entity()
 export class Tag {
@@ -41,6 +42,14 @@ export class Tag {
 
   @ManyToMany((type) => Post, (posts) => posts.tags, { cascade: true })
   posts: Post[];
+
+  @ManyToMany((type) => Question, (quetions) => quetions.tags, {
+    cascade: true,
+  })
+  questions: Question[];
+
+  //   @OneToMany(() => Post_tag, (postss) => postss.tags)
+  //   postss: Post_tag[];
 
   //   @ManyToMany((type) => Question, (questions) => questions.tags)
   //   questions: Question[];
