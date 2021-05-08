@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilesService } from 'src/files/files.service';
 import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
@@ -9,6 +9,7 @@ import { UserProfileRepository } from 'src/users/repository/user-profile.reposit
 import { UserRepository } from 'src/users/repository/user.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreateCommentPostDto } from './dto/create_comment_post';
+import { PostByUserResponseDto } from './dto/post-by-user-response.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostComment } from './entity/post-comment.entity';
 import { Post } from './entity/post.entity';
@@ -18,8 +19,11 @@ import { PostRepository } from './repository/post.repository';
 
 @Injectable()
 export class PostsService {
+  private readonly logger = new Logger(PostsService.name);
   constructor(
     @InjectRepository(Post)
+    private readonly userRepository: UserRepository,
+    private readonly userProfileRepository: UserProfileRepository,
     private readonly postRepository: PostRepository,
     private readonly filesService: FilesService,
     private readonly postCommentRepository: PostCommentRepository,
@@ -50,6 +54,7 @@ export class PostsService {
       .leftJoinAndSelect('post.tags', 'tags')
       .leftJoinAndSelect('post.user_like', 'user_like')
       .leftJoinAndSelect('post.metadata', 'metadata')
+      .leftJoinAndSelect('post.information', 'information')
       .where('post.user_id= :userId', { userId: userId })
       .orderBy('post.created_at', 'DESC')
       .getMany();
@@ -58,16 +63,24 @@ export class PostsService {
 
   // 유저의 post 불러오기
   //   공개된것만
-  async getPostsByUserId(userId: string): Promise<Post[]> {
+  async getPostsByUserId(userId: string): Promise<PostByUserResponseDto> {
+    //   async getPostsByUserId(userId: string): Promise<Post[]> {
+    const user = await this.userProfileRepository.findOne({ user_id: userId });
     const posts = await this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.metadata', 'metadata')
+      .leftJoinAndSelect('post.tags', 'tag')
+      //   .leftJoinAndSelect('post.author', 'author')
+      //   .leftJoinAndSelect('author.profile', 'profile')
       .where('post.user_id= :userId', { userId: userId })
       .andWhere('metadata.is_private = false')
       .getMany();
 
     // console.log(post);
-    return posts;
+    return {
+      author: user.username,
+      posts,
+    };
   }
   // postid의 post 불러오기
   //   공개된것만
@@ -76,17 +89,33 @@ export class PostsService {
     const post = await this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.metadata', 'metadata')
+      .leftJoinAndSelect('post.comments', 'comments')
       .where('post.id = :postId', { postId: postId })
       .andWhere('metadata.is_private = false')
       .getOne();
 
+    // post.weekly_view_count++;
+    // post.total_view_count++;
+
+    await this.postRepository.save(post);
+
     return post;
   }
+  /**
+   * 
+   * @test 게시글 조회 어떻게해야할까?
+   
+   */
+
+  //   @Cron('45 * * * * *')
+  //   handleCron() {
+  //     this.logger.debug('45초마다 실행');
+  //   }
 
   async updatePost(
     userId: string,
     postId: string,
-    data: CreatePostDto,
+    data: UpdatePostDto,
   ): Promise<Post> {
     const post = await this.postRepository.updatePost(userId, postId, data);
 
@@ -168,8 +197,24 @@ export class PostsService {
     originalname: string,
   ): Promise<string> {
     // const { buffer, originalname } = files.thumbnail;
+    const post = await this.postRepository.findOne({
+      where: { id: postId, user_id: userId },
+      //   relations: ['information'],
+    });
+    if (!post) {
+      throw new BadRequestException('게시글이 없습니다!');
+    }
+
     const key = `${postId}`;
-    return this.filesService.uploadFile(key, buffer, originalname);
+    const thumbnail = await this.filesService.uploadFile(
+      key,
+      buffer,
+      originalname,
+    );
+    post.information.thumbnail = thumbnail;
+    await this.postRepository.save(post);
+
+    return thumbnail;
   }
 
   async uploadContentImages(
@@ -178,7 +223,7 @@ export class PostsService {
     buffer: Buffer,
     originalname: string,
   ): Promise<string> {
-    const key = `${originalname}`;
+    const key = `${postId}/${originalname}`;
     return this.filesService.uploadFile(key, buffer, originalname);
   }
 

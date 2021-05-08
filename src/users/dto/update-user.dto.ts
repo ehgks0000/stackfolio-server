@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsObject, IsOptional, IsString, Length } from 'class-validator';
 import { SocialLinks } from '../entity/user-profile.entity';
+import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto {
   @ApiProperty({ required: false })

@@ -55,6 +55,14 @@ export class Post {
   @Column('text')
   @IsString()
   contents: string;
+
+  //   @ApiProperty({ description: '전체 조회수 기능입니다.' })
+  //   @Column({ default: 0 })
+  //   total_view_count: number;
+
+  //   @ApiProperty({ description: '일주일 조회수 기능입니다.' })
+  //   @Column({ default: 0 })
+  //   weekly_view_count: number;
   /* 
     @todo 
     댓글 수를 유저 엔티티에서 어떻게 불러올수있을까

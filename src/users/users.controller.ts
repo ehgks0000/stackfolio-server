@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
@@ -41,7 +42,13 @@ import { FileUploadDto } from './dto/file-upload.dto';
 @Controller('users')
 // @UseGuards(JwtAuthGuard)
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
   constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  getUsers(): Promise<User[]> {
+    return this.usersService.getUsers();
+  }
 
   @Delete('')
   @UseGuards(JwtAuthGuard)
@@ -114,7 +121,7 @@ export class UsersController {
   @ApiUnauthorizedResponse(docs.unauthorized)
   // eslint-disable-next-line
   getFollowing(@Req() req, @Param('user_id') userId: string): Promise<void> {
-    return this.usersService.follow(req.user, userId);
+    return this.usersService.follow(req.user.id, userId);
   }
 
   @Delete('follow/:user_id')
@@ -138,7 +145,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'avatar image',
+    description: '"image"로 파일 전송',
     type: FileUploadDto,
   })
   @ApiBearerAuth()
@@ -147,12 +154,13 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('image'))
   uploadFile(
     @Req() req,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
   ): Promise<UserProfile> {
+    this.logger.log('업로드 입니다.');
     return this.usersService.addAvatar(
       req.user.id,
-      file.buffer,
-      file.originalname,
+      image.buffer,
+      image.originalname,
     );
   }
 

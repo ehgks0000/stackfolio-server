@@ -13,6 +13,7 @@ import {
   AfterLoad,
   RelationId,
   EventSubscriber,
+  AfterUpdate,
 } from 'typeorm';
 import { User } from './user.entity';
 import {
@@ -149,14 +150,15 @@ export class UserProfile {
   //     this.exp = this.post_count;
   //   }
 
-  //   @AfterLoad()
-  //   updateLevel() {
-  //     if (this.exp <= 50) {
-  //       this.level = 1;
-  //     } else if (this.exp <= 100) {
-  //       this.level = 2;
-  //     } else {
-  //       this.level = 3;
-  //     }
-  //   }
+  @AfterLoad()
+  //   @AfterUpdate()
+  updateLevel(): void {
+    if (this.exp <= 10) {
+      this.level = 1;
+    } else if (this.exp <= 20) {
+      this.level = 2;
+    } else if (this.exp < 30) {
+      this.level = 3;
+    }
+  }
 }

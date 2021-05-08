@@ -97,12 +97,18 @@ export class AuthService {
   }
 
   async loginWithCode(code: string): Promise<LoginDto> {
-    const userProfile = await this.verificationRepository.verifyCodeAndGetUserProfile(
-      code,
-    );
+    const {
+      user_id,
+    } = await this.verificationRepository.verifyCodeAndGetUserProfile(code);
+    if (!user_id) {
+      throw new BadRequestException('유저 프로필이 없습니다');
+    }
+    // const accessToken = this.jwtService.sign({ userId: user_id });
+    // console.log('유저프로필 토큰 출력 : ', accessToken);
     return {
-      profile: userProfile,
-      accessToken: this.jwtService.sign({ userId: userProfile.user_id }),
+      profile: user_id,
+      //   profile: userProfile,
+      accessToken: this.jwtService.sign({ userId: user_id }),
     };
   }
 }

@@ -69,6 +69,8 @@ export class PostCommentRepository extends Repository<PostComment> {
         console.log(comment);
         // await questionCommentRepository.save(comment);
         post.comment_count += 1;
+        user.exp++;
+        await queryRunner.manager.save(user);
         await queryRunner.manager.save(post);
         await queryRunner.manager.save(comment);
 
@@ -138,6 +140,8 @@ export class PostCommentRepository extends Repository<PostComment> {
 
           //   await questionCommentRepository.save(comment);
           post.comment_count += 1;
+          user.exp++;
+          await queryRunner.manager.save(user);
           await queryRunner.manager.save(post);
           await queryRunner.manager.save(comment);
         } else {
@@ -183,6 +187,8 @@ export class PostCommentRepository extends Repository<PostComment> {
           console.log('2번', comment);
           //   await questionCommentRepository.save(comment);
           post.comment_count += 1;
+          user.exp++;
+          await queryRunner.manager.save(user);
           await queryRunner.manager.save(post);
           await queryRunner.manager.save(comment);
         }

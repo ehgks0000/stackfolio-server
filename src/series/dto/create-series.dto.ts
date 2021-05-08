@@ -10,6 +10,7 @@ export class CreateSeriesDto {
   name: string;
 
   @ApiProperty({
+    required: false,
     description: "a new Tag's title",
     example: 'JavaScript',
   })
@@ -18,6 +19,7 @@ export class CreateSeriesDto {
   description?: string;
 
   @ApiProperty({
+    required: false,
     description: "a new Tag's title",
     example: 'JavaScript',
   })
@@ -26,6 +28,7 @@ export class CreateSeriesDto {
   thumbnail?: string;
 
   @ApiProperty({
+    required: false,
     description: "a new Tag's title",
     example: 'JavaScript',
   })

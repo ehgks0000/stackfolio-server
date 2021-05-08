@@ -108,7 +108,7 @@ export class User {
   //   @JoinColumn({ name: 'post_count', referencedColumnName: '' })
   posts: Post[];
 
-  @OneToMany((type) => Post, (question) => question.author)
+  @OneToMany((type) => Question, (question) => question.author)
   questions: Question[];
 
   // postcomments와 questioncomments 2개로 나눠야하나?

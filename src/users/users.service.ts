@@ -24,6 +24,11 @@ export class UsersService {
     private readonly filesService: FilesService,
   ) {}
 
+  async getUsers(): Promise<User[]> {
+    const users = await this.userRepository.find();
+    return users;
+  }
+
   async deleteUser(user: User): Promise<User> {
     await this.userRepository.delete(user.id);
     return user;
@@ -35,16 +40,25 @@ export class UsersService {
       .createQueryBuilder('user_profile')
       .leftJoinAndSelect('user_profile.user', 'user')
       .leftJoinAndSelect('user.posts', 'posts')
+      .leftJoinAndSelect('user.questions', 'questions')
       //   .leftJoinAndSelect('posts.tags', 'tags')
       .where('user.id = :id', { id: user_id })
       .getOne();
 
+    //post 태그 목록만 불러옴
+    // question 태그 목록은?
     //유저의 리스트 목록 들에서 태그를 뽑는다.
     const ttt = [];
     // const ttt: tagInterface[] = [];
     profile.user.posts.forEach((post) => {
       post.tag_id.forEach((tag) => {
         // ttt.push({ tag: tag, count: 1 });
+        ttt.push(tag);
+      });
+    });
+
+    profile.user.questions.forEach((question) => {
+      question.tag_id.forEach((tag) => {
         ttt.push(tag);
       });
     });
@@ -68,8 +82,6 @@ export class UsersService {
       return b[1] - a[1];
     });
 
-    console.log(tagArray);
-
     return { profile, tags: tagArray };
   }
 
@@ -87,7 +99,7 @@ export class UsersService {
         .where('user.id = :id', { id: user_id })
         .getOne();
 
-      console.log('유저의 프로필', user);
+      //   console.log('유저의 프로필', user);
 
       //   const user = await this.userRepository.findOne({
       //     where: { id: user_id },
@@ -100,7 +112,9 @@ export class UsersService {
       return {
         profile: user.profile,
         followers: user.followers.length,
+        followers_: user.followers,
         following: user.following.length,
+        following_: user.following,
         posts: user.posts.length,
       };
     } catch (err) {
@@ -163,8 +177,8 @@ export class UsersService {
   }
 
   // 팔로잉하기
-  async follow(me: User, userId: string): Promise<void> {
-    if (me.id === userId) {
+  async follow(me: string, userId: string): Promise<void> {
+    if (me === userId) {
       throw new BadRequestException('Unable to follow yourself.');
     }
     try {
@@ -172,10 +186,11 @@ export class UsersService {
         { id: userId },
         { relations: ['following'] },
       );
+      const my = await this.userRepository.findOne({ id: me });
       if (!user) {
-        throw new Error();
+        throw new Error('없는 회원입니다!');
       }
-      user.followers = [...user.followers, me];
+      user.followers = [...user.followers, my];
       this.userRepository.save(user);
     } catch (err) {
       // the `findOne` method throws an error if the provided `user_id` is not a `uuid`
@@ -207,14 +222,19 @@ export class UsersService {
     imageBuffer: Buffer,
     filename: string,
   ): Promise<UserProfile> {
+    const userProfile = await this.userProfileRepository.findOne({
+      user_id: userId,
+    });
+
+    if (!userProfile) {
+      throw new BadRequestException('유저가 로그인 안되어있습니다!');
+    }
     const avatar = await this.filesService.uploadFile(
       userId,
       imageBuffer,
       filename,
     );
-    const userProfile = await this.userProfileRepository.findOne({
-      user_id: userId,
-    });
+
     userProfile.avatar = avatar;
 
     await this.userProfileRepository.save(userProfile);

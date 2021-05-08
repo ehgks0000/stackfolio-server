@@ -39,6 +39,7 @@ import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { PostComment } from './entity/post-comment.entity';
 import { CreateCommentPostDto } from './dto/create_comment_post';
+import { PostByUserResponseDto } from './dto/post-by-user-response.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -76,7 +77,9 @@ export class PostsController {
   @Get('user/:user_id')
   @ApiOperation(docs.get['user/:user_id'].operation)
   @ApiOkResponse(docs.get['user/:user_id'].response[200])
-  getPosts(@Param('user_id') userId: string): Promise<_Post[]> {
+  getPosts(@Param('user_id') userId: string): Promise<PostByUserResponseDto> {
+    //   getPosts(@Param('user_id') userId: string): Promise<_Post[]> {
+    console.log(userId);
     return this.postsService.getPostsByUserId(userId);
   }
 
@@ -96,7 +99,7 @@ export class PostsController {
   updatePost(
     @Req() req,
     @Query('post_id') postId: string,
-    @Body() data: CreatePostDto,
+    @Body() data: UpdatePostDto,
   ): Promise<_Post> {
     return this.postsService.updatePost(req.user.id, postId, data);
   }
@@ -193,12 +196,6 @@ export class PostsController {
       file.originalname,
     );
   }
-  /**
-   *
-   * @todo
-   *    포스트 글 안의 이미지는 어떻게 삭제해야하나?
-   *  이미지 테이블을 만들어 1:1관계로 하고 삭제?
-   */
 
   @Delete('delete/thumbnail')
   @UseGuards(JwtAuthGuard)

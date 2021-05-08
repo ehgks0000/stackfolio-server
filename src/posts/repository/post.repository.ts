@@ -46,7 +46,8 @@ export class PostRepository extends Repository<Post> {
     post.title = title;
     post.contents = contents;
     post.user_id = userId;
-    user.profile.post_count += 1;
+    user.profile.post_count++;
+    user.profile.exp++;
 
     post.tags = [];
     let newTags = [];

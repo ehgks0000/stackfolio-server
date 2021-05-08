@@ -10,3 +10,12 @@ export class AuthGuard implements CanActivate {
     return Boolean(request.user);
   }
 }
+
+@Injectable()
+export class AuthenticatedGuard implements CanActivate {
+  async canActivate(context: ExecutionContext) {
+    const req = context.switchToHttp().getResponse();
+
+    return req.isAuthenticated();
+  }
+}
