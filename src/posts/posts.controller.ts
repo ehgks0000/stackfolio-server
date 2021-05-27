@@ -40,6 +40,7 @@ import { FileUploadDto } from './dto/file-upload.dto';
 import { PostComment } from './entity/post-comment.entity';
 import { CreateCommentPostDto } from './dto/create_comment_post';
 import { PostByUserResponseDto } from './dto/post-by-user-response.dto';
+import { PostPagenation } from './dto/page.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -62,8 +63,8 @@ export class PostsController {
   @Get('')
   @ApiOperation(docs.get['posts'].operation)
   @ApiOkResponse(docs.get['posts'].response[200])
-  getPostsAll(): Promise<_Post[]> {
-    return this.postsService.getPostsAll();
+  getPostsAll(@Query() query: PostPagenation): Promise<_Post[]> {
+    return this.postsService.getPostsAll(query.page, query.pageSize);
   }
 
   @Get('my')
@@ -242,5 +243,54 @@ export class PostsController {
     @Body() data: CreateCommentPostDto,
   ): Promise<void> {
     return this.postsService.createComment(req.user.id, post_id, data);
+  }
+
+  // 태그아이디를 갖는 게시글 전체 찾기
+  @Get('tag/:tag_id')
+  getPostByTagID(@Param('tag_id') tagId: string): Promise<_Post[]> {
+    return this.postsService.getPostByTagID(tagId);
+  }
+  // 태그이름을 갖는 게시글 전체 찾기
+  @Get('tag/:tag_name')
+  getPostByTagName(@Param('tag_name') tagName: string): Promise<_Post[]> {
+    return this.postsService.getPostByTagName(tagName);
+  }
+
+  // 태그 아이디로 내 게시글 전체 찾기
+  @Get('tag/:tag_id/my')
+  @UseGuards(JwtAuthGuard)
+  getMyPostByTagID(
+    @Req() req,
+    @Param('tag_id') tagId: string,
+  ): Promise<_Post[]> {
+    return this.postsService.getMyPostByTagID(req.user.id, tagId);
+  }
+
+  // 태그이름으로 내 게시글 전체 찾기
+  @Get('tag/:tag_name/my')
+  @UseGuards(JwtAuthGuard)
+  getMyPostByTagName(
+    @Req() req,
+    @Param('tag_name') tagName: string,
+  ): Promise<_Post[]> {
+    return this.postsService.getMyPostByTagName(req.user.id, tagName);
+  }
+
+  //시리즈 이름의 게시글 찾기
+  // ??해야하나?
+  //   @Get('series/:series_name')
+  //   getPostBySeriesName(
+  //     @Param('series_name') seriesName: string,
+  //   ): Promise<_Post[]> {
+  //     return this.postsService.getPostBySerisName(seriesName);
+  //   }
+
+  @Get('series/:series_name/my')
+  @UseGuards(JwtAuthGuard)
+  getMyPostBySeriesName(
+    @Req() req,
+    @Param('series_name') seriesName: string,
+  ): Promise<_Post[]> {
+    return this.postsService.getMyPostBySeriesName(req.user.id, seriesName);
   }
 }

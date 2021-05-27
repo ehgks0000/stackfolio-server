@@ -62,20 +62,20 @@ export class TagsController {
   }
 
   // 태그 id 를 갖고있는 전체 게시글
-  @Get('id')
+  @Get('id/:tag_id')
   @ApiBearerAuth()
   @ApiOperation(docs.get['tags/id'].operation)
   @ApiOkResponse(docs.get['tags/id'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
   @UseGuards(JwtAuthGuard)
-  getPostsOfTag(@Query('tagId') tagId: string): Promise<_Post[]> {
+  getPostsOfTag(@Param('tag_id') tagId: string): Promise<_Post[]> {
     return this.tagsService.getPostsOfTag(tagId);
   }
   // 태그(이름)을 갖고있는 전체 게시글
-  @Get('name')
+  @Get('name:tag_name')
   @ApiOperation(docs.get['tags/name'].operation)
   @ApiOkResponse(docs.get['tags/name'].response[200])
-  getPostsOfTagName(@Query('tag') tagName: string): Promise<_Post[]> {
+  getPostsOfTagName(@Param('tag_name') tagName: string): Promise<_Post[]> {
     return this.tagsService.getPostsOfTagByTittle(tagName);
   }
 }

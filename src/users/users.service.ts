@@ -178,23 +178,30 @@ export class UsersService {
 
   // 팔로잉하기
   async follow(me: string, userId: string): Promise<void> {
+    // console.log('나', me);
+    // console.log('팔로할사람', userId);
     if (me === userId) {
       throw new BadRequestException('Unable to follow yourself.');
     }
     try {
-      const user = await this.userRepository.findOne(
-        { id: userId },
-        { relations: ['following'] },
-      );
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+        relations: ['following'],
+      });
+      //   { id: userId },
+      //     { relations: ['following'] },
       const my = await this.userRepository.findOne({ id: me });
+      //   console.log('마이마이:', my);
+      //   console.log('유저:', user);
       if (!user) {
-        throw new Error('없는 회원입니다!');
+        throw new BadRequestException('없는 회원입니다!');
       }
-      user.followers = [...user.followers, my];
+      user.followers = [my];
       this.userRepository.save(user);
     } catch (err) {
       // the `findOne` method throws an error if the provided `user_id` is not a `uuid`
-      throw new BadRequestException('Invalid user_id');
+      console.log(err);
+      throw new BadRequestException('Invalid user_id', err);
     }
   }
 

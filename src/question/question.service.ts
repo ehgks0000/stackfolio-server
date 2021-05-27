@@ -108,7 +108,8 @@ export class QuestionService {
 
   async unlikeQuestion(userId: string, questionId: string): Promise<void> {
     const unlikeQuestion = await this.questionRepository.findOne({
-      id: questionId,
+      where: { id: questionId },
+      relations: ['user_like'],
     });
     unlikeQuestion.user_like = unlikeQuestion.user_like.filter((user) => {
       user.id !== userId;
@@ -141,4 +142,74 @@ export class QuestionService {
 
     // return {} as any;
   }
+
+  async getPostByTagID(tagId: string): Promise<Question[]> {
+    const questions = await this.questionRepository.find({
+      where: { tag_id: tagId },
+    });
+
+    return questions;
+  }
+
+  async getPostByTagName(tagName: string): Promise<Question[]> {
+    const questions = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.tags', 'tags')
+      .where('tags.title =: tagName', { tagName: tagName })
+      .getMany();
+
+    // const posts = await this.postRepository.find({
+    //   where: {},
+    //   relations: [''],
+    // });
+    return questions;
+  }
+
+  async getMyPostByTagID(userId: string, tagId: string): Promise<Question[]> {
+    const questions = await this.questionRepository.find({
+      where: { user_id: userId, tag_id: tagId },
+    });
+    return questions;
+  }
+
+  async getMyPostByTagName(
+    userId: string,
+    tagName: string,
+  ): Promise<Question[]> {
+    const questions = await this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.tags', 'tags')
+      .where('question.userId =:userId', { userId: userId })
+      .andWhere('tags.title =:tagName', { tagName: tagName })
+      .getMany();
+
+    return questions;
+  }
+
+  // 질문은 시리즈가 없다
+  //   async getPostBySerisName(seriesName: string): Promise<Question[]> {
+  //     const questions = await this.questionRepository
+  //       .createQueryBuilder('question')
+  //       .leftJoinAndSelect('question.series', 'series')
+  //       .leftJoinAndSelect('question.metadata', 'metadata')
+  //       .where('metadata.is_private = false')
+  //       .andWhere('series.name =: seriesName', { seriesName: seriesName })
+  //       .getMany();
+
+  //     return questions;
+  //   }
+
+  //   async getMyPostBySeriesName(
+  //     userId: string,
+  //     seriesName: string,
+  //   ): Promise<Question[]> {
+  //     const questions = await this.questionRepository
+  //       .createQueryBuilder('question')
+  //       .leftJoinAndSelect('question.series', 'series')
+  //       .where('question.userId= :userId', { userId: userId })
+  //       .andWhere('series.name= :seriesName', { seriesName: seriesName })
+  //       .getMany();
+
+  //     return questions;
+  //   }
 }

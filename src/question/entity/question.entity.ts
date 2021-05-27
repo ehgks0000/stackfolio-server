@@ -70,7 +70,8 @@ export class Question {
 
   @ApiProperty({ readOnly: true })
   @RelationId((self: Question) => self.user_like)
-  user_like_ids: string[];
+  @IsUUID('4')
+  user_like_ids?: string[];
 
   @ApiProperty({ readOnly: true })
   @RelationId((self: Question) => self.tags)

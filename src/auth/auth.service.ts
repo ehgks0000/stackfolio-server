@@ -47,9 +47,11 @@ export class AuthService {
       });
       const client = 'http://localhost:4000'; /** @todo Update to client url */
       const redirectUrl = `${client}/register?code=${register.code}&email=${register.email}`;
+      console.log('소셜로그인', redirectUrl);
       this.logger.verbose(`New social login [${redirectUrl}]`);
 
-      return res.redirect(encodeURI(redirectUrl));
+      return res.redirect(redirectUrl);
+      //   return res.redirect(encodeURI(redirectUrl));
     }
 
     return {
@@ -97,18 +99,18 @@ export class AuthService {
   }
 
   async loginWithCode(code: string): Promise<LoginDto> {
-    const {
-      user_id,
-    } = await this.verificationRepository.verifyCodeAndGetUserProfile(code);
-    if (!user_id) {
+    const userProfile = await this.verificationRepository.verifyCodeAndGetUserProfile(
+      code,
+    );
+    if (!userProfile.user_id) {
       throw new BadRequestException('유저 프로필이 없습니다');
     }
     // const accessToken = this.jwtService.sign({ userId: user_id });
     // console.log('유저프로필 토큰 출력 : ', accessToken);
     return {
-      profile: user_id,
-      //   profile: userProfile,
-      accessToken: this.jwtService.sign({ userId: user_id }),
+      //   profile: user_id,
+      profile: userProfile,
+      accessToken: this.jwtService.sign({ userId: userProfile.user_id }),
     };
   }
 }

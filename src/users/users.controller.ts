@@ -114,13 +114,14 @@ export class UsersController {
 
   @Post('follow/:user_id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation(docs.post['follow/:user_id'].operation)
-  @ApiOkResponse(docs.post['follow/:user_id'].response[200])
-  @ApiBadRequestResponse(docs.post['follow/:user_id'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  // eslint-disable-next-line
-  getFollowing(@Req() req, @Param('user_id') userId: string): Promise<void> {
+  //   @ApiBearerAuth()
+  //   @ApiOperation(docs.post['follow/:user_id'].operation)
+  //   @ApiOkResponse(docs.post['follow/:user_id'].response[200])
+  //   @ApiBadRequestResponse(docs.post['follow/:user_id'].response[400])
+  //   @ApiUnauthorizedResponse(docs.unauthorized)
+  getFollowing(@Req() req, @Param('user_id') userId: string) {
+    // console.log('나', req.user.id);
+    // console.log('팔로할사람', userId);
     return this.usersService.follow(req.user.id, userId);
   }
 

@@ -35,7 +35,8 @@ export class PostsService {
   }
 
   //전체 게시글 & is_private = false 인것만
-  async getPostsAll(): Promise<Post[]> {
+  // 페이지 네이션
+  async getPostsAll(page: number, pageSize: number): Promise<Post[]> {
     const posts = await this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.tags', 'tags')
@@ -43,8 +44,9 @@ export class PostsService {
       .leftJoinAndSelect('post.metadata', 'metadata')
       .where('metadata.is_private = false')
       .orderBy('post.created_at', 'DESC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
       .getMany();
-    console.log('post all');
 
     return posts;
   }
@@ -90,6 +92,7 @@ export class PostsService {
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.metadata', 'metadata')
       .leftJoinAndSelect('post.comments', 'comments')
+      .leftJoinAndSelect('post.series', 'series')
       .where('post.id = :postId', { postId: postId })
       .andWhere('metadata.is_private = false')
       .getOne();
@@ -98,6 +101,7 @@ export class PostsService {
     // post.total_view_count++;
 
     await this.postRepository.save(post);
+    // post.
 
     return post;
   }
@@ -274,5 +278,72 @@ export class PostsService {
     await this.postCommentRepository.createPostComment(userId, post_id, data);
 
     // return {} as any;
+  }
+
+  async getPostByTagID(tagId: string): Promise<Post[]> {
+    const posts = await this.postRepository.find({
+      where: { tag_id: tagId },
+    });
+
+    return posts;
+  }
+
+  async getPostByTagName(tagName: string): Promise<Post[]> {
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.tags', 'tags')
+      .where('tags.title =: tagName', { tagName: tagName })
+      .getMany();
+
+    // const posts = await this.postRepository.find({
+    //   where: {},
+    //   relations: [''],
+    // });
+    return posts;
+  }
+
+  async getMyPostByTagID(userId: string, tagId: string): Promise<Post[]> {
+    const posts = await this.postRepository.find({
+      where: { user_id: userId, tag_id: tagId },
+    });
+    return posts;
+  }
+
+  async getMyPostByTagName(userId: string, tagName: string): Promise<Post[]> {
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.tags', 'tags')
+      .where('post.userId =:userId', { userId: userId })
+      .andWhere('tags.title =:tagName', { tagName: tagName })
+      .getMany();
+
+    return posts;
+  }
+
+  //필요 없는거 같은데?
+  //   async getPostBySerisName(seriesName: string): Promise<Post[]> {
+  //     const posts = await this.postRepository
+  //       .createQueryBuilder('post')
+  //       .leftJoinAndSelect('post.series', 'series')
+  //       .leftJoinAndSelect('post.metadata', 'metadata')
+  //       .where('metadata.is_private = false')
+  //       .andWhere('series.name =: seriesName', { seriesName: seriesName })
+  //       .getMany();
+
+  //     return posts;
+  //   }
+
+  async getMyPostBySeriesName(
+    userId: string,
+    seriesName: string,
+  ): Promise<Post[]> {
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.series', 'series')
+      .where('post.userId= :userId', { userId: userId })
+      .andWhere('series.name= :seriesName', { seriesName: seriesName })
+      .getMany();
+
+    return posts;
   }
 }

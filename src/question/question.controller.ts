@@ -150,4 +150,52 @@ export class QuestionController {
   ): Promise<void> {
     return this.questionService.createComment(req.user.id, question_id, data);
   }
+
+  // 태그아이디를 갖는 게시글 전체 찾기
+  @Get('tag/:tag_id')
+  getPostByTagID(@Param('tag_id') tagId: string): Promise<Question[]> {
+    return this.questionService.getPostByTagID(tagId);
+  }
+  // 태그이름을 갖는 게시글 전체 찾기
+  @Get('tag/:tag_name')
+  getPostByTagName(@Param('tag_name') tagName: string): Promise<Question[]> {
+    return this.questionService.getPostByTagName(tagName);
+  }
+
+  // 태그 아이디로 내 게시글 전체 찾기
+  @Get('tag/:tag_id/my')
+  @UseGuards(JwtAuthGuard)
+  getMyPostByTagID(
+    @Req() req,
+    @Param('tag_id') tagId: string,
+  ): Promise<Question[]> {
+    return this.questionService.getMyPostByTagID(req.user.id, tagId);
+  }
+
+  // 태그이름으로 내 게시글 전체 찾기
+  @Get('tag/:tag_name/my')
+  @UseGuards(JwtAuthGuard)
+  getMyPostByTagName(
+    @Req() req,
+    @Param('tag_name') tagName: string,
+  ): Promise<Question[]> {
+    return this.questionService.getMyPostByTagName(req.user.id, tagName);
+  }
+
+  //질문은 시리즈가 없다.
+  //   @Get('series/:series_name')
+  //   getPostBySeriesName(
+  //     @Param('series_name') seriesName: string,
+  //   ): Promise<Question[]> {
+  //     return this.questionService.getPostBySerisName(seriesName);
+  //   }
+
+  //   @Get('series/:series_name/my')
+  //   @UseGuards(JwtAuthGuard)
+  //   getMyPostBySeriesName(
+  //     @Req() req,
+  //     @Param('series_name') seriesName: string,
+  //   ): Promise<Question[]> {
+  //     return this.questionService.getMyPostBySeriesName(req.user.id, seriesName);
+  //   }
 }
