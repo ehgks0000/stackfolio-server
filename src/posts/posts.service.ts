@@ -98,6 +98,7 @@ export class PostsService {
       .leftJoinAndSelect('post.metadata', 'metadata')
       .leftJoinAndSelect('post.comments', 'comments')
       .leftJoinAndSelect('post.series', 'series')
+      .leftJoinAndSelect('series.posts', 'posts')
       .leftJoinAndSelect('post.author', 'author')
       .leftJoinAndSelect('author.profile', 'profile')
       .where('post.id = :postId', { postId: postId })
@@ -107,7 +108,15 @@ export class PostsService {
     // console.log('유저이름 :', post.author.profile);
     // console.log('유저이름 :', post.author.profile.username);
     const author = post.author.profile.username;
+    const series = [];
+    post.series.posts.forEach((post) => {
+      series.push(post.title);
+    });
+
+    const seriesName = post.series.name;
+    // console.log('시리즈 : ', series);
     delete post.author;
+    delete post.series;
 
     const tags = await this.tagService.getTagsByPost(postId);
     const tagNames = [];
@@ -115,7 +124,7 @@ export class PostsService {
       tagNames.push(tag.title);
     });
 
-    return { author, post, tagNames };
+    return { author, post, tagNames, seriesName, series };
   }
   /**
    * 
