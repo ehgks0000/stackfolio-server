@@ -37,6 +37,7 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { FileUploadDto } from './dto/file-upload.dto';
+import { MyProfileResponseDto } from './dto/my-profile-response.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -66,7 +67,7 @@ export class UsersController {
   @ApiOperation(docs.get['user'].operation)
   @ApiOkResponse(docs.get['user'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
-  getMyUser(@Req() req): Promise<UserProfile> {
+  getMyUser(@Req() req): Promise<MyProfileResponseDto> {
     return this.usersService.getMyUser(req.user.id);
   }
 

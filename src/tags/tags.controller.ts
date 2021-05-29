@@ -72,10 +72,16 @@ export class TagsController {
     return this.tagsService.getPostsOfTag(tagId);
   }
   // 태그(이름)을 갖고있는 전체 게시글
-  @Get('name:tag_name')
+  @Get('name/:tag_name')
   @ApiOperation(docs.get['tags/name'].operation)
   @ApiOkResponse(docs.get['tags/name'].response[200])
   getPostsOfTagName(@Param('tag_name') tagName: string): Promise<_Post[]> {
     return this.tagsService.getPostsOfTagByTittle(tagName);
+  }
+
+  //포스트 Id를 갖고있는 태그들 찾기
+  @Get(':post_id')
+  getTagsByPost(@Param('post_id') postId: string) {
+    return this.tagsService.getTagsByPost(postId);
   }
 }

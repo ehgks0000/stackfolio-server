@@ -1,3 +1,4 @@
+import { MyProfileResponseDto } from './dto/my-profile-response.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { Favorite } from './entity/user-favorite.entity';
 import { UserProfile } from './entity/user-profile.entity';
@@ -24,7 +25,7 @@ export default {
       response: {
         [200]: {
           description: 'Return my Profile',
-          type: UserProfile,
+          type: MyProfileResponseDto,
         },
         [400]: { description: 'My Profile does not exist' },
       },

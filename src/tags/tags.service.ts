@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from 'src/posts/entity/post.entity';
 import { PostRepository } from 'src/posts/repository/post.repository';
-import { ConnectionManager, getConnection, getRepository } from 'typeorm';
+import {
+  ConnectionManager,
+  getConnection,
+  getRepository,
+  QueryBuilder,
+} from 'typeorm';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entity/tag.entity';
 import { TagRepository } from './repository/tag.repository';
@@ -23,6 +28,46 @@ export class TagsService {
 
     return tags;
   }
+
+  /**
+   *
+   * @todo
+   * @
+   */
+  async getTagsByPost(postId: string) {
+    const tags = await this.tagRepository
+      .createQueryBuilder('tag')
+      .leftJoinAndSelect('tag.posts', 'posts')
+      .where('posts.id = :postId', { postId: postId })
+      .getMany();
+    tags.forEach((tag) => {
+      delete tag.posts;
+    });
+
+    return tags;
+  }
+  async getTagsByQuestion(questionId: string) {
+    const tags = await this.tagRepository
+      .createQueryBuilder('tag')
+      .leftJoinAndSelect('tag.questions', 'questions')
+      .where('questions.id = :questionId', { questionId: questionId })
+      .getMany();
+    tags.forEach((tag) => {
+      delete tag.questions;
+      //   delete tag.posts;
+    });
+
+    return tags;
+  }
+
+  //   async getTagsByUserId(userId: string) {
+  //     const tags = await this.tagRepository
+  //       .createQueryBuilder('tag')
+  //       .leftJoinAndSelect('tag.')
+  //       .where()
+  //       .getMany();
+  //   }
+
   async createTag(
     userId: string,
     postId: string,

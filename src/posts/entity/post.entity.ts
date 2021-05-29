@@ -92,7 +92,7 @@ export class Post {
   @RelationId((self: Post) => self.tags)
   tag_id: string[];
 
-  //   @Column()
+  //   @Column((self: Post) => self.tags)
   //   tag_name: string[];
 
   @ApiProperty({ readOnly: true })

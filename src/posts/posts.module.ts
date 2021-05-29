@@ -27,11 +27,11 @@ import { PostRepository } from './repository/post.repository';
       UserRepository,
       UserProfileRepository,
       UserFavoriteRepository,
-      //   TagRepository,
+      TagRepository,
     ]),
   ],
   controllers: [PostsController],
-  providers: [PostsService, TagsService, TagRepository, FilesService],
+  providers: [PostsService, TagsService, FilesService],
   exports: [PostsService, TypeOrmModule],
 })
 export class PostsModule {}

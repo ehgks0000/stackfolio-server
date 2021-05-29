@@ -4,11 +4,13 @@ import { FilesService } from 'src/files/files.service';
 import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
 import { Tag } from 'src/tags/entity/tag.entity';
 import { TagRepository } from 'src/tags/repository/tag.repository';
+import { TagsService } from 'src/tags/tags.service';
 import { User } from 'src/users/entity/user.entity';
 import { UserProfileRepository } from 'src/users/repository/user-profile.repository';
 import { UserRepository } from 'src/users/repository/user.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreateCommentPostDto } from './dto/create_comment_post';
+import { PostByIdResponseDto } from './dto/post-by-Id-response.dto';
 import { PostByUserResponseDto } from './dto/post-by-user-response.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostComment } from './entity/post-comment.entity';
@@ -25,8 +27,11 @@ export class PostsService {
     private readonly userRepository: UserRepository,
     private readonly userProfileRepository: UserProfileRepository,
     private readonly postRepository: PostRepository,
+    private readonly tagsRepository: TagRepository,
     private readonly filesService: FilesService,
     private readonly postCommentRepository: PostCommentRepository,
+
+    private readonly tagService: TagsService,
   ) {}
 
   async createPost(userId: string, data: CreatePostDto): Promise<Post> {
@@ -57,7 +62,7 @@ export class PostsService {
       .leftJoinAndSelect('post.user_like', 'user_like')
       .leftJoinAndSelect('post.metadata', 'metadata')
       .leftJoinAndSelect('post.information', 'information')
-      .where('post.user_id= :userId', { userId: userId })
+      .where('post.user_id = :userId', { userId: userId })
       .orderBy('post.created_at', 'DESC')
       .getMany();
     return posts;
@@ -74,7 +79,7 @@ export class PostsService {
       .leftJoinAndSelect('post.tags', 'tag')
       //   .leftJoinAndSelect('post.author', 'author')
       //   .leftJoinAndSelect('author.profile', 'profile')
-      .where('post.user_id= :userId', { userId: userId })
+      .where('post.user_id = :userId', { userId: userId })
       .andWhere('metadata.is_private = false')
       .getMany();
 
@@ -86,24 +91,31 @@ export class PostsService {
   }
   // postid의 post 불러오기
   //   공개된것만
-  async getPostByPostId(postId: string): Promise<Post> {
-    // const posts = await this.postRepository.find({ id: postId });
+  async getPostByPostId(postId: string): Promise<PostByIdResponseDto> {
+    //   async getPostByPostId(postId: string): Promise<Post> {
     const post = await this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.metadata', 'metadata')
       .leftJoinAndSelect('post.comments', 'comments')
       .leftJoinAndSelect('post.series', 'series')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('author.profile', 'profile')
       .where('post.id = :postId', { postId: postId })
       .andWhere('metadata.is_private = false')
       .getOne();
 
-    // post.weekly_view_count++;
-    // post.total_view_count++;
+    // console.log('유저이름 :', post.author.profile);
+    // console.log('유저이름 :', post.author.profile.username);
+    const author = post.author.profile.username;
+    delete post.author;
 
-    await this.postRepository.save(post);
-    // post.
+    const tags = await this.tagService.getTagsByPost(postId);
+    const tagNames = [];
+    tags.forEach((tag) => {
+      tagNames.push(tag.title);
+    });
 
-    return post;
+    return { author, post, tagNames };
   }
   /**
    * 
@@ -292,7 +304,7 @@ export class PostsService {
     const posts = await this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.tags', 'tags')
-      .where('tags.title =: tagName', { tagName: tagName })
+      .where('tags.title=:tagName', { tagName: tagName })
       .getMany();
 
     // const posts = await this.postRepository.find({
@@ -302,6 +314,11 @@ export class PostsService {
     return posts;
   }
 
+  /**
+   *
+   * @todo
+   * @
+   */
   async getMyPostByTagID(userId: string, tagId: string): Promise<Post[]> {
     const posts = await this.postRepository.find({
       where: { user_id: userId, tag_id: tagId },

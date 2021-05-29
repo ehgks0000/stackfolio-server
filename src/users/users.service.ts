@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilesService } from 'src/files/files.service';
 import { getConnection } from 'typeorm';
+import { MyProfileResponseDto } from './dto/my-profile-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserProfile } from './entity/user-profile.entity';
@@ -34,14 +35,14 @@ export class UsersService {
     return user;
   }
 
-  async getMyUser(user_id: string): Promise<any> {
+  async getMyUser(user_id: string): Promise<MyProfileResponseDto> {
     // const user = await this.userRepository.findOne({ id: user_id });
     const profile = await this.userProfileRepository
       .createQueryBuilder('user_profile')
       .leftJoinAndSelect('user_profile.user', 'user')
       .leftJoinAndSelect('user.posts', 'posts')
+      .leftJoinAndSelect('posts.tags', 'tags')
       .leftJoinAndSelect('user.questions', 'questions')
-      //   .leftJoinAndSelect('posts.tags', 'tags')
       .where('user.id = :id', { id: user_id })
       .getOne();
 
@@ -50,19 +51,22 @@ export class UsersService {
     //유저의 리스트 목록 들에서 태그를 뽑는다.
     const ttt = [];
     // const ttt: tagInterface[] = [];
+    console.log('프로필 태그 :', profile.user.posts);
     profile.user.posts.forEach((post) => {
-      post.tag_id.forEach((tag) => {
+      post.tags.forEach((tag) => {
         // ttt.push({ tag: tag, count: 1 });
-        ttt.push(tag);
+        ttt.push(tag.title);
       });
     });
 
+    console.log('프로필 태그 :', profile.user.questions);
     profile.user.questions.forEach((question) => {
-      question.tag_id.forEach((tag) => {
-        ttt.push(tag);
+      question.tags.forEach((tag) => {
+        ttt.push(tag.title);
       });
     });
-
+    delete profile.user.posts;
+    delete profile.user.questions;
     // 뽑은 태그 숫자를 만듬
     const tagJson = ttt.reduce((acc, curr) => {
       if (typeof acc[curr] == 'undefined') {

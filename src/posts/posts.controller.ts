@@ -41,6 +41,7 @@ import { PostComment } from './entity/post-comment.entity';
 import { CreateCommentPostDto } from './dto/create_comment_post';
 import { PostByUserResponseDto } from './dto/post-by-user-response.dto';
 import { PostPagenation } from './dto/page.dto';
+import { PostByIdResponseDto } from './dto/post-by-Id-response.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -87,7 +88,7 @@ export class PostsController {
   @Get(':post_id')
   @ApiOperation(docs.get[':post_id'].operation)
   @ApiOkResponse(docs.get[':post_id'].response[200])
-  getPost(@Param('post_id') postId: string): Promise<_Post> {
+  getPost(@Param('post_id') postId: string): Promise<PostByIdResponseDto> {
     return this.postsService.getPostByPostId(postId);
   }
 
