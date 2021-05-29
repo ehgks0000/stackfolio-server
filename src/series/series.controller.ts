@@ -23,6 +23,8 @@ import { Series } from './entity/series.entity';
 import { SeriesService } from './series.service';
 import docs from './series.docs';
 import { Post as _Post } from 'src/posts/entity/post.entity';
+import { query } from 'express';
+import { SeriesPagenation } from './dto/page.dto';
 @ApiTags('Series')
 @Controller('series')
 export class SeriesController {
@@ -73,9 +75,15 @@ export class SeriesController {
   @ApiUnauthorizedResponse(docs.unauthorized)
   async getPostsOfSeries(
     @Req() req,
-    @Query('seriesId') seriesId: string,
-  ): Promise<_Post[]> {
-    return this.seriesService.getPostsOfSeries(req.user.id, seriesId);
+    // @Query('seriesId') seriesId: string,
+    @Query() query: SeriesPagenation,
+  ) {
+    return this.seriesService.getPostsOfSeries(
+      req.user.id,
+      query.seriesId,
+      query.page,
+      query.pageSize,
+    );
   }
 
   @Patch('')

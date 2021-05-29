@@ -31,12 +31,28 @@ export class SeriesService {
     });
   }
   // 내 아이디의 한 시리즈의 게시글 목록
-  async getPostsOfSeries(userId: string, seriesId: string): Promise<Post[]> {
-    const series = await this.seriesRepository.findOne({
-      where: { id: seriesId, user_id: userId },
-      relations: ['post'],
-    });
-    return series.posts;
+  async getPostsOfSeries(
+    userId: string,
+    seriesId: string,
+    page: number,
+    pageSize: number,
+  ) {
+    //   async getPostsOfSeries(userId: string, seriesId: string): Promise<Post[]> {
+    const series = await this.seriesRepository
+      .createQueryBuilder('series')
+      .leftJoinAndSelect('series.posts', 'posts')
+      .where('series.id = :seriesId', { seriesId: seriesId })
+      .andWhere('series.user_id = :user_id', { user_id: userId })
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getMany();
+    // console.log('테스트 :', test);
+
+    // const series = await this.seriesRepository.findOne({
+    //   where: { id: seriesId, user_id: userId },
+    //   relations: ['posts'],
+    // });
+    return { page, pageSize, series };
   }
   async updateSeries(
     userId: string,

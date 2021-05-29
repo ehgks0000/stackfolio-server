@@ -10,6 +10,9 @@ export class PostByIdResponseDto {
   post: Post;
 
   @ApiProperty()
+  seriesId: string;
+
+  @ApiProperty()
   tagNames: string[];
 
   @ApiProperty()

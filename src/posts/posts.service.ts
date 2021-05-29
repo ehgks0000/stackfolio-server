@@ -113,6 +113,7 @@ export class PostsService {
       series.push(post.title);
     });
 
+    const seriesId = post.series.id;
     const seriesName = post.series.name;
     // console.log('시리즈 : ', series);
     delete post.author;
@@ -124,7 +125,7 @@ export class PostsService {
       tagNames.push(tag.title);
     });
 
-    return { author, post, tagNames, seriesName, series };
+    return { author, post, tagNames, seriesId, seriesName, series };
   }
   /**
    * 
