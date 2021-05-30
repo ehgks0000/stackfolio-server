@@ -34,7 +34,7 @@ export class TagsService {
    * @todo
    * @
    */
-  async getTagsByPost(postId: string) {
+  async getTagsByPost(postId: string): Promise<Tag[]> {
     const tags = await this.tagRepository
       .createQueryBuilder('tag')
       .leftJoinAndSelect('tag.posts', 'posts')

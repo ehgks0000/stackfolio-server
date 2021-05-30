@@ -63,7 +63,8 @@ export class PostsController {
   // jwt req.user가 있고 없고로 endpoint 구분 가능한가?
   @Get('')
   @ApiOperation(docs.get['posts'].operation)
-  @ApiOkResponse(docs.get['posts'].response[200])
+  @ApiOkResponse({ type: _Post, isArray: true })
+  //   @ApiOkResponse(docs.get['posts'].response[200])
   getPostsAll(@Query() query: PostPagenation): Promise<_Post[]> {
     return this.postsService.getPostsAll(query.page, query.pageSize);
   }
@@ -78,10 +79,10 @@ export class PostsController {
 
   @Get('user/:user_id')
   @ApiOperation(docs.get['user/:user_id'].operation)
+  //   @ApiOkResponse({ type: PostByUserResponseDto })
   @ApiOkResponse(docs.get['user/:user_id'].response[200])
-  getPosts(@Param('user_id') userId: string): Promise<PostByUserResponseDto> {
-    //   getPosts(@Param('user_id') userId: string): Promise<_Post[]> {
-    console.log(userId);
+  getPosts(@Param('user_id') userId: string) {
+    //   getPosts(@Param('user_id') userId: string): Promise<PostByUserResponseDto> {
     return this.postsService.getPostsByUserId(userId);
   }
 
@@ -143,13 +144,6 @@ export class PostsController {
   deletePost(@Req() req, @Param('post_id') postId: string): Promise<_Post> {
     return this.postsService.deletePost(req.user.id, postId);
   }
-  /**
-   * 
-   * @todo
-   * 썸네일 및 내용 이미지를 게시글에 추가하는걸
-   *  옮겨야하나 파일 서비스로
-   
-   */
 
   @Post('upload/thumbnail')
   @UseGuards(JwtAuthGuard)
@@ -232,11 +226,11 @@ export class PostsController {
     return this.postsService.getComments(post_id);
   }
 
-  @Post('comment/:post_id')
+  @Post('comment/:post_id/:comment_id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation(docs.post['post/comment/:post_id'].operation)
-  @ApiOkResponse(docs.post['post/comment/:post_id'].response[200])
+  @ApiOperation(docs.post['post/comment/:post_id/:comment_id'].operation)
+  @ApiOkResponse(docs.post['post/comment/:post_id/:comment_id'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
   createCommenttest(
     @Req() req,
@@ -277,15 +271,6 @@ export class PostsController {
   ): Promise<_Post[]> {
     return this.postsService.getMyPostByTagName(req.user.id, tagName);
   }
-
-  //시리즈 이름의 게시글 찾기
-  // ??해야하나?
-  //   @Get('series/:series_name')
-  //   getPostBySeriesName(
-  //     @Param('series_name') seriesName: string,
-  //   ): Promise<_Post[]> {
-  //     return this.postsService.getPostBySerisName(seriesName);
-  //   }
 
   @Get('series/:series_name/my')
   @UseGuards(JwtAuthGuard)

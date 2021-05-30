@@ -70,22 +70,33 @@ export class PostsService {
 
   // 유저의 post 불러오기
   //   공개된것만
-  async getPostsByUserId(userId: string): Promise<PostByUserResponseDto> {
+  async getPostsByUserId(userId: string) {
+    //   async getPostsByUserId(userId: string): Promise<PostByUserResponseDto> {
     //   async getPostsByUserId(userId: string): Promise<Post[]> {
     const user = await this.userProfileRepository.findOne({ user_id: userId });
     const posts = await this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.metadata', 'metadata')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('author.profile', 'profile')
       .leftJoinAndSelect('post.tags', 'tag')
-      //   .leftJoinAndSelect('post.author', 'author')
-      //   .leftJoinAndSelect('author.profile', 'profile')
       .where('post.user_id = :userId', { userId: userId })
       .andWhere('metadata.is_private = false')
       .getMany();
 
-    // console.log(post);
+    const author = posts[0].author.profile;
+    posts.forEach((post) => {
+      const tagName = [];
+      post.tags.forEach((tag) => {
+        tagName.push(tag.title);
+      });
+      post.tags = tagName;
+      delete post.author;
+    });
+    // console.log(author);
     return {
-      author: user.username,
+      //   author,
+      author,
       posts,
     };
   }
@@ -107,7 +118,7 @@ export class PostsService {
 
     // console.log('유저이름 :', post.author.profile);
     // console.log('유저이름 :', post.author.profile.username);
-    const author = post.author.profile.username;
+    const author = post.author.profile;
     const series = [];
     post.series.posts.forEach((post) => {
       series.push(post.title);

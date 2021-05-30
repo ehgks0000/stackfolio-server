@@ -1,4 +1,5 @@
 import { PostByIdResponseDto } from './dto/post-by-Id-response.dto';
+import { PostByUserResponseDto } from './dto/post-by-user-response.dto';
 import { PostComment } from './entity/post-comment.entity';
 import { Post } from './entity/post.entity';
 
@@ -35,7 +36,7 @@ export default {
       response: {
         [200]: {
           description: 'Return a list of user posts by user ID',
-          type: Post,
+          type: PostByUserResponseDto,
         },
         [400]: { description: "User's posts does not exist" },
       },
@@ -85,7 +86,7 @@ export default {
       response: {
         [200]: {
           description: 'Return void',
-          type: Post,
+          //   type: Post,
         },
       },
     },
@@ -96,18 +97,17 @@ export default {
       response: {
         [200]: {
           description: 'Return void',
-          type: Post,
+          //   type: Post,
         },
       },
     },
-    ['post/comment/:post_id']: {
+    ['post/comment/:post_id/:comment_id']: {
       operation: {
         description: 'User turns off post likes by post ID',
       },
       response: {
         [200]: {
           description: 'Return void',
-          type: Post,
         },
       },
     },

@@ -81,7 +81,9 @@ export class TagsController {
 
   //포스트 Id를 갖고있는 태그들 찾기
   @Get(':post_id')
-  getTagsByPost(@Param('post_id') postId: string) {
+  @ApiOperation({ description: 'Returns a list of Tags by Post ID' })
+  @ApiOkResponse({ type: Tag, isArray: true })
+  getTagsByPost(@Param('post_id') postId: string): Promise<Tag[]> {
     return this.tagsService.getTagsByPost(postId);
   }
 }

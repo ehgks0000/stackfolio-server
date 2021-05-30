@@ -4,7 +4,7 @@ import { Post } from '../entity/post.entity';
 
 export class PostByIdResponseDto {
   @ApiProperty()
-  author: UserProfile['username'];
+  author: UserProfile;
 
   @ApiProperty()
   post: Post;

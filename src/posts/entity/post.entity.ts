@@ -109,6 +109,7 @@ export class Post {
 
   /** Relations */
 
+  @ApiProperty({ readOnly: true })
   @OneToOne((type) => PostInformation, (information) => information.post, {
     cascade: true,
     eager: true,
@@ -116,6 +117,7 @@ export class Post {
   @JoinColumn({ name: 'post_information_id', referencedColumnName: 'id' })
   information?: PostInformation;
 
+  @ApiProperty({ readOnly: true })
   @OneToOne((type) => PostMetadata, (metadata) => metadata.post, {
     cascade: true,
     eager: true,
@@ -123,12 +125,15 @@ export class Post {
   @JoinColumn({ name: 'post_metadata_id', referencedColumnName: 'id' })
   metadata: PostMetadata;
 
+  @ApiProperty({ readOnly: true })
   @OneToMany((type) => PostComment, (comment) => comment.post)
   comments: PostComment[];
 
+  @ApiProperty({ readOnly: true })
   @OneToMany((type) => Favorite, (favorites) => favorites.post)
   favorites!: Favorite[];
 
+  //   @ApiProperty({ readOnly: true })
   @ManyToOne((type) => User, (user) => user.posts, {
     cascade: true,
     // eager: true,
@@ -140,10 +145,12 @@ export class Post {
   //   @ManyToMany((type) => User, (user) => user.favorites)
   //   users: User[];
 
+  @ApiProperty({ readOnly: true })
   @ManyToOne(() => Series, (series) => series.posts)
   @JoinColumn({ name: 'series_id', referencedColumnName: 'id' })
   series: Series;
 
+  @ApiProperty({ readOnly: true })
   @ManyToMany((type) => Tag, (tags) => tags.posts)
   @JoinTable({
     name: 'post_tag',
@@ -152,9 +159,7 @@ export class Post {
   })
   tags?: Tag[];
 
-  //   @OneToMany(() => Post_tag, (taggss) => taggss.tag)
-  //   taggss: Post_tag[];
-
+  @ApiProperty({ readOnly: true })
   @ManyToMany((type) => User, (user_like) => user_like.post_like, {
     cascade: true,
   })
