@@ -8,14 +8,14 @@ import {
 } from 'class-validator';
 
 export class CreateCommentQuestionDto {
-  @ApiProperty({
-    required: false,
-    description: '댓글의 id값은 필요없습니다.',
-    type: Number,
-  })
-  @IsNumber()
-  @IsOptional()
-  id?: number;
+  //   @ApiProperty({
+  //     required: false,
+  //     description: '댓글의 id값은 필요없습니다.',
+  //     type: Number,
+  //   })
+  //   @IsNumber()
+  //   @IsOptional()
+  //   id?: number;
 
   @ApiProperty({
     description:

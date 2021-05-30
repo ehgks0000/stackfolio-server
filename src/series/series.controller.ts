@@ -25,6 +25,7 @@ import docs from './series.docs';
 import { Post as _Post } from 'src/posts/entity/post.entity';
 import { query } from 'express';
 import { SeriesPagenation } from './dto/page.dto';
+import { PostsOfSeriesResponse } from './dto/post-by-Id-response.dto';
 @ApiTags('Series')
 @Controller('series')
 export class SeriesController {
@@ -77,7 +78,7 @@ export class SeriesController {
     @Req() req,
     // @Query('seriesId') seriesId: string,
     @Query() query: SeriesPagenation,
-  ) {
+  ): Promise<PostsOfSeriesResponse> {
     return this.seriesService.getPostsOfSeries(
       req.user.id,
       query.seriesId,

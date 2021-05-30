@@ -1,3 +1,4 @@
+import { PostsOfSeriesResponse } from './dto/post-by-Id-response.dto';
 import { Series } from './entity/series.entity';
 
 export default {
@@ -21,7 +22,7 @@ export default {
       response: {
         [200]: {
           description: 'Returns posts with my series.',
-          type: Series,
+          type: PostsOfSeriesResponse,
         },
         [400]: { description: 'Posts does not exist' },
       },

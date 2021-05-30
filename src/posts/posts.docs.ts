@@ -1,4 +1,5 @@
 import { PostByIdResponseDto } from './dto/post-by-Id-response.dto';
+import { PostComment } from './entity/post-comment.entity';
 import { Post } from './entity/post.entity';
 
 export default {
@@ -58,7 +59,7 @@ export default {
       response: {
         [200]: {
           description: 'Return a list of user posts by post ID',
-          type: Post,
+          type: PostComment,
         },
         [400]: { description: 'Post does not exist by id' },
       },

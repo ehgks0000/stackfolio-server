@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from 'src/posts/entity/post.entity';
 import { CreateSeriesDto } from './dto/create-series.dto';
+import { PostsOfSeriesResponse } from './dto/post-by-Id-response.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { UpdateSeriesDto } from './dto/update-series.dto';
 import { Series } from './entity/series.entity';
@@ -36,7 +37,7 @@ export class SeriesService {
     seriesId: string,
     page: number,
     pageSize: number,
-  ) {
+  ): Promise<PostsOfSeriesResponse> {
     //   async getPostsOfSeries(userId: string, seriesId: string): Promise<Post[]> {
     const series = await this.seriesRepository
       .createQueryBuilder('series')

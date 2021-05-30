@@ -32,7 +32,7 @@ export class QuestionCommentRepository extends Repository<QuestionComment> {
       const questionRepository = getRepository(Question);
       const userProfileRepository = getRepository(UserProfile);
 
-      const { id, group, sorts, depth, contents } = data;
+      const { group, sorts, depth, contents } = data;
 
       const question = await questionRepository.findOne({ id: question_id });
       if (!question) {

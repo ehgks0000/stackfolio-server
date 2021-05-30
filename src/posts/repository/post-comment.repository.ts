@@ -23,10 +23,17 @@ import { CreateCommentPostDto } from '../dto/create_comment_post';
 @EntityRepository(PostComment)
 export class PostCommentRepository extends Repository<PostComment> {
   // eslint-disable-next-linee
+
+  /**
+   *
+   * @param todo
+   * 댓글 아이디로 검사
+   */
   async createPostComment(
     userId: string,
     post_id: string,
-    data: CreateCommentPostDto,
+    comment_id: number,
+    // data: CreateCommentPostDto,
   ): Promise<void> {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
@@ -37,8 +44,10 @@ export class PostCommentRepository extends Repository<PostComment> {
     try {
       const postRepository = getRepository(Post);
       const userProfileRepository = getRepository(UserProfile);
+      const parentComment = await this.findOne({ where: { id: comment_id } });
 
-      const { id, group, sorts, depth, contents } = data;
+      const { group, sorts, depth, contents } = parentComment;
+      //   const { group, sorts, depth, contents } = data;
 
       const post = await postRepository.findOne({ id: post_id });
       if (!post) {

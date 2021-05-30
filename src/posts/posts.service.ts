@@ -295,9 +295,14 @@ export class PostsService {
   async createComment(
     userId: string,
     post_id: string,
-    data: CreateCommentPostDto,
+    comment_id: number,
+    // data: CreateCommentPostDto,
   ): Promise<void> {
-    await this.postCommentRepository.createPostComment(userId, post_id, data);
+    await this.postCommentRepository.createPostComment(
+      userId,
+      post_id,
+      comment_id,
+    );
 
     // return {} as any;
   }

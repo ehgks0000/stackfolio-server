@@ -238,12 +238,13 @@ export class PostsController {
   @ApiOperation(docs.post['post/comment/:post_id'].operation)
   @ApiOkResponse(docs.post['post/comment/:post_id'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
-  createComment(
+  createCommenttest(
     @Req() req,
     @Param('post_id') post_id: string,
-    @Body() data: CreateCommentPostDto,
+    @Param('comment_id') comment_id: number,
+    // @Body() data: CreateCommentPostDto,
   ): Promise<void> {
-    return this.postsService.createComment(req.user.id, post_id, data);
+    return this.postsService.createComment(req.user.id, post_id, comment_id);
   }
 
   // 태그아이디를 갖는 게시글 전체 찾기
