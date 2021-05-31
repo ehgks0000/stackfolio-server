@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -236,9 +237,15 @@ export class PostsController {
     @Req() req,
     @Param('post_id') post_id: string,
     @Param('comment_id') comment_id: number,
-    // @Body() data: CreateCommentPostDto,
+    @Body() data: CreateCommentPostDto,
+    //   ) {
   ): Promise<void> {
-    return this.postsService.createComment(req.user.id, post_id, comment_id);
+    return this.postsService.createComment(
+      req.user.id,
+      post_id,
+      comment_id,
+      data,
+    );
   }
 
   // 태그아이디를 갖는 게시글 전체 찾기

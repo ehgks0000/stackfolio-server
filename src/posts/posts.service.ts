@@ -313,12 +313,13 @@ export class PostsService {
     userId: string,
     post_id: string,
     comment_id: number,
-    // data: CreateCommentPostDto,
+    data: CreateCommentPostDto,
   ): Promise<void> {
     await this.postCommentRepository.createPostComment(
       userId,
       post_id,
       comment_id,
+      data,
     );
 
     // return {} as any;

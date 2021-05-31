@@ -33,7 +33,7 @@ export class PostCommentRepository extends Repository<PostComment> {
     userId: string,
     post_id: string,
     comment_id: number,
-    // data: CreateCommentPostDto,
+    data: CreateCommentPostDto,
   ): Promise<void> {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
@@ -46,7 +46,17 @@ export class PostCommentRepository extends Repository<PostComment> {
       const userProfileRepository = getRepository(UserProfile);
       const parentComment = await this.findOne({ where: { id: comment_id } });
 
-      const { group, sorts, depth, contents } = parentComment;
+      let group: number = null;
+      let sorts: number = null;
+      let depth: number = null;
+      const contents = data.contents;
+      if (parentComment) {
+        group = parentComment.group;
+        sorts = parentComment.sorts;
+        depth = parentComment.depth;
+        // const { group, sorts, depth } = parentComment;
+      }
+
       //   const { group, sorts, depth, contents } = data;
 
       const post = await postRepository.findOne({ id: post_id });
