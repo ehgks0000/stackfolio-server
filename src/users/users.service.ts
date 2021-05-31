@@ -49,26 +49,22 @@ export class UsersService {
     //post 태그 목록만 불러옴
     // question 태그 목록은?
     //유저의 리스트 목록 들에서 태그를 뽑는다.
-    const ttt = [];
-    // const ttt: tagInterface[] = [];
-    console.log('프로필 태그 :', profile.user.posts);
+    const tagTitle = [];
     profile.user.posts.forEach((post) => {
       post.tags.forEach((tag) => {
-        // ttt.push({ tag: tag, count: 1 });
-        ttt.push(tag.title);
+        tagTitle.push(tag.title);
       });
     });
 
-    console.log('프로필 태그 :', profile.user.questions);
     profile.user.questions.forEach((question) => {
       question.tags.forEach((tag) => {
-        ttt.push(tag.title);
+        tagTitle.push(tag.title);
       });
     });
     delete profile.user.posts;
     delete profile.user.questions;
     // 뽑은 태그 숫자를 만듬
-    const tagJson = ttt.reduce((acc, curr) => {
+    const tagJson = tagTitle.reduce((acc, curr) => {
       if (typeof acc[curr] == 'undefined') {
         acc[curr] = 1;
       } else {

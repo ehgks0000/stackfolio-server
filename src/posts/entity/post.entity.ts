@@ -146,7 +146,7 @@ export class Post {
   //   users: User[];
 
   @ApiProperty({ readOnly: true })
-  @ManyToOne(() => Series, (series) => series.posts)
+  @ManyToOne(() => Series, (series) => series.posts, { nullable: true })
   @JoinColumn({ name: 'series_id', referencedColumnName: 'id' })
   series: Series;
 

@@ -108,24 +108,30 @@ export class PostsService {
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.metadata', 'metadata')
       .leftJoinAndSelect('post.comments', 'comments')
+      .leftJoinAndSelect('post.author', 'author')
       .leftJoinAndSelect('post.series', 'series')
       .leftJoinAndSelect('series.posts', 'posts')
-      .leftJoinAndSelect('post.author', 'author')
       .leftJoinAndSelect('author.profile', 'profile')
       .where('post.id = :postId', { postId: postId })
       .andWhere('metadata.is_private = false')
       .getOne();
 
+    // console.log('유저이름 :', test);
     // console.log('유저이름 :', post.author.profile);
     // console.log('유저이름 :', post.author.profile.username);
     const author = post.author.profile;
     const series = [];
-    post.series.posts.forEach((post) => {
-      series.push(post.title);
-    });
 
-    const seriesId = post.series.id;
-    const seriesName = post.series.name;
+    let seriesId = null;
+    let seriesName = null;
+    if (post.series) {
+      seriesId = post.series.id;
+      seriesName = post.series.name;
+      post.series.posts.forEach((post) => {
+        series.push(post.title);
+      });
+    }
+
     // console.log('시리즈 : ', series);
     delete post.author;
     delete post.series;
