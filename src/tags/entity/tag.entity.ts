@@ -10,28 +10,30 @@ import {
 } from 'typeorm';
 import { Post } from 'src/posts/entity/post.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Question } from 'src/question/entity/question.entity';
 
 @Entity()
 export class Tag {
   /** Columns */
-
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly created_at: Date;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @UpdateDateColumn()
   readonly updated_at: Date;
 
-  @ApiProperty()
   // @ApiProperty({ required: false })
-  // @ApiProperty({ readOnly: true })
+  @ApiProperty({ readOnly: true, required: true })
   @Column({ length: 255 })
   @MinLength(2)
-  title: string;
+  title!: string;
 
   /** Relations */
   @ApiProperty({ readOnly: true })
@@ -40,6 +42,14 @@ export class Tag {
 
   @ManyToMany((type) => Post, (posts) => posts.tags, { cascade: true })
   posts: Post[];
+
+  @ManyToMany((type) => Question, (quetions) => quetions.tags, {
+    cascade: true,
+  })
+  questions: Question[];
+
+  //   @OneToMany(() => Post_tag, (postss) => postss.tags)
+  //   postss: Post_tag[];
 
   //   @ManyToMany((type) => Question, (questions) => questions.tags)
   //   questions: Question[];

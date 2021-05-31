@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from 'src/posts/entity/post.entity';
 import { PostRepository } from 'src/posts/repository/post.repository';
-import { ConnectionManager, getConnection, getRepository } from 'typeorm';
+import {
+  ConnectionManager,
+  getConnection,
+  getRepository,
+  QueryBuilder,
+} from 'typeorm';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entity/tag.entity';
 import { TagRepository } from './repository/tag.repository';
@@ -23,6 +28,46 @@ export class TagsService {
 
     return tags;
   }
+
+  /**
+   *
+   * @todo
+   * @
+   */
+  async getTagsByPost(postId: string): Promise<Tag[]> {
+    const tags = await this.tagRepository
+      .createQueryBuilder('tag')
+      .leftJoinAndSelect('tag.posts', 'posts')
+      .where('posts.id = :postId', { postId: postId })
+      .getMany();
+    tags.forEach((tag) => {
+      delete tag.posts;
+    });
+
+    return tags;
+  }
+  async getTagsByQuestion(questionId: string) {
+    const tags = await this.tagRepository
+      .createQueryBuilder('tag')
+      .leftJoinAndSelect('tag.questions', 'questions')
+      .where('questions.id = :questionId', { questionId: questionId })
+      .getMany();
+    tags.forEach((tag) => {
+      delete tag.questions;
+      //   delete tag.posts;
+    });
+
+    return tags;
+  }
+
+  //   async getTagsByUserId(userId: string) {
+  //     const tags = await this.tagRepository
+  //       .createQueryBuilder('tag')
+  //       .leftJoinAndSelect('tag.')
+  //       .where()
+  //       .getMany();
+  //   }
+
   async createTag(
     userId: string,
     postId: string,
@@ -61,7 +106,7 @@ export class TagsService {
         await this.postRepository.save(post);
       });
 
-    return dummy;
+    return post.tags;
   }
   // 태그 수정 없이 createTag를 해서 post에 삽입
   // async updateTags() {
@@ -72,6 +117,7 @@ export class TagsService {
     const posts = await this.postRepository.find({
       where: { tag_id: tagId, user_id: userId },
     });
+    // posts.length;
 
     return posts;
     // await this.tagRepository.find({ where: { id: tagId } });
@@ -99,6 +145,8 @@ export class TagsService {
 
   //조인테이블만 삭제 (post와 tag 테이블의 관계도 같이 삭제)
   // Post_tag
+  // 차집합으로 빼주지 않아도 post repository에서 수정을 하게되면
+  // 조인테이블에서 자동 삭제됨
   async deleteTag(
     userId: string,
     postId: string,

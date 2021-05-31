@@ -44,6 +44,7 @@ export class SeriesRepository extends Repository<Series> {
 
     const post = await postRepository.findOne({ id: postId });
     console.log(series);
+    // post.series_id
     series.posts = [...series.posts, post];
     console.log(series);
 

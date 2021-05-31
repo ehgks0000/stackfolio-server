@@ -13,12 +13,13 @@ import { ApiProperty } from '@nestjs/swagger';
 export class QuestionMetadata {
   /** Columns */
 
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
   // @ApiProperty({ required: false })
   // @ApiProperty({ readOnly: true })
-
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @UpdateDateColumn()
   published_at: Date;

@@ -5,7 +5,6 @@ import { QuestionController } from './question.controller';
 import { QuestionService } from './question.service';
 import { QuestionCommentRepository } from './repository/question-comment.repository';
 import { QuestionInformationRepository } from './repository/question-information.repository';
-import { QuestionLikeRepository } from './repository/question-like.repository';
 import { QuestionMetadataRepository } from './repository/question-metadata.repository';
 import { QuestionRepository } from './repository/question.repository';
 
@@ -13,7 +12,6 @@ import { QuestionRepository } from './repository/question.repository';
   imports: [
     TypeOrmModule.forFeature([
       QuestionRepository,
-      QuestionLikeRepository,
       QuestionInformationRepository,
       QuestionMetadataRepository,
       QuestionCommentRepository,

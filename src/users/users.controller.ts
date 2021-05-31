@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
@@ -36,12 +37,19 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { FileUploadDto } from './dto/file-upload.dto';
+import { MyProfileResponseDto } from './dto/my-profile-response.dto';
 
 @ApiTags('Users')
 @Controller('users')
 // @UseGuards(JwtAuthGuard)
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
   constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  getUsers(): Promise<User[]> {
+    return this.usersService.getUsers();
+  }
 
   @Delete('')
   @UseGuards(JwtAuthGuard)
@@ -52,6 +60,15 @@ export class UsersController {
   // eslint-disable-next-line
   deleteUser(@Req() req): Promise<User> {
     return this.usersService.deleteUser(req.user);
+  }
+
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation(docs.get['user'].operation)
+  @ApiOkResponse(docs.get['user'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  getMyUser(@Req() req): Promise<MyProfileResponseDto> {
+    return this.usersService.getMyUser(req.user.id);
   }
 
   @Get('profile/:user_id')
@@ -98,14 +115,15 @@ export class UsersController {
 
   @Post('follow/:user_id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation(docs.post['follow/:user_id'].operation)
-  @ApiOkResponse(docs.post['follow/:user_id'].response[200])
-  @ApiBadRequestResponse(docs.post['follow/:user_id'].response[400])
-  @ApiUnauthorizedResponse(docs.unauthorized)
-  // eslint-disable-next-line
-  getFollowing(@Req() req, @Param('user_id') userId: string): Promise<void> {
-    return this.usersService.follow(req.user, userId);
+  //   @ApiBearerAuth()
+  //   @ApiOperation(docs.post['follow/:user_id'].operation)
+  //   @ApiOkResponse(docs.post['follow/:user_id'].response[200])
+  //   @ApiBadRequestResponse(docs.post['follow/:user_id'].response[400])
+  //   @ApiUnauthorizedResponse(docs.unauthorized)
+  getFollowing(@Req() req, @Param('user_id') userId: string) {
+    // console.log('나', req.user.id);
+    // console.log('팔로할사람', userId);
+    return this.usersService.follow(req.user.id, userId);
   }
 
   @Delete('follow/:user_id')
@@ -129,7 +147,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'avatar image',
+    description: '"image"로 파일 전송',
     type: FileUploadDto,
   })
   @ApiBearerAuth()
@@ -138,12 +156,13 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('image'))
   uploadFile(
     @Req() req,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
   ): Promise<UserProfile> {
+    this.logger.log('업로드 입니다.');
     return this.usersService.addAvatar(
       req.user.id,
-      file.buffer,
-      file.originalname,
+      image.buffer,
+      image.originalname,
     );
   }
 

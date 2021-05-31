@@ -7,9 +7,8 @@ import {
   Req,
   Res,
   UseGuards,
-  Request,
-  Response,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import {
   ApiExcludeEndpoint,
   ApiOAuth2,
@@ -28,6 +27,7 @@ import { SendMailDto } from './dto/send-mail.dto';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import docs from './auth.docs';
 import { LoginDto } from './dto/login.dto';
+import { AuthenticatedGuard } from './guards/auth.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -86,5 +86,11 @@ export class AuthController {
   @ApiBadRequestResponse(docs.get['verify/:code'].response[400])
   loginWithCode(@Param('code') code: string): Promise<LoginDto> {
     return this.authService.loginWithCode(code);
+  }
+
+  @Get('logout')
+  @UseGuards(AuthenticatedGuard)
+  logout(@Req() req: Request) {
+    req.logOut();
   }
 }

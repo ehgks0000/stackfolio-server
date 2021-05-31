@@ -7,8 +7,10 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { Question } from './question.entity';
@@ -19,6 +21,7 @@ export class QuestionComment {
   // @ApiProperty({ required: false })
   // @ApiProperty({ readOnly: true })
 
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn()
   readonly id: number;
 
@@ -59,6 +62,8 @@ export class QuestionComment {
   // @IsOptional()
   // deleted: boolean;
 
+  /** Relations IDs*/
+
   @ApiProperty({ readOnly: true })
   @Column('uuid')
   @IsUUID('4')
@@ -69,8 +74,10 @@ export class QuestionComment {
   @IsUUID('4')
   question_id: string;
 
-  /** Relations */
+  @RelationId((self: QuestionComment) => self.user_like)
+  user_like_ids: string[];
 
+  /** Relations */
   @ManyToOne((type) => User, (user) => user.comments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
@@ -80,4 +87,10 @@ export class QuestionComment {
   })
   @JoinColumn({ name: 'question_id', referencedColumnName: 'id' })
   question: Question;
+
+  @ManyToMany((type) => User, (user_like) => user_like.question_comment_like, {
+    cascade: true,
+  })
+  //   @JoinTable({ name: 'comment_like' })
+  user_like: User[];
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from 'src/posts/entity/post.entity';
 import { CreateSeriesDto } from './dto/create-series.dto';
+import { PostsOfSeriesResponse } from './dto/post-by-Id-response.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { UpdateSeriesDto } from './dto/update-series.dto';
 import { Series } from './entity/series.entity';
@@ -31,8 +32,28 @@ export class SeriesService {
     });
   }
   // 내 아이디의 한 시리즈의 게시글 목록
-  async getPostsOfSeries(userId: string, seriesId: string): Promise<Series[]> {
-    return this.seriesRepository.find({ id: seriesId, user_id: userId });
+  async getPostsOfSeries(
+    userId: string,
+    seriesId: string,
+    page: number,
+    pageSize: number,
+  ): Promise<PostsOfSeriesResponse> {
+    //   async getPostsOfSeries(userId: string, seriesId: string): Promise<Post[]> {
+    const series = await this.seriesRepository
+      .createQueryBuilder('series')
+      .leftJoinAndSelect('series.posts', 'posts')
+      .where('series.id = :seriesId', { seriesId: seriesId })
+      .andWhere('series.user_id = :user_id', { user_id: userId })
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getMany();
+    // console.log('테스트 :', test);
+
+    // const series = await this.seriesRepository.findOne({
+    //   where: { id: seriesId, user_id: userId },
+    //   relations: ['posts'],
+    // });
+    return { page, pageSize, series };
   }
   async updateSeries(
     userId: string,

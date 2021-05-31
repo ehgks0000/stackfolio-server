@@ -14,16 +14,16 @@ import { Question } from './question.entity';
 export class QuestionInformation {
   /** Columns */
 
-  @ApiProperty()
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
-  @ApiProperty()
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @CreateDateColumn()
   readonly created_at: Date;
 
-  @ApiProperty()
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @UpdateDateColumn()
   readonly updated_at: Date;

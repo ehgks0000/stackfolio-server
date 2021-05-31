@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -16,6 +17,8 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -34,6 +37,12 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
+import { FileUploadDto } from './dto/file-upload.dto';
+import { PostComment } from './entity/post-comment.entity';
+import { CreateCommentPostDto } from './dto/create_comment_post';
+import { PostByUserResponseDto } from './dto/post-by-user-response.dto';
+import { PostPagenation } from './dto/page.dto';
+import { PostByIdResponseDto } from './dto/post-by-Id-response.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -55,31 +64,34 @@ export class PostsController {
   // jwt req.user가 있고 없고로 endpoint 구분 가능한가?
   @Get('')
   @ApiOperation(docs.get['posts'].operation)
-  @ApiOkResponse(docs.get['posts'].response[200])
-  getPostsAll(): Promise<_Post[]> {
-    return this.postsService.getPostsAll();
+  @ApiOkResponse({ type: _Post, isArray: true })
+  //   @ApiOkResponse(docs.get['posts'].response[200])
+  getPostsAll(@Query() query: PostPagenation): Promise<_Post[]> {
+    return this.postsService.getPostsAll(query.page, query.pageSize);
   }
 
-  @Get('')
+  @Get('my')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation(docs.get['posts'].operation)
-  @ApiOkResponse(docs.get['posts'].response[200])
+  @ApiOperation(docs.get['posts/my'].operation)
+  @ApiOkResponse(docs.get['posts/my'].response[200])
   getMyPosts(@Req() req): Promise<_Post[]> {
-    return this.postsService.getPosts(req.user.id, true);
+    return this.postsService.getPostsOfMy(req.user.id);
   }
 
   @Get('user/:user_id')
   @ApiOperation(docs.get['user/:user_id'].operation)
+  //   @ApiOkResponse({ type: PostByUserResponseDto })
   @ApiOkResponse(docs.get['user/:user_id'].response[200])
-  getPosts(@Param('user_id') userId: string): Promise<_Post[]> {
-    return this.postsService.getPosts(userId);
+  getPosts(@Param('user_id') userId: string) {
+    //   getPosts(@Param('user_id') userId: string): Promise<PostByUserResponseDto> {
+    return this.postsService.getPostsByUserId(userId);
   }
 
   @Get(':post_id')
   @ApiOperation(docs.get[':post_id'].operation)
   @ApiOkResponse(docs.get[':post_id'].response[200])
-  getPost(@Param('post_id') postId: string): Promise<_Post[]> {
-    return this.postsService.getPost(postId);
+  getPost(@Param('post_id') postId: string): Promise<PostByIdResponseDto> {
+    return this.postsService.getPostByPostId(postId);
   }
 
   @Patch('')
@@ -110,7 +122,7 @@ export class PostsController {
   @ApiOkResponse(docs.post['like/:post_id'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
   likePost(@Req() req, @Param('post_id') postId: string): Promise<void> {
-    return this.postsService.likePost(req.user.id, postId);
+    return this.postsService.likePost(req.user, postId);
   }
 
   @Post('unlike/:post_id')
@@ -136,6 +148,14 @@ export class PostsController {
 
   @Post('upload/thumbnail')
   @UseGuards(JwtAuthGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'thumbnail image',
+    type: FileUploadDto,
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse(docs.post['upload/thumbnail'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   @UseInterceptors(FileInterceptor('thumbnail'))
   async uploadThumbnail(
     @Req() req,
@@ -152,6 +172,14 @@ export class PostsController {
 
   @Post('upload/contentImages')
   @UseGuards(JwtAuthGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'content image',
+    type: FileUploadDto,
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse(docs.post['upload/contentImages'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   @UseInterceptors(FileInterceptor('contentImages'))
   async uploadContentImages(
     @Req() req,
@@ -166,19 +194,97 @@ export class PostsController {
     );
   }
 
-  @Delete('thumbnail/test')
+  @Delete('delete/thumbnail')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse(docs.delete['delete/thumbnail'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
   deleteThumbnail(@Req() req, @Query('post_id') postId: string): Promise<void> {
     return this.postsService.deleteThumbnail(req.user.id, postId);
   }
 
-  //   @Post('tag')
-  //   @UseGuards(JwtAuthGuard)
-  //   createTag(
-  //     @Req() req,
-  //     @Query('postId') postId: string,
-  //     @Body() data: CreateTagDto,
-  //   ) {
-  //     return this.postsService.createTag(req.user.id, postId, data);
-  //   }
+  /**
+   *
+   * @todo
+   *  게시글에 이미지 넣는거 삭제
+   *  */
+  @Delete('delete/comtentimage')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse(docs.delete['delete/thumbnail'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  deleteContentImage(
+    @Req() req,
+    @Query('post_id') postId: string,
+  ): Promise<void> {
+    return this.postsService.deleteContentImages(req.user.id, postId);
+  }
+
+  @Get('comment/:post_id')
+  @ApiOperation(docs.get['post/comment/:post_id'].operation)
+  @ApiOkResponse(docs.get['post/comment/:post_id'].response[200])
+  getComments(@Param('post_id') post_id: string): Promise<PostComment[]> {
+    return this.postsService.getComments(post_id);
+  }
+
+  @Post('comment/:post_id/:comment_id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation(docs.post['post/comment/:post_id/:comment_id'].operation)
+  @ApiOkResponse(docs.post['post/comment/:post_id/:comment_id'].response[200])
+  @ApiUnauthorizedResponse(docs.unauthorized)
+  createCommenttest(
+    @Req() req,
+    @Param('post_id') post_id: string,
+    @Param('comment_id') comment_id: number,
+    @Body() data: CreateCommentPostDto,
+    //   ) {
+  ): Promise<void> {
+    return this.postsService.createComment(
+      req.user.id,
+      post_id,
+      comment_id,
+      data,
+    );
+  }
+
+  // 태그아이디를 갖는 게시글 전체 찾기
+  @Get('tag/:tag_id')
+  getPostByTagID(@Param('tag_id') tagId: string): Promise<_Post[]> {
+    return this.postsService.getPostByTagID(tagId);
+  }
+  // 태그이름을 갖는 게시글 전체 찾기
+  @Get('tag/:tag_name')
+  getPostByTagName(@Param('tag_name') tagName: string): Promise<_Post[]> {
+    return this.postsService.getPostByTagName(tagName);
+  }
+
+  // 태그 아이디로 내 게시글 전체 찾기
+  @Get('tag/:tag_id/my')
+  @UseGuards(JwtAuthGuard)
+  getMyPostByTagID(
+    @Req() req,
+    @Param('tag_id') tagId: string,
+  ): Promise<_Post[]> {
+    return this.postsService.getMyPostByTagID(req.user.id, tagId);
+  }
+
+  // 태그이름으로 내 게시글 전체 찾기
+  @Get('tag/:tag_name/my')
+  @UseGuards(JwtAuthGuard)
+  getMyPostByTagName(
+    @Req() req,
+    @Param('tag_name') tagName: string,
+  ): Promise<_Post[]> {
+    return this.postsService.getMyPostByTagName(req.user.id, tagName);
+  }
+
+  @Get('series/:series_name/my')
+  @UseGuards(JwtAuthGuard)
+  getMyPostBySeriesName(
+    @Req() req,
+    @Param('series_name') seriesName: string,
+  ): Promise<_Post[]> {
+    return this.postsService.getMyPostBySeriesName(req.user.id, seriesName);
+  }
 }

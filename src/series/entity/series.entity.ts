@@ -70,7 +70,7 @@ export class Series {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @OneToMany(() => Post, (posts) => posts.series)
+  @OneToMany(() => Post, (posts) => posts.series, { nullable: true })
   @JoinColumn({ name: 'post_id' })
   posts: Post[];
 }

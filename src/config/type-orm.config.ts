@@ -6,7 +6,7 @@ import { User } from '../users/entity/user.entity';
 import { UserProfile } from '../users/entity/user-profile.entity';
 import { PostMetadata } from '../posts/entity/post-metadata.entity';
 import { PostInformation } from '../posts/entity/post-information.entity';
-import { PostLike } from 'src/posts/entity/post-like.entity';
+// import { PostLike } from 'src/posts/entity/post-like.entity';
 import { Tag } from 'src/tags/entity/tag.entity';
 import { PostComment } from 'src/posts/entity/post-comment.entity';
 import { Favorite } from 'src/users/entity/user-favorite.entity';
@@ -14,12 +14,12 @@ import { Favorite } from 'src/users/entity/user-favorite.entity';
 import { Series } from 'src/series/entity/series.entity';
 import { Question } from 'src/question/entity/question.entity';
 import { QuestionComment } from 'src/question/entity/question-comment.entity';
-import { QuestionLike } from 'src/question/entity/question-like.entity';
 import { QuestionInformation } from 'src/question/entity/question-information.entity';
 import { QuestionMetadata } from 'src/question/entity/question-metadata.entity';
 import { UserInterest } from 'src/users/entity/user-interest.entity';
 
-const inContainer = Boolean(process.env.IN_CONTAINER);
+const inContainer = JSON.parse(process.env.IN_CONTAINER);
+// const inContainer = Boolean(process.env.IN_CONTAINER);
 const isDev = process.env.NODE_ENV === 'development';
 
 const entities = [
@@ -33,13 +33,11 @@ const entities = [
   //   Series_posts,
   Question,
   QuestionComment,
-  QuestionLike,
   QuestionInformation,
   QuestionMetadata,
   Post,
   PostMetadata,
   PostInformation,
-  PostLike,
   PostComment,
   Tag,
 ];

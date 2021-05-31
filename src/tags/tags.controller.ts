@@ -30,11 +30,6 @@ import { Post as _Post } from 'src/posts/entity/post.entity';
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
-  // @ApiBearerAuth()
-  // @ApiOperation(docs.delete['user'].operation)
-  // @ApiOkResponse(docs.delete['user'].response[200])
-  // @ApiUnauthorizedResponse(docs.unauthorized)
-
   @Get()
   getTags(): Promise<Tag[]> {
     return this.tagsService.getTags();
@@ -56,10 +51,10 @@ export class TagsController {
 
   //나중에 포스트 컨트롤러로 옮기자
   //태그 id 를 갖고있는 "내" 게시글
-  @Get('posts/user')
+  @Get('my/posts')
   @ApiBearerAuth()
-  @ApiOperation(docs.get['tags/posts/user'].operation)
-  @ApiOkResponse(docs.get['tags/posts/user'].response[200])
+  @ApiOperation(docs.get['tags/my/posts'].operation)
+  @ApiOkResponse(docs.get['tags/my/posts'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
   @UseGuards(JwtAuthGuard)
   getMyPostsOfTag(@Query('tagId') tagId: string, @Req() req): Promise<_Post[]> {
@@ -67,34 +62,28 @@ export class TagsController {
   }
 
   // 태그 id 를 갖고있는 전체 게시글
-  @Get('posts')
+  @Get('id/:tag_id')
   @ApiBearerAuth()
-  @ApiOperation(docs.get['tags/posts'].operation)
-  @ApiOkResponse(docs.get['tags/posts'].response[200])
+  @ApiOperation(docs.get['tags/id'].operation)
+  @ApiOkResponse(docs.get['tags/id'].response[200])
   @ApiUnauthorizedResponse(docs.unauthorized)
   @UseGuards(JwtAuthGuard)
-  getPostsOfTag(@Query('tagId') tagId: string): Promise<_Post[]> {
+  getPostsOfTag(@Param('tag_id') tagId: string): Promise<_Post[]> {
     return this.tagsService.getPostsOfTag(tagId);
   }
   // 태그(이름)을 갖고있는 전체 게시글
-  @Get('name')
-  // @ApiBearerAuth()
+  @Get('name/:tag_name')
   @ApiOperation(docs.get['tags/name'].operation)
   @ApiOkResponse(docs.get['tags/name'].response[200])
-  // @ApiUnauthorizedResponse(docs.unauthorized)
-  //   @UseGuards(JwtAuthGuard)
-  getPostsOfTagName(@Query('tag') tagName: string): Promise<_Post[]> {
+  getPostsOfTagName(@Param('tag_name') tagName: string): Promise<_Post[]> {
     return this.tagsService.getPostsOfTagByTittle(tagName);
   }
 
-  //velog 처럼 post 수정할 때 tag 클릭하면 삭제??
-  @Delete()
-  @UseGuards(JwtAuthGuard)
-  deleteTag(
-    @Req() req,
-    @Query('postId') postId: string,
-    @Query('tagId') tagId: string,
-  ): Promise<void> {
-    return this.tagsService.deleteTag(req.user.id, postId, tagId);
+  //포스트 Id를 갖고있는 태그들 찾기
+  @Get(':post_id')
+  @ApiOperation({ description: 'Returns a list of Tags by Post ID' })
+  @ApiOkResponse({ type: Tag, isArray: true })
+  getTagsByPost(@Param('post_id') postId: string): Promise<Tag[]> {
+    return this.tagsService.getTagsByPost(postId);
   }
 }

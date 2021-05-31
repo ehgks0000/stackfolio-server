@@ -4,12 +4,12 @@
 
 - VSCode
 - ERD Cloud
-  ![ERD](lib/velog-ERD.png)
 
--
+  ![ERD](lib/Stackfolio-ERD.png)
 
 ## Stack
 
+- Lucid Chart
 - NestJS
 - PostgreSQL with TypeORM
 
@@ -19,4 +19,4 @@
 
 ## API
 
-[Open API Specification](http://3.34.117.208/api)
+[Open API Specification](http://3.34.117.208/docs)

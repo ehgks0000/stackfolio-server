@@ -11,25 +11,27 @@ import { PostInformation } from './entity/post-information.entity';
 import { PostMetadata } from './entity/post-metadata.entity';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
-import { PostLikeRepository } from './repository/post-like.repository';
+import { PostCommentRepository } from './repository/post-comment.repository';
+// import { PostLikeRepository } from './repository/post-like.repository';
 import { PostRepository } from './repository/post.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       PostRepository,
-      PostLikeRepository,
+      PostCommentRepository,
+      //   PostLikeRepository,
       PostInformation,
       PostMetadata,
       Favorite,
       UserRepository,
       UserProfileRepository,
       UserFavoriteRepository,
-      //   TagRepository,
+      TagRepository,
     ]),
   ],
   controllers: [PostsController],
-  providers: [PostsService, TagsService, TagRepository, FilesService],
+  providers: [PostsService, TagsService, FilesService],
   exports: [PostsService, TypeOrmModule],
 })
 export class PostsModule {}

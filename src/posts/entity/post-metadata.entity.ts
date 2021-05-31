@@ -13,9 +13,11 @@ import { ApiProperty } from '@nestjs/swagger';
 export class PostMetadata {
   /** Columns */
 
+  @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
 
+  @ApiProperty({ readOnly: true })
   @Column('timestamptz')
   @UpdateDateColumn()
   published_at: Date;

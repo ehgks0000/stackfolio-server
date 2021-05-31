@@ -16,16 +16,23 @@ import { User } from 'src/users/entity/user.entity';
 import { UserProfile } from 'src/users/entity/user-profile.entity';
 import { PostInformation } from '../entity/post-information.entity';
 import { PostMetadata } from '../entity/post-metadata.entity';
-import { PostLike } from '../entity/post-like.entity';
+// import { PostLike } from '../entity/post-like.entity';
 import { PostComment } from '../entity/post-comment.entity';
 import { CreateCommentPostDto } from '../dto/create_comment_post';
 
 @EntityRepository(PostComment)
 export class PostCommentRepository extends Repository<PostComment> {
   // eslint-disable-next-linee
+
+  /**
+   *
+   * @param todo
+   * 댓글 아이디로 검사
+   */
   async createPostComment(
     userId: string,
     post_id: string,
+    comment_id: number,
     data: CreateCommentPostDto,
   ): Promise<void> {
     const connection = getConnection();
@@ -37,8 +44,20 @@ export class PostCommentRepository extends Repository<PostComment> {
     try {
       const postRepository = getRepository(Post);
       const userProfileRepository = getRepository(UserProfile);
+      const parentComment = await this.findOne({ where: { id: comment_id } });
 
-      const { id, group, sorts, depth, contents } = data;
+      let group: number = null;
+      let sorts: number = null;
+      let depth: number = null;
+      const contents = data.contents;
+      if (parentComment) {
+        group = parentComment.group;
+        sorts = parentComment.sorts;
+        depth = parentComment.depth;
+        // const { group, sorts, depth } = parentComment;
+      }
+
+      //   const { group, sorts, depth, contents } = data;
 
       const post = await postRepository.findOne({ id: post_id });
       if (!post) {
@@ -58,6 +77,7 @@ export class PostCommentRepository extends Repository<PostComment> {
           .getRawOne();
 
         const comment = new PostComment();
+
         comment.group = max + 1;
         // comment.sorts = ;
         // comment.depth = ;
@@ -67,6 +87,10 @@ export class PostCommentRepository extends Repository<PostComment> {
 
         console.log(comment);
         // await questionCommentRepository.save(comment);
+        post.comment_count += 1;
+        user.exp++;
+        await queryRunner.manager.save(user);
+        await queryRunner.manager.save(post);
         await queryRunner.manager.save(comment);
 
         // return comment;
@@ -134,6 +158,10 @@ export class PostCommentRepository extends Repository<PostComment> {
           console.log('1번', comment);
 
           //   await questionCommentRepository.save(comment);
+          post.comment_count += 1;
+          user.exp++;
+          await queryRunner.manager.save(user);
+          await queryRunner.manager.save(post);
           await queryRunner.manager.save(comment);
         } else {
           //3. UPDATE BOARD SET SORTS = SORTS + 1
@@ -177,7 +205,10 @@ export class PostCommentRepository extends Repository<PostComment> {
 
           console.log('2번', comment);
           //   await questionCommentRepository.save(comment);
-
+          post.comment_count += 1;
+          user.exp++;
+          await queryRunner.manager.save(user);
+          await queryRunner.manager.save(post);
           await queryRunner.manager.save(comment);
         }
         //   await questionCommentRepository.save(comment);
