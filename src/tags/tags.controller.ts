@@ -24,6 +24,7 @@ import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entity/tag.entity';
 import { TagsService } from './tags.service';
 import { Post as _Post } from 'src/posts/entity/post.entity';
+import { TagNameResponseDto } from './dto/tagNameResponse.dto';
 
 @ApiTags('Tags')
 @Controller('tags')
@@ -72,11 +73,17 @@ export class TagsController {
     return this.tagsService.getPostsOfTag(tagId);
   }
   // 태그(이름)을 갖고있는 전체 게시글
-  @Get('name/:tag_name')
+  @Get('post/:tag_name')
   @ApiOperation(docs.get['tags/name'].operation)
   @ApiOkResponse(docs.get['tags/name'].response[200])
   getPostsOfTagName(@Param('tag_name') tagName: string): Promise<_Post[]> {
     return this.tagsService.getPostsOfTagByTittle(tagName);
+  }
+  @Get('name/:tagId')
+  @ApiOperation(docs.get['tags/:tagId'].operation)
+  @ApiOkResponse(docs.get['tags/:tagId'].response[200])
+  getTagNameByID(@Param('tagId') tagId: string): Promise<TagNameResponseDto> {
+    return this.tagsService.getTagNameByID(tagId);
   }
 
   //포스트 Id를 갖고있는 태그들 찾기

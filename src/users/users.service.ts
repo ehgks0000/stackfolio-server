@@ -9,6 +9,7 @@ import { getConnection } from 'typeorm';
 import { MyProfileResponseDto } from './dto/my-profile-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
+import { UserNameResponseDto } from './dto/userNameResponse.dto';
 import { UserProfile } from './entity/user-profile.entity';
 import { User } from './entity/user.entity';
 import { UserFavoriteRepository } from './repository/user-favorite.repository';
@@ -33,6 +34,17 @@ export class UsersService {
   async deleteUser(user: User): Promise<User> {
     await this.userRepository.delete(user.id);
     return user;
+  }
+
+  //   async getUserNameByID(userId: string) {
+  async getUserNameByID(userId: string): Promise<UserNameResponseDto> {
+    const { profile } = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .where('user.id = :userId', { userId: userId })
+      .getOne();
+
+    return { userName: profile.username };
   }
 
   async getMyUser(user_id: string): Promise<MyProfileResponseDto> {

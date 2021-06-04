@@ -8,6 +8,7 @@ import {
   QueryBuilder,
 } from 'typeorm';
 import { CreateTagDto } from './dto/create-tag.dto';
+import { TagNameResponseDto } from './dto/tagNameResponse.dto';
 import { Tag } from './entity/tag.entity';
 import { TagRepository } from './repository/tag.repository';
 
@@ -141,6 +142,12 @@ export class TagsService {
 
     console.log(posts);
     return posts;
+  }
+
+  async getTagNameByID(tagId: string): Promise<TagNameResponseDto> {
+    const { title: tagName } = await this.tagRepository.findOne({ id: tagId });
+
+    return { tagName };
   }
 
   //조인테이블만 삭제 (post와 tag 테이블의 관계도 같이 삭제)

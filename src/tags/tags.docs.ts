@@ -1,4 +1,5 @@
 import { Post } from 'src/posts/entity/post.entity';
+import { TagNameResponseDto } from './dto/tagNameResponse.dto';
 import { Tag } from './entity/tag.entity';
 
 export default {
@@ -49,6 +50,18 @@ export default {
           type: Post,
         },
         [400]: { description: 'Posts(with tag Name) does not exist' },
+      },
+    },
+    ['tags/:tagId']: {
+      operation: {
+        description: 'Return a tagName by Tag ID',
+      },
+      response: {
+        [200]: {
+          description: 'Return a tagName by Tag ID',
+          type: TagNameResponseDto,
+        },
+        [400]: { description: 'Tag does not exist' },
       },
     },
   },

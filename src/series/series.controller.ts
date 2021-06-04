@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -26,6 +27,7 @@ import { Post as _Post } from 'src/posts/entity/post.entity';
 import { query } from 'express';
 import { SeriesPagenation } from './dto/page.dto';
 import { PostsOfSeriesResponse } from './dto/post-by-Id-response.dto';
+import { SeriesNameResponse } from './dto/seriesNameResponse.dto';
 @ApiTags('Series')
 @Controller('series')
 export class SeriesController {
@@ -69,6 +71,15 @@ export class SeriesController {
   @ApiUnauthorizedResponse(docs.unauthorized)
   async getSeries(@Req() req): Promise<Series[]> {
     return this.seriesService.getSeries(req.user.id);
+  }
+
+  @Get('/:seriesId')
+  @ApiOperation(docs.get['series/:seriesId'].operation)
+  @ApiOkResponse(docs.get['series/:seriesId'].response[200])
+  async getSeriesByID(
+    @Param('seriesId') series_id: string,
+  ): Promise<SeriesNameResponse> {
+    return this.seriesService.getSeriesByID(series_id);
   }
 
   // 시리즈의 게시글 목록 가져오기

@@ -38,6 +38,7 @@ import {
 } from '@nestjs/platform-express';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { MyProfileResponseDto } from './dto/my-profile-response.dto';
+import { UserNameResponseDto } from './dto/userNameResponse.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -60,6 +61,13 @@ export class UsersController {
   // eslint-disable-next-line
   deleteUser(@Req() req): Promise<User> {
     return this.usersService.deleteUser(req.user);
+  }
+
+  @Get(':userId')
+  getUserNameByID(
+    @Param('userId') userId: string,
+  ): Promise<UserNameResponseDto> {
+    return this.usersService.getUserNameByID(userId);
   }
 
   @Get('profile')

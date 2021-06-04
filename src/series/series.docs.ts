@@ -1,4 +1,5 @@
 import { PostsOfSeriesResponse } from './dto/post-by-Id-response.dto';
+import { SeriesNameResponse } from './dto/seriesNameResponse.dto';
 import { Series } from './entity/series.entity';
 
 export default {
@@ -11,6 +12,18 @@ export default {
         [200]: {
           description: 'Returns lists of my series.',
           type: Series,
+        },
+        [400]: { description: 'series does not exist' },
+      },
+    },
+    ['series/:seriesId']: {
+      operation: {
+        description: 'Returns name of series.',
+      },
+      response: {
+        [200]: {
+          description: 'Returns name of series.',
+          type: SeriesNameResponse,
         },
         [400]: { description: 'series does not exist' },
       },

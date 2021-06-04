@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Post } from 'src/posts/entity/post.entity';
 import { CreateSeriesDto } from './dto/create-series.dto';
 import { PostsOfSeriesResponse } from './dto/post-by-Id-response.dto';
+import { SeriesNameResponse } from './dto/seriesNameResponse.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { UpdateSeriesDto } from './dto/update-series.dto';
 import { Series } from './entity/series.entity';
@@ -78,5 +79,13 @@ export class SeriesService {
   }
   async updateOrderOfSeries(seriesId: string, data: UpdateOrderDto) {
     return this.seriesRepository.updateOrder(seriesId, data);
+  }
+
+  async getSeriesByID(seriesId: string): Promise<SeriesNameResponse> {
+    const { name: seriesName } = await this.seriesRepository.findOne({
+      id: seriesId,
+    });
+
+    return { seriesName };
   }
 }
