@@ -34,7 +34,7 @@ export class PostCommentRepository extends Repository<PostComment> {
     post_id: string,
     comment_id: number,
     data: CreateCommentPostDto,
-  ): Promise<void> {
+  ): Promise<PostComment> {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
 
@@ -49,6 +49,8 @@ export class PostCommentRepository extends Repository<PostComment> {
       let group: number = null;
       let sorts: number = null;
       let depth: number = null;
+      let comment: PostComment;
+
       const contents = data.contents;
       if (parentComment) {
         group = parentComment.group;
@@ -76,7 +78,7 @@ export class PostCommentRepository extends Repository<PostComment> {
           })
           .getRawOne();
 
-        const comment = new PostComment();
+        comment = new PostComment();
 
         comment.group = max + 1;
         // comment.sorts = ;
@@ -92,8 +94,6 @@ export class PostCommentRepository extends Repository<PostComment> {
         await queryRunner.manager.save(user);
         await queryRunner.manager.save(post);
         await queryRunner.manager.save(comment);
-
-        // return comment;
       } else {
         //대댓글
 
@@ -144,7 +144,7 @@ export class PostCommentRepository extends Repository<PostComment> {
           //         SELECT NVL(MAX(sorts), 0) + 1 FROM question_comment WHERE group = ${group}
           //   `);
           console.log('-----------------After max--------', max_2);
-          const comment = new PostComment();
+          comment = new PostComment();
           //id 는 자동생성
           comment.group = group;
           comment.sorts = (max_2 ?? 0) + 1;
@@ -192,7 +192,7 @@ export class PostCommentRepository extends Repository<PostComment> {
             console.error(error);
           }
 
-          const comment = new PostComment();
+          comment = new PostComment();
 
           //id 는 자동생성
           comment.group = group;
@@ -215,6 +215,8 @@ export class PostCommentRepository extends Repository<PostComment> {
       }
 
       await queryRunner.commitTransaction();
+
+      return comment;
     } catch (error) {
       console.log(error);
       await queryRunner.rollbackTransaction();

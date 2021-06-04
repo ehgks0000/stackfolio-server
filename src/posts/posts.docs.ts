@@ -65,6 +65,18 @@ export default {
         [400]: { description: 'Post does not exist by id' },
       },
     },
+    ['post/comment/:comment_id']: {
+      operation: {
+        description: 'Return a comment of post by comment ID',
+      },
+      response: {
+        [200]: {
+          description: 'Return a comment of post by comment ID',
+          type: PostComment,
+        },
+        [400]: { description: 'Post does not exist by id' },
+      },
+    },
   },
   post: {
     ['posts']: {

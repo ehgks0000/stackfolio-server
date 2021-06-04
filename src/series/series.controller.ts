@@ -31,6 +31,7 @@ import { PostsOfSeriesResponse } from './dto/post-by-Id-response.dto';
 export class SeriesController {
   constructor(private readonly seriesService: SeriesService) {}
 
+  //시리즈 생성
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -44,6 +45,7 @@ export class SeriesController {
     return this.seriesService.createSeries(req.user.id, data);
   }
 
+  //게시글에 시리즈 붙이기
   @Post('posts')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -58,6 +60,7 @@ export class SeriesController {
     return this.seriesService.insertPost(seriesId, req.user.id, postId);
   }
 
+  //유저의 시리즈 전부 가져오기
   @Get('')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -68,6 +71,7 @@ export class SeriesController {
     return this.seriesService.getSeries(req.user.id);
   }
 
+  // 시리즈의 게시글 목록 가져오기
   @Get('posts')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -87,6 +91,7 @@ export class SeriesController {
     );
   }
 
+  //시리즈 내용 수정
   @Patch('')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -106,6 +111,7 @@ export class SeriesController {
    * 시리즈 순서 변경 어떻게 해야할까?
    *
    *  **/
+  //시리즈 게시글 목록 순서 변경
   @Patch('order')
   //   @UseGuards(JwtAuthGuard)
   //   @ApiBearerAuth()

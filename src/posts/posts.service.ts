@@ -112,6 +112,7 @@ export class PostsService {
       .leftJoinAndSelect('post.series', 'series')
       .leftJoinAndSelect('series.posts', 'posts')
       .leftJoinAndSelect('author.profile', 'profile')
+      .orderBy('comments.group', 'ASC')
       .where('post.id = :postId', { postId: postId })
       .andWhere('metadata.is_private = false')
       .getOne();
@@ -309,13 +310,22 @@ export class PostsService {
     return comments;
   }
 
+  async getComment(comment_id: number): Promise<PostComment> {
+    const comment = await this.postCommentRepository.findOne({
+      id: comment_id,
+    });
+
+    return comment;
+  }
+
   async createComment(
     userId: string,
     post_id: string,
     comment_id: number,
     data: CreateCommentPostDto,
-  ): Promise<void> {
-    await this.postCommentRepository.createPostComment(
+  ): Promise<PostComment> {
+    //   ): Promise<void> {
+    return await this.postCommentRepository.createPostComment(
       userId,
       post_id,
       comment_id,

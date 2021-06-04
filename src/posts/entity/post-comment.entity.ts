@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -19,7 +20,7 @@ import { Post } from './post.entity';
 @Entity()
 export class PostComment {
   /** Columns */
-
+  @Index()
   @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn()
   readonly id: number;

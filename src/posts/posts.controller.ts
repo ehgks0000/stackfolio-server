@@ -6,6 +6,7 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -84,7 +85,11 @@ export class PostsController {
   @ApiOkResponse(docs.get['user/:user_id'].response[200])
   getPosts(@Param('user_id') userId: string) {
     //   getPosts(@Param('user_id') userId: string): Promise<PostByUserResponseDto> {
-    return this.postsService.getPostsByUserId(userId);
+    try {
+      return this.postsService.getPostsByUserId(userId);
+    } catch (error) {
+      throw new Error();
+    }
   }
 
   @Get(':post_id')
@@ -220,13 +225,24 @@ export class PostsController {
     return this.postsService.deleteContentImages(req.user.id, postId);
   }
 
-  @Get('comment/:post_id')
+  @Get('comments/:post_id')
   @ApiOperation(docs.get['post/comment/:post_id'].operation)
   @ApiOkResponse(docs.get['post/comment/:post_id'].response[200])
   getComments(@Param('post_id') post_id: string): Promise<PostComment[]> {
     return this.postsService.getComments(post_id);
   }
 
+  @Get('comment/:comment_id')
+  @ApiOperation(docs.get['post/comment/:comment_id'].operation)
+  @ApiOkResponse(docs.get['post/comment/:comment_id'].response[200])
+  //   @UseGuards(JwtAuthGuard)
+  getComment(@Param('comment_id') comment_id: number): Promise<PostComment> {
+    return this.postsService.getComment(comment_id);
+  }
+
+  //쿼리로 주면 디폴트 값으로 첫댓글 생성가능
+  //파람을 사용하면 디폴트 값 사용못하고 강제로 미리 생성되어있는 댓글들 id값을 제외한 값을 넣으면 첫댓글 생성됨
+  //   @Post('comment/:post_id/')
   @Post('comment/:post_id/:comment_id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -237,9 +253,14 @@ export class PostsController {
     @Req() req,
     @Param('post_id') post_id: string,
     @Param('comment_id') comment_id: number,
-    @Body() data: CreateCommentPostDto,
+    // @Query('comment_id', new DefaultValuePipe(-1), ParseIntPipe)
+    // comment_id: number,
+    @Body()
+    data: CreateCommentPostDto,
     //   ) {
-  ): Promise<void> {
+  ): Promise<PostComment> {
+    //   ): Promise<void> {
+    console.log(comment_id);
     return this.postsService.createComment(
       req.user.id,
       post_id,
